@@ -1,0 +1,106 @@
+body {
+    font-family: "Verdana";
+}
+
+.alert {
+    margin-bottom: 0;
+}
+
+.alert-heading  {
+    text-align: center;
+}
+
+.main-navbar {
+    background-color: #F5F5F5;
+    box-shadow: 0 4px 8px 0 rgb(0 0 0 / 20%), 0 6px 20px 0 rgb(0 0 0 / 19%);
+}
+
+.alert-success {
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.tweets-stats-body {
+    padding: 0.5rem 4em;
+}
+
+.jumbotron {
+    padding: 0.8em 1em;
+    margin-bottom: 0.4rem;
+    border-radius: 0;
+}
+
+.jumbotron p {
+    font-size: 0.9em;
+    margin-bottom: 0;
+}
+
+.rts-jumbotron {
+    font-size: 0.9em;
+}
+
+.country-rts-jumbotron {
+    font-size: 0.9em;
+    font-weight: bold;
+}
+
+.container {
+    max-width: 90%;
+}
+
+.tw-card-body {
+    /* border-bottom: 1px solid #383838; */
+    padding: 0.4em 0.4em 0 0.4em;
+    margin-bottom: 0.4em;
+    /* width: 24em; */
+    font-size: 0.9em;
+}
+
+
+.quoted-flag {
+    width: 4%;
+    height: 4%;
+    margin-right: 9px;
+    margin-left: 9px;
+    vertical-align: middle;
+}
+
+.quoted-info {
+    font-size: 0.9em;
+    color: #787878;
+}
+
+.quoted-endorsements {
+    margin-right: 4px;
+    vertical-align: middle;
+}
+
+
+.influencer-flag {
+    width: 12%;
+    /* height: 12%; */
+    margin-bottom: 4px;
+    /* /* margin-right: 9px; */
+    margin-left: 6px; 
+    vertical-align: middle;
+}
+
+.influencer-badge {
+    margin: 0.6em;
+    cursor: pointer;
+}
+
+.influencer-chip {
+    padding: 0.2em;
+    margin: 0;
+    font-weight: 400;
+}
+
+.influencers-chips-row {
+    max-height: 20em;
+    overflow-y: scroll;
+}
+
+.dash-graph {
+    width: 100%;
+}
