@@ -1,0 +1,8 @@
+venv
+.DS_Store
+.ipynb_checkpoints
+__pycache__
+tweets.log
+
+# To be uncommented once dashboard is ready
+assests
