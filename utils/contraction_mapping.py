@@ -41,5 +41,6 @@ contraction_mapping = {
     "wouldn't've": "would not have", "y'all": "you all", "y'all'd": "you all would",
     "y'all'd've": "you all would have", "y'all're": "you all are", "y'all've": "you all have",
     "you'd": "you would", "you'd've": "you would have", "you'll": "you will",
-    "you'll've": "you will have", "you're": "you are", "you've": "you have"}
+    "you'll've": "you will have", "you're": "you are", "you've": "you have"
 }
+

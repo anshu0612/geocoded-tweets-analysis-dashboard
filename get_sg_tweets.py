@@ -1,25 +1,22 @@
 import os
+import time
 import logging
+import datetime
+
 import pandas as pd
-from pymongo import MongoClient
-from sshtunnel import SSHTunnelForwarder
 from rich import print
 from dotenv import load_dotenv
-# import re
+from sshtunnel import SSHTunnelForwarder
+
 from utils.detect_place import get_geo_user_location, get_geo_latlng
-from constant import ALPHA2_TO_COUNTRY
-import time, datetime
+from constant import ALPHA2_TO_COUNTRY, SG_SLANGS
 
-from enum import Enum 
-
-# from geopy.geocoders import Nominatim
-# geolocator = Nominatim(user_agent="anshu")
+# from pymongo import MongoClient
+# from enum import Enum
 
 load_dotenv()
 logging.basicConfig(filename='tweets.log', filemode="a+",
                     level=logging.INFO, format='%(asctime)-15s %(levelname)s:%(message)s')
-
-SG_SLANGS = ['sg', 'spore', 'singapore', 'singapura']
 
 
 def geo_coding(tweet):
@@ -38,10 +35,12 @@ def geo_coding(tweet):
             coding_type = 'Place'
         elif u['location']:
             country_info = get_geo_user_location(u['location'])
-            if country_info: coding_type = 'Location'
-        if country_info and  u['description']:
-                country_info = get_geo_user_location(u['description'])
-                if country_info: coding_type = 'Description'
+            if country_info:
+                coding_type = 'Location'
+        if country_info and u['description']:
+            country_info = get_geo_user_location(u['description'])
+            if country_info:
+                coding_type = 'Description'
     except Exception as e:
         print(e)
     return country_info, coding_type
@@ -51,7 +50,7 @@ def create_geo_users_csv(data, start_csv_no=1, running_tw_save_count=1000, max_c
     global collection_no, db_name, collection_no, sg_users
 
     # print("Start time: ")
-    st = time.time() 
+    st = time.time()
     tweet_csv_data = {}
     tweet_eng_csv_data = {}
 
@@ -138,7 +137,7 @@ def create_geo_users_csv(data, start_csv_no=1, running_tw_save_count=1000, max_c
                 not (u['location'] and any(sg_ref in u['location'].lower().split(' ') for sg_ref in SG_SLANGS)) and \
                 not (u['description'] and any(sg_ref in u['description'].lower().split(' ') for sg_ref in SG_SLANGS)):
             continue
-        
+
         # print("FOUND")
         # GEO TAGGING
         geo_info = ''
@@ -156,7 +155,8 @@ def create_geo_users_csv(data, start_csv_no=1, running_tw_save_count=1000, max_c
         tweet_text.append(tweet['text'])
         tweet_id.append(tweet['id'])
         tweet_lang.append(tweet['lang'])
-        tweet_possibly_sensitive.append(tweet['possibly_sensitive'] if 'possibly_sensitive' in tweet else None)
+        tweet_possibly_sensitive.append(
+            tweet['possibly_sensitive'] if 'possibly_sensitive' in tweet else None)
 
         # User Details -- 10
         user_id.append(u['id'])
@@ -169,9 +169,11 @@ def create_geo_users_csv(data, start_csv_no=1, running_tw_save_count=1000, max_c
         user_desc.append(u['description'])
 
         ori_geo_coding = geo_coding(tweet)
-        oriu_geo_coding = ori_geo_coding[0][0] + '|' + ori_geo_coding[0][1] if ori_geo_coding[0] else None
+        oriu_geo_coding = ori_geo_coding[0][0] + '|' + \
+            ori_geo_coding[0][1] if ori_geo_coding[0] else None
         user_geo_coding.append(oriu_geo_coding)
-        user_geo_coding_type.append(ori_geo_coding[1] if ori_geo_coding[1] else None)
+        user_geo_coding_type.append(
+            ori_geo_coding[1] if ori_geo_coding[1] else None)
 
         # entities
         e = tweet['entities']
@@ -297,7 +299,6 @@ def create_geo_users_csv(data, start_csv_no=1, running_tw_save_count=1000, max_c
         retweeted_user_geo_coding_type.append(ru_geo_coding_type)
 
         valid_tweets += 1
-        
 
         # BATCH SAVING DATA
         if valid_tweets % running_tw_save_count == 0:
@@ -359,12 +360,12 @@ def create_geo_users_csv(data, start_csv_no=1, running_tw_save_count=1000, max_c
             # batch storing 1000 tweets
             df = pd.DataFrame(data=tweet_csv_data)
             tw_file_name = "data/v2/{}/{}_{}.csv".format("tw_sg_" + db_name.lower(),
-                                                      collection_no, start_csv_no)
+                                                         collection_no, start_csv_no)
             df.to_csv(tw_file_name)
 
             df = pd.DataFrame(data=tweet_eng_csv_data)
             tw_eng_file_name = "data/v2/{}/{}_{}.csv".format("tw_eng_sg_" + db_name.lower(),
-                                                          collection_no, start_csv_no)
+                                                             collection_no, start_csv_no)
             df.to_csv(tw_eng_file_name)
             print("Saved tweets --->", tw_file_name, tw_eng_file_name)
             print(valid_tweets, "/", total_tweets)
@@ -433,8 +434,6 @@ def create_geo_users_csv(data, start_csv_no=1, running_tw_save_count=1000, max_c
 
             print("RENEWING WITH CSV NO - {}".format(start_csv_no).center(100, '-'))
 
-            
-
     # final save
     tweet_csv_data['tweet_text'] = tweet_text
     tweet_csv_data['tweet_time'] = tweet_time
@@ -494,16 +493,18 @@ def create_geo_users_csv(data, start_csv_no=1, running_tw_save_count=1000, max_c
     # batch storing 1000 tweets
     df = pd.DataFrame(data=tweet_csv_data)
     tw_file_name = "data/v2/{}/{}_{}.csv".format("tw_sg_" + db_name.lower(),
-                                              collection_no, start_csv_no)
+                                                 collection_no, start_csv_no)
     df.to_csv(tw_file_name)
 
     df = pd.DataFrame(data=tweet_eng_csv_data)
     tw_eng_file_name = "data/v2/{}/{}_{}.csv".format("tw_eng_sg_" + db_name.lower(),
-                                                  collection_no, start_csv_no)
+                                                     collection_no, start_csv_no)
     df.to_csv(tw_eng_file_name)
     print("Final saving Saved tweets --->", tw_file_name, tw_eng_file_name)
 
-    print("Time taken for this CSV: ", datetime.datetime.fromtimestamp(time.time() - st).strftime("%H: %M: %S"))
+    print("Time taken for this CSV: ", datetime.datetime.fromtimestamp(
+        time.time() - st).strftime("%H: %M: %S"))
+
 
 def _set_connetion():
     return SSHTunnelForwarder(
@@ -519,20 +520,19 @@ if __name__ == "__main__":
 
     client = MongoClient('127.0.0.1', server.local_bind_port)
 
-    CURR_MAX_COLELCTION = 102
+    CURR_MAX_COLLECTION = 102
     db_name = "COVID_VACCINE"
     # db_name = "AGE_RACE"
     db = client[db_name]
 
     sg_users = set()
-    with open("./min_3_following_users.txt") as f:
+    with open("./data/min_2_following_users.txt") as f:
         for line in f:
             sg_users.add(line.strip())
 
     print("Total twitter users: ", len(sg_users))
 
-
-    for collection_no in [100]:#range(94, 96):#range(87, 89): #CURR_MAX_COLELCTION + 1):
+    for collection_no in range(84, CURR_MAX_COLLECTION + 1):
         collection_name = "tweets_" + str(collection_no)
         collection_data = db[collection_name]
         print('Starting to collect tweets for colelction no. {}'.format(
