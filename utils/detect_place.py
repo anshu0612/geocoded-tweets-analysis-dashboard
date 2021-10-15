@@ -7,7 +7,6 @@ from constant import ALPHA2_TO_COUNTRY
 locator = Nominatim(user_agent="anshu")
 nlp = spacy.load('en_core_web_sm')
 
-
 def get_geo_user_location(location_desc):
     '''
     Input: Location Noisy Description - string
