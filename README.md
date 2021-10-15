@@ -1,6 +1,6 @@
 # Singapore-based geocoded tweets analysis (In-progress)
 
-Overview:
+## Overview:
 **Challenge**: Collecting tweets by ***Singapore-based users*** from streaming Twitter data.
 
 Previous research works relied on relaxed and limited heuristics resulting in noisy data containing false positives of Singapore-based users' tweets. 
@@ -10,6 +10,6 @@ First, the Twitter streaming data is ingested into MongoDB, data wrangling is pe
 
 --------------------------------------------------------------------------------
 
-Insights are presented on dashboard with the help of the visualizations. 
+### Insights are presented on dashboard with the help of the visualizations. 
 
 ![Alt text](assets/sg-pulse-monitor.png?raw=true "Title")
