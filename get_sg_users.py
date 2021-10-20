@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 from twython import Twython
 from collections import Counter
 
-
 load_dotenv()
 
 APP_KEY = os.environ.get('TWITTER_APP_KEY')
@@ -13,20 +12,21 @@ APP_SECRET = os.environ.get('TWITTER_APP_SECRET')
 OAUTH_TOKEN = os.environ.get('TWITTER_OAUTH_TOKEN')
 OAUTH_TOKEN_SECRET = os.environ.get('TWITTER_OAUTH_TOKEN_SECRET')
 
-SCREEN_NAMES = ['mindefsg', 'MOEsg', 'sporeMOH', 'LTAsg', 'SMRT_Singapore', 'SBSTransit_Ltd', 
+SCREEN_NAMES = ['mindefsg', 'MOEsg', 'sporeMOH', 'LTAsg', 'SMRT_Singapore', 'SBSTransit_Ltd',
                 'SingaporeHDB', 'MNDSingapore', 'mhasingapore', 'SingaporePolice', 'URAsg',
                 'MAS_sg', 'MOFsg', 'ICASingapore', 'SingaporeMCI', 'nlbsingapore', 'IMDAsg',
                 'NEAsg', 'nparksbuzz', 'SGSportsHub', 'govsingapore', 'SingaporeCAAS', 'MFAsg',
-                'iremembersg', 'youthsg', 'NUSingapore', 'NTUsg', 'sgSMU', 'sutdsg', 'SGRedCross', 
+                'iremembersg', 'youthsg', 'NUSingapore', 'NTUsg', 'sgSMU', 'sutdsg', 'SGRedCross',
                 'STcom', 'ChannelNewsAsia', 'TODAYonline', 'asiaonecom', 'thenewpaper', 'MothershipSG',
                 'Singtel', 'StarHub', 'MyRepublicSG', 'M1Singapore', 'temasekpoly', 'singaporetech',
                 'SingaporePoly', 'PUBsingapore', 'NgeeAnnNP', 'ITESpore', 'mediacorp', 'YahooSG',
-                'TimeOutSG', 'VisitSingapore', 'stb_sg', 'GovTechSG', 'SGmagazine', 'mySingapore', 
+                'TimeOutSG', 'VisitSingapore', 'stb_sg', 'GovTechSG', 'SGmagazine', 'mySingapore',
                 'sgelection', 'SGAG_SG', 'TEDxSingapore', 'STATravelSG', 'STPix']
 
 USER_TXT_PATH = "sg_accounts/"
 
 twitter = Twython(APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET)
+
 
 def _get_all_followers(screen_name):
     '''
@@ -35,7 +35,8 @@ def _get_all_followers(screen_name):
     id_list = []
     next_cursor = -1
     while True:
-        response = twitter.get_followers_ids(screen_name=screen_name, cursor=next_cursor)
+        response = twitter.get_followers_ids(
+            screen_name=screen_name, cursor=next_cursor)
         id_list.extend(response['ids'])
         print(len(id_list))
         next_cursor = response['next_cursor']
@@ -53,9 +54,9 @@ def _merge_all_followers(sg_accounts_followers):
         with open(USER_TXT_PATH + txt) as f:
             for line in f:
                 sg_accounts_followers.append(line.strip())
-    
-    print("total users:", len(sg_accounts_followers))    
-    print("total unique users:", len(set(sg_accounts_followers))) 
+
+    print("total users:", len(sg_accounts_followers))
+    print("total unique users:", len(set(sg_accounts_followers)))
     print("total files (accounts)", len(os.listdir(USER_TXT_PATH)))
 
 
@@ -65,7 +66,8 @@ def _get_min_following_followers_id(min_following_required):
         `min_following_required`  Singapore-based accounts
     '''
     users_count = Counter(sg_accounts_followers)
-    users_2 = [k for k, v in users_count.items() if v >= min_following_required]
+    users_2 = [k for k, v in users_count.items() if v >=
+               min_following_required]
     f = open("data/min_2_following_users.txt", "w")
     for u in users_2:
         f.write("{}\n".format(u))
@@ -81,7 +83,6 @@ if __name__ == "__main__":
         if follower_ids is not None:
             for follower_id in follower_ids:
                 file.write('{}\n'.format(follower_id))
-            print("done-->", screen_name)
         time.sleep(61)
         file.flush()
         file.close()
