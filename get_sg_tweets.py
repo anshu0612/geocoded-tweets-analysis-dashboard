@@ -399,15 +399,15 @@ def create_geo_users_csv(data, start_csv_no=1, running_tw_save_count=1000, max_c
             user_geo_coding = []
             user_geo_coding_type = []
 
-            # ------------- engagements -- 1
+            # ------------- engagements
             tweet_enagagement_type = []  # {reply, retweet, quote}
 
-            # reply -- 3
+            # replies data
             replied_to_tweet_id = []
             replied_to_user_id = []
             replied_to_user_screenname = []
 
-            # retweet -- 10
+            # retweets data
             retweeted_tweet_id = []
             retweeted_tweet_time = []  # extra over retweet
             retweeted_user_id = []
@@ -419,7 +419,7 @@ def create_geo_users_csv(data, start_csv_no=1, running_tw_save_count=1000, max_c
             retweeted_retweet_count = []
             retweeted_favorite_count = []
 
-            # quote -- 11
+            # quoted tweets data
             quoted_tweet_text = []  # extra over retweet
             quoted_tweet_id = []
             quoted_tweet_time = []
