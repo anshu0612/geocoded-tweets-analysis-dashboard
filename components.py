@@ -47,6 +47,8 @@ with urllib.request.urlopen(BASE_URL + 'output/basics/basic.json') as url:
 
 
 def generate_quoted_data(tw):
+    print("-"*10)
+    print(tw)
     return (
         dbc.CardBody(
             dbc.Row([
@@ -64,8 +66,9 @@ def generate_quoted_data(tw):
                                 html.Span(
                                     Img(
                                         className='quoted-flag',
-                                        src="https://www.countryflags.io/{}/flat/64.png".format(
-                                            COUNTRY_TO_ALPHA2['Singapore'])
+                                        # src="https://cdn.countryflags.com/thumbs/singapore/flag-400.png"
+                                        src="https://cdn.countryflags.com/thumbs/{}/flag-400.png".format(
+                                            tw['quoted_user_geo_coding'].lower())
                                     )
                                 ),
 
@@ -544,9 +547,9 @@ MAIN_CONTAINER = dbc.Container([
 NAVBAR = dbc.Navbar(
     children=[
         Img(
-            style={"margin": "0 1em"},
-            src="https://www.countryflags.io/{}/flat/64.png".format(
-                COUNTRY_TO_ALPHA2['Singapore'])
+            style={"margin": "0 1em", "width": "4em"},
+            src="https://cdn.countryflags.com/thumbs/{}/flag-400.png".format(
+                'singapore')
         ),
         html.P("Singapore's Pulse Monitoring through Twitter's Lens"),
         Img(

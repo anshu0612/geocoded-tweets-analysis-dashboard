@@ -375,8 +375,9 @@ def generate_influential_users(idx, tw):
                     html.Span(
                         Img(
                             className="influencer-flag",
-                            src="https://www.countryflags.io/{}/flat/64.png".format(
-                                COUNTRY_TO_ALPHA2.get(tw['user_geo_coding'], ""))
+                            style={"width": "2em"},
+                            src="https://cdn.countryflags.com/thumbs/{}/flag-400.png".format(
+                                            tw['user_geo_coding'].lower())
                             if tw['user_geo_coding'] != "Unknown" else ""
                         )
                     )
@@ -401,4 +402,4 @@ def gen_infuential_users_by_country(country):
 
 warnings.filterwarnings('ignore')
 if __name__ == "__main__":
-    app.run_server(debug=True, port=8051)
+    app.run_server(debug=False, port=8051)
