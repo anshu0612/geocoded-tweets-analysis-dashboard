@@ -11,7 +11,7 @@ from sshtunnel import SSHTunnelForwarder
 from utils.detect_place import get_geo_user_location, get_geo_latlng
 from constant import ALPHA2_TO_COUNTRY, SG_SLANGS
 
-# from pymongo import MongoClient
+from pymongo import MongoClient
 # from enum import Enum
 
 load_dotenv()
@@ -37,7 +37,7 @@ def geo_coding(tweet):
             country_info = get_geo_user_location(u['location'])
             if country_info:
                 coding_type = 'Location'
-        if country_info and u['description']:
+        if not country_info and u['description']:
             country_info = get_geo_user_location(u['description'])
             if country_info:
                 coding_type = 'Description'
@@ -113,6 +113,12 @@ def create_geo_users_csv(data, start_csv_no=1, running_tw_save_count=1000, max_c
     quoted_retweet_count = []
     quoted_favorite_count = []
 
+    # geocoded users - memoization
+    geocoded_users = dict()
+    ALT_GEO_NOT_FOUND = "Unknown"
+    UGANDA_FIX = "Uganda"
+    SINGPAORE = "Singapore"
+
     # tracking counters
     total_tweets = 0
     valid_tweets = 0
@@ -168,9 +174,15 @@ def create_geo_users_csv(data, start_csv_no=1, running_tw_save_count=1000, max_c
         user_location.append(u['location'])
         user_desc.append(u['description'])
 
-        ori_geo_coding = geo_coding(tweet)
+        # TODO VERIFY
+        if u['id'] in geocoded_users:
+            ori_geo_coding = geocoded_users[u['id']]
+        else:
+            ori_geo_coding = geo_coding(tweet)
+            geocoded_users[u['id']] = ori_geo_coding
+
         oriu_geo_coding = ori_geo_coding[0][0] + '|' + \
-            ori_geo_coding[0][1] if ori_geo_coding[0] else None
+            ori_geo_coding[0][1] if ori_geo_coding[0] else ALT_GEO_NOT_FOUND
         user_geo_coding.append(oriu_geo_coding)
         user_geo_coding_type.append(
             ori_geo_coding[1] if ori_geo_coding[1] else None)
@@ -244,9 +256,18 @@ def create_geo_users_csv(data, start_csv_no=1, running_tw_save_count=1000, max_c
             qu_name = qu['name']
             qu_verified = qu['verified']
             qu_screen_name = qu['screen_name']
-            q_geo_coding = geo_coding(q)
+
+            # TODO VERIFY
+            if qu['id'] in geocoded_users:
+                q_geo_coding = geocoded_users[qu['id']]
+            else:
+                q_geo_coding = geo_coding(q)
+                geocoded_users[qu['id']] = q_geo_coding
+
+            # q_geo_coding = geo_coding(q)
+
             qu_geo_coding = q_geo_coding[0][0] + '|' + \
-                q_geo_coding[0][1] if q_geo_coding[0] else None
+                q_geo_coding[0][1] if q_geo_coding[0] else ALT_GEO_NOT_FOUND
             qu_geo_coding_type = q_geo_coding[1]
 
         elif 'retweeted_status' in tweet:
@@ -263,9 +284,17 @@ def create_geo_users_csv(data, start_csv_no=1, running_tw_save_count=1000, max_c
             ru_name = ru['name']
             ru_verified = ru['verified']
             ru_screen_name = ru['screen_name']
-            r_geo_coding = geo_coding(r)
+
+            # TODO VERIFY UGANDA FIX
+            if ru['id'] in geocoded_users:
+                r_geo_coding = geocoded_users[ru['id']]
+            else:
+                r_geo_coding = geo_coding(r)
+                geocoded_users[ru['id']] = r_geo_coding
+
+            # r_geo_coding = geo_coding(r)
             ru_geo_coding = r_geo_coding[0][0] + '|' + \
-                r_geo_coding[0][1] if r_geo_coding[0] else None
+                r_geo_coding[0][1] if r_geo_coding[0] else ALT_GEO_NOT_FOUND
             ru_geo_coding_type = r_geo_coding[1]
 
         # append values
@@ -322,7 +351,7 @@ def create_geo_users_csv(data, start_csv_no=1, running_tw_save_count=1000, max_c
             tweet_csv_data['user_location'] = user_location
             tweet_csv_data['user_desc'] = user_desc
             tweet_csv_data['user_geo_coding'] = user_geo_coding
-            # tweet_csv_data['user_geo_coding_type'] = user_geo_coding_type
+            tweet_csv_data['user_geo_coding_type'] = user_geo_coding_type
             tweet_csv_data['user_geo_tagging'] = user_geo_tagging
 
             tweet_eng_csv_data['user_id'] = user_id
