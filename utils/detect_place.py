@@ -51,3 +51,24 @@ def get_geo_latlng(lng, lat):
     except Exception as e:
         print(e)
         return None
+
+
+def get_geo_raw_address(lng, lat):
+    '''
+    Input: (longitude, latitude) - float
+    Output: (country, country_code) - Tuple 
+
+    Alternative:
+    # from geopy.geocoders import GoogleV3
+    # geolocator = GoogleV3(api_key='Your_API_Key')
+    # location = geolocator.reverse("52.509669, 13.376294")
+    # print(location.address)
+    '''
+    try:
+        coordinates = str(lat) + "," + str(lng)
+        location = locator.reverse(coordinates)
+        # cc = location.raw['address']['country_code'].upper()
+        return location.raw['address']
+    except Exception as e:
+        print(e)
+        return None

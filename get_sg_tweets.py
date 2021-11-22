@@ -34,7 +34,12 @@ def geo_coding(tweet):
                 ALPHA2_TO_COUNTRY[p['country_code']], p['country_code'])
             coding_type = 'Place'
         elif u['location']:
-            country_info = get_geo_user_location(u['location'])
+            if 'singapore' in u['location'].lower():
+                # prevent unncessary API call
+                country_info = ('Singapore', 'SG')
+            else:
+                country_info = get_geo_user_location(u['location'])
+            
             if country_info:
                 coding_type = 'Location'
         if not country_info and u['description']:

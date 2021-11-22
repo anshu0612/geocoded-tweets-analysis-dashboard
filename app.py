@@ -1,3 +1,4 @@
+from dash_data.basics import generate_dash_hashtags, generate_dash_mentions, generate_dash_sentiments
 import os
 import warnings
 from components import *
@@ -28,9 +29,14 @@ app_env = 'prod'  # 'local'
 
 ########################
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
-server = app.server
+# server = app.server
 # style={'backgroundColor': '#ffffff'}
 app.layout = html.Div(children=[NAVBAR, MAIN_CONTAINER])
+
+
+BASE_PATH = 'data/'
+sg_tweets = pd.read_csv(BASE_PATH + "sg.csv")
+
 
 # local --------
 all_local_rts_trend = pd.read_csv(
@@ -82,6 +88,7 @@ country_data = pd.read_csv(BASE_URL + 'output/influencers/top_countries.csv')
 
 GRAPHS_TEMPLATE = 'plotly_white'
 
+
 def generate_rts_info(tw):
     return (
         dbc.CardBody(
@@ -126,7 +133,7 @@ def generate_rts_info(tw):
 COUNTRY = 'Singapore'
 
 
-def plotly_wordcloud(tweets_text, selected_country):
+def plotly_wordcloud(tweets_text, filtered_for):
     text = " ".join(list(tweets_text))
 
     STOPWORDS.update([COUNTRY])
@@ -155,7 +162,7 @@ def plotly_wordcloud(tweets_text, selected_country):
 
     frequency_fig_data.update_traces(marker_color='#40B5AD')
     frequency_fig_data.update_layout(
-        title="Frequent words in " + selected_country,
+        title="Frequent words for " + filtered_for,
         font=dict(
             family="Verdana, monospace",
             size=10
@@ -218,6 +225,61 @@ def gen_global_temporal_tweets_count(country):
     ))
 
     return (fig_world_influence, plotly_wordcloud(list(x), country))
+
+
+pst_tweets = pd.read_csv(BASE_URL + "output/basics/pst_tweets.csv")
+
+
+@app.callback(
+    Output('freq-count-psts-tweets', 'figure'),
+    Input('psts-datepick', 'date'))
+def psts_output(date):
+    pst_tweets_by_date = pst_tweets[
+        pst_tweets['processed_tweet_text'].notna() &
+        pst_tweets['tweet_date'].between(
+        date, date, inclusive='both')]['processed_tweet_text']
+    return plotly_wordcloud(list(pst_tweets_by_date), str(date))
+
+
+@app.callback(
+    [Output('fig_hashtags', 'figure'),
+     Output('fig_mentions', 'figure'),
+     Output('fig_sentiments', 'figure')],
+    Input('hash_mention_sent_datepick', 'start_date'),
+    Input('hash_mention_sent_datepick', 'end_date'))
+def update_hash_mentions_sent_output(start_date, end_date):
+    df_hashtags = generate_dash_hashtags(sg_tweets, start_date, end_date)
+    fig_hashtags = px.bar(df_hashtags, x="counts", y="hashtag",
+                          orientation='h', template="plotly_white")
+
+    fig_hashtags.update_layout(
+        title="Top hashtags distribution",
+        margin=dict(l=0, r=0, t=30, b=4),
+        xaxis_title=None,
+        yaxis_title=None
+    )
+
+    df_mentions = generate_dash_mentions(sg_tweets, start_date, end_date)
+    fig_mentions = px.bar(df_mentions, x="counts", y="mention",
+                          orientation='h', template="plotly_white")
+    fig_mentions.update_layout(
+        title="Top mentions distribution",
+        margin=dict(l=0, r=0, t=30, b=4),
+        xaxis_title=None,
+        yaxis_title=None
+    )
+
+    df_sentiments = generate_dash_sentiments(sg_tweets, start_date, end_date)
+    fig_sentiments = px.bar(df_sentiments, x="count", y="tweet_sentiment",
+                            orientation='h', template="plotly_white", color="tweet_sentiment")
+    fig_sentiments.update_layout(
+        title="Sentiments distribution",
+        margin=dict(l=0, r=0, t=30, b=4),
+        xaxis_title=None,
+        yaxis_title=None
+    )
+
+    return (fig_hashtags, fig_mentions, fig_sentiments)
 
 
 @app.callback(
@@ -377,7 +439,7 @@ def generate_influential_users(idx, tw):
                             className="influencer-flag",
                             style={"width": "2em"},
                             src="https://cdn.countryflags.com/thumbs/{}/flag-400.png".format(
-                                            tw['user_geo_coding'].lower())
+                                tw['user_geo_coding'].lower())
                             if tw['user_geo_coding'] != "Unknown" else ""
                         )
                     )
@@ -402,4 +464,4 @@ def gen_infuential_users_by_country(country):
 
 warnings.filterwarnings('ignore')
 if __name__ == "__main__":
-    app.run_server(debug=False, port=8051)
+    app.run_server(debug=True, port=8051)
