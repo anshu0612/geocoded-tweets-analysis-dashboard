@@ -38,12 +38,12 @@ most_influential_country = str(
 # with open('data/output/interactions/cytoscape.json') as json_file:
 #     cytoscape_data = json.load(json_file)
 
-with urllib.request.urlopen(BASE_URL + 'output/basics/basic.json') as url:
-    basic_data = json.loads(url.read().decode())
+# with urllib.request.urlopen(BASE_URL + 'output/basics/basic.json') as url:
+#     basic_data = json.loads(url.read().decode())
 
 
-# with open(BASE_URL + 'output/basics/basic.json') as json_file:
-#     basic_data = json.load(json_file)
+with open(BASE_URL + 'output/basics/basic.json') as json_file:
+    basic_data = json.load(json_file)
 
 
 def generate_quoted_data(tw):
@@ -158,57 +158,101 @@ fig_sentiments.update_layout(
     yaxis_title=None
 )
 
+
+df_tweets_daily_count = pd.read_csv(
+    BASE_URL + "output/basics/daily_tweets.csv")
+fig_tweets_daily_count = px.line(
+    df_tweets_daily_count, x='tweet_date', y='count', template="plotly_white")
+
+
+c_sg_tweets_pst = pd.read_csv(BASE_URL + "output/basics/pst_counts.csv")
+spike_value = c_sg_tweets_pst['count'].quantile(0.95)
+colors = ["red" if cc > spike_value else "green" for cc in c_sg_tweets_pst['count']]
+fig_psts = px.bar(c_sg_tweets_pst, x="tweet_date", y="count", template='plotly_white', color=colors,
+                  height=spike_value)
+fig_psts.update_layout(showlegend=False)
+# fig.show()
+
+
 MAIN_CONTAINER = dbc.Container([
 
     dbc.Row(
-        dbc.Card(
-            [
-                dbc.CardBody(
+        [
+            dbc.Col(
+
+                dbc.Card(
                     [
-                        html.H4("Tweets Stats", className="card-title"),
-                        html.Div(
-                            [html.P([
-                                html.Span(basic_data['total_tweets'], style={
-                                    "fontWeight": 'bold'}),
-                                html.Span(" tweets")
-                            ]
-                            ),
-                                html.P([
-                                    html.Span("{} to {}".format(
-                                        dt.strftime(dt.strptime(
-                                            basic_data["min_date"], DATE_FORMAT), DASH_NO_YEAR_FORMAT),
-                                        dt.strftime(dt.strptime(
-                                            basic_data["max_date"], DATE_FORMAT), DASH_FORMAT)),
-                                        style={"fontWeight": 'bold'}),
-                                    html.Span(" duration")
-                                ]),
-                                html.P([
-                                    html.Span(basic_data['avg_tweets'], style={
-                                        "fontWeight": 'bold'}),
-                                    html.Span(" average no. of tweets per day")
-                                ])],
-                            style={'display': 'flex',
-                                   'justifyContent': 'space-between'}
-                        )
+                        dbc.CardBody(
+                            [
+                                html.H4("Tweets Stats",
+                                        className="card-title"),
+                                html.Div(
+                                    [html.P([
+                                        html.Span(basic_data['total_tweets'], style={
+                                            "fontWeight": 'bold'}),
+                                        html.Span(" tweets")
+                                    ]
+                                    ),
+                                        html.P([
+                                            html.Span("{} to {}".format(
+                                                dt.strftime(dt.strptime(
+                                                    basic_data["min_date"], DATE_FORMAT), DASH_NO_YEAR_FORMAT),
+                                                dt.strftime(dt.strptime(
+                                                    basic_data["max_date"], DATE_FORMAT), DASH_FORMAT)),
+                                                style={"fontWeight": 'bold'}),
+                                            html.Span(" duration")
+                                        ]),
+                                        html.P([
+                                            html.Span(basic_data['avg_tweets'], style={
+                                                "fontWeight": 'bold'}),
+                                            html.Span(
+                                                " average no. of tweets per day")
+                                        ])],
+                                    style={'display': 'flex',
+                                           'justifyContent': 'space-between'}
+                                )
+                            ],
+                            className='tweets-stats-body'
+                        ),
                     ],
-                    className='tweets-stats-body'
+                    style={'width': '100%', 'marginTop': '2em'}
                 ),
-            ],
-            style={'width': '100%', 'marginTop': '2em'}
-        ),
+                className="col-md-4"
+            ),
+            dbc.Col(
+                dcc.Graph(
+                    figure=fig_tweets_daily_count,
+                    className="col-md-8"
+                )
+            )
+        ]),
+    dbc.Row(
+        [
+            html.Div(id="temp"),
+            dcc.DatePickerRange(
+                id='hash_mention_sent_datepick',
+                min_date_allowed=basic_data["min_date"],
+                max_date_allowed=basic_data["max_date"],
+                initial_visible_month=basic_data["min_date"]
+                # end_date=date()
+            ),
+        ],
         className="col-md-12"
     ),
     dbc.Row(
         [
             dcc.Graph(
+                id="fig_hashtags",
                 figure=fig_hashtags,
                 className="col-md-4"
             ),
             dcc.Graph(
+                id="fig_mentions",
                 figure=fig_mentions,
                 className="col-md-4"
             ),
             dcc.Graph(
+                id="fig_sentiments",
                 figure=fig_sentiments,
                 className="col-md-4"
             )
@@ -217,6 +261,34 @@ MAIN_CONTAINER = dbc.Container([
         style={"margin": "3em 0"},
         className="col-md-12"
     ),
+
+    dcc.DatePickerSingle(
+        id='psts-datepick',
+        min_date_allowed=basic_data["min_date"],
+        max_date_allowed=basic_data["max_date"],
+        initial_visible_month=basic_data["min_date"],
+        date=basic_data["min_date"]
+    ),
+    dbc.Row(
+        [
+            dbc.Col(
+                dcc.Graph(
+                    figure=fig_psts,
+                    className="col-md-8"
+                )
+            ),
+            dbc.Col(
+                dcc.Loading(
+                    id="loading-psts-tweets",
+                    children=[
+                        dcc.Graph(id="freq-count-psts-tweets")],
+                    type="dot",
+                ),
+                className="col-md-4"
+            )
+        ]
+    ),
+
 
     dbc.Row(
         [

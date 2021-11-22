@@ -1,4 +1,6 @@
-TOP_COUNTRIES_COUNT = 15
+BASE_LOCAL_URL = "data/"
+BASE_PROD_URL = "https://sg-pulse-monitoring.s3.ap-southeast-1.amazonaws.com/"
+BASE_PATH = BASE_LOCAL_URL
 
 # Dates
 TW_CREATED_AT_FORMAT = "%a %b %d %H:%M:%S +0000 %Y"
@@ -8,11 +10,6 @@ DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 NEW_FORMAT = "%a %b %Y, %I:%m %p"
 DASH_FORMAT = "%d %b, %Y"
 DASH_NO_YEAR_FORMAT = "%d %b"
-
-BASE_LOCAL_URL = "data/"
-BASE_PROD_URL = "https://sg-pulse-monitoring.s3.ap-southeast-1.amazonaws.com/"
-BASE_URL = BASE_PROD_URL
-
 
 SG_SLANGS = ['sg', 'spore', 'singapore', 'singapura']
 SG_LONG = 103.8

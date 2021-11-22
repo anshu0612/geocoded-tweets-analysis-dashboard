@@ -1,0 +1,223 @@
+import json
+import collections as col
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.cm as cm
+
+# graph analysis
+import networkx as nx
+import community as community_louvain
+from dash_constants import *
+
+
+def get_all_interacting_users(sg_tweets):
+    sg_users = set()
+    retweeted_users = set()
+    quoted_users = set()
+    replied_users = set()
+
+    # merged csvs created user_screenname_x and user_screenname_y
+    for u in sg_tweets['user_screenname_x']:
+        sg_users.add(u)
+    print("Count unique SG users: ", len(sg_users))
+
+    for u in sg_tweets[sg_tweets['replied_to_user_screenname'].notna()]['replied_to_user_screenname']:
+        if u == u:
+            replied_users.add(u)
+    print("Count unique replied users: ", len(replied_users))
+
+    for u in sg_tweets[sg_tweets['retweeted_user_screenname'].notna()]['retweeted_user_screenname']:
+        if u == u:
+            retweeted_users.add(u)
+    print("Count unique retweeted users: ", len(retweeted_users))
+
+    for u in sg_tweets[sg_tweets['quoted_user_screenname'].notna()]['quoted_user_screenname']:
+        if u == u:
+            quoted_users.add(u)
+    print("Count unique quoted users: ", len(quoted_users))
+
+    common_interacting_users = set.intersection(
+        sg_users, replied_users, retweeted_users, quoted_users)
+    print("{} total unique common interacting users".format(
+        len(common_interacting_users)))
+
+    return set.union(sg_users, replied_users, retweeted_users, quoted_users)
+
+
+def get_weighted_interacting_edges(sg_tweets):
+    interacting_edges = dict()  # try set as well
+
+    # replies interaction
+    replies_sg = sg_tweets[sg_tweets['tweet_enagagement_type'] == 'Reply'][[
+        'user_screenname_x', 'replied_to_user_screenname']]
+    for user, iuser in zip(replies_sg['user_screenname_x'], replies_sg['replied_to_user_screenname']):
+        if user and iuser and (user != iuser):
+            if (user, iuser,) in interacting_edges:
+                interacting_edges[(user, iuser,)] += 1
+            else:
+                interacting_edges[(user, iuser,)] = 1
+
+    # retweets interaction
+    retweets_sg = sg_tweets[sg_tweets['tweet_enagagement_type'] == 'Retweet'][[
+        'user_screenname_x', 'retweeted_user_screenname']]
+    for user, iuser in zip(retweets_sg['user_screenname_x'], retweets_sg['retweeted_user_screenname']):
+        if user and iuser and (user != iuser):
+            if (user, iuser,) in interacting_edges:
+                interacting_edges[(user, iuser,)] += 1
+            else:
+                interacting_edges[(user, iuser,)] = 1
+
+    # quotes interaction
+    quotes_sg = sg_tweets[sg_tweets['tweet_enagagement_type'] == 'Quote'][[
+        'user_screenname_x', 'quoted_user_screenname']]
+    for user, iuser in zip(quotes_sg['user_screenname_x'], quotes_sg['quoted_user_screenname']):
+        if user and iuser and (user != iuser):
+            if (user, iuser,) in interacting_edges:
+                interacting_edges[(user, iuser,)] += 1
+            else:
+                interacting_edges[(user, iuser,)] = 1
+
+    weighted_interacting_edges_ = set()
+    for k, v in interacting_edges.items():
+        weighted_interacting_edges_.add(k + (v,))
+
+    return weighted_interacting_edges_
+
+
+def create_weighted_directed_graph(nodes, edges):
+    G = nx.MultiDiGraph()
+    G.add_nodes_from(nodes)
+    G.add_weighted_edges_from(edges)
+    return G
+
+
+def graph_details(G):
+    degrees = [val for (node, val) in G.degree()]
+    print("The maximum degree of the graph is " + str(np.max(degrees)))
+    print("The minimum degree of the graph is " + str(np.min(degrees)))
+    print("There are " + str(G.number_of_nodes()) + " nodes and " +
+          str(G.number_of_edges()) + " edges present in the graph")
+    print("The average degree of the nodes in the graph is " + str(np.mean(degrees)))
+
+
+def get_top_ranked_users(G, top_users_count=50):
+    ranked_users = nx.pagerank(G, 0.9)
+    ranked_users = dict(sorted(ranked_users.items(),
+                        key=lambda item: item[1], reverse=True))
+
+    return list(ranked_users)[:top_users_count]
+
+
+def generate_dash_influential_users(sg_tweets, top_ranking,
+                                    save=False,
+                                    influential_users_save_path=INFLUENTIAL_USERS_PATH):
+    # TODO: Can add followers counts but missing for retweeted_user_screenname and quoted_user_screenname
+    normal_users = sg_tweets[sg_tweets['user_screenname_x'].isin(
+        top_ranking)][['user_screenname_x', 'user_geo_coding', 'user_verified']]
+    normal_users.rename(
+        columns={'user_screenname_x': 'user_screenname'}, inplace=True)
+
+    rts_users = sg_tweets[sg_tweets['retweeted_user_screenname'].isin(top_ranking)][[
+        'retweeted_user_screenname', 'retweeted_user_geo_coding', 'retweeted_user_verified']]
+    rts_users.rename(columns={'retweeted_user_screenname': 'user_screenname',
+                              'retweeted_user_geo_coding': 'user_geo_coding',
+                              'retweeted_user_verified': 'user_verified'}, inplace=True)
+
+    quoted_users = sg_tweets[sg_tweets['quoted_user_screenname'].isin(top_ranking)][[
+        'quoted_user_screenname', 'quoted_user_geo_coding', 'quoted_user_verified']]
+    quoted_users.rename(columns={'quoted_user_screenname': 'user_screenname',
+                                 'quoted_user_geo_coding': 'user_geo_coding',
+                                 'quoted_user_verified': 'user_verified'}, inplace=True)
+
+    influential_users = pd.concat(
+        [normal_users, rts_users, quoted_users]).drop_duplicates().reset_index(drop=True)
+
+    if save:
+        pd.DataFrame.to_csv(influential_users, influential_users_save_path)
+
+    print(top_ranking)
+    return influential_users
+
+
+def generate_dash_influential_users_tweets(sg_tweets, top_ranking,
+                                           save=False,
+                                           influential_users_tweets_save_path=INFLUENTIAL_USERS_TWEETS_PATH):
+    # TODO: Can add followers counts but missing for retweeted_user_screenname and quoted_user_screenname
+    normal_users = sg_tweets[sg_tweets['user_screenname_x'].isin(
+        top_ranking)][['user_screenname_x', 'tweet_text']]
+    normal_users.rename(
+        columns={'user_screenname_x': 'user_screenname'}, inplace=True)
+
+    rts_users = sg_tweets[sg_tweets['retweeted_user_screenname'].isin(
+        top_ranking)][['retweeted_user_screenname', 'tweet_text']]
+    rts_users.rename(
+        columns={'retweeted_user_screenname': 'user_screenname'}, inplace=True)
+
+    quoted_users = sg_tweets[sg_tweets['quoted_user_screenname'].isin(
+        top_ranking)][['quoted_user_screenname', 'quoted_tweet_text']]
+    quoted_users.rename(columns={'quoted_user_screenname': 'user_screenname',
+                                 'quoted_tweet_text': 'tweet_text'}, inplace=True)
+
+    influential_users_tweets = pd.concat(
+        [normal_users, rts_users, quoted_users]).reset_index(drop=True)
+
+    if save:
+        pd.DataFrame.to_csv(influential_users_tweets,
+                            influential_users_tweets_save_path)
+
+    return influential_users_tweets
+
+
+def quality_check_pagerank(sg_tweets, top_ranking, top_users_count):
+    sg_verified_users = sg_tweets[sg_tweets['user_verified']
+                                  == True]['user_screenname_x']
+    rt_verified_users = sg_tweets[(sg_tweets['tweet_enagagement_type'] == 'Retweet') & (
+        sg_tweets['retweeted_user_verified'] == True)]['retweeted_user_screenname']
+    q_verified_users = sg_tweets[(sg_tweets['tweet_enagagement_type'] == 'Quote') & (
+        sg_tweets['quoted_user_verified'] == True)]['quoted_user_screenname']
+
+    all_verified_users = set(list(sg_verified_users) +
+                             list(rt_verified_users) + list(q_verified_users))
+    z = set(top_ranking).intersection(all_verified_users)
+    print("The number of verified users in the top {} rankings - {}%".format(
+        top_users_count, len(z)/top_users_count*100))
+    return len(z)/top_users_count*100
+
+
+def remove_low_degree_edges(G, min_degree=MIN_DEGREE_TO_HAVE):
+    G_pruned = G.copy()
+    low_degree_nodes = [node for node, degree in dict(
+        G_pruned.degree()).items() if degree < min_degree]
+    print("Number of users to be removed with degree less than {}: {}".format(
+        min_degree, len(low_degree_nodes)))
+    G_pruned.remove_nodes_from(low_degree_nodes)
+
+    print("New graph:", G_pruned.size(), G_pruned.order())
+    return G_pruned
+
+
+def get_communities(G_pruned, save=False,
+                    communities_save_path=COMMUNITIES_PATH,
+                    communities_plot_save_path=COMMUNITIES_PLOT_PATH):
+    G2 = G_pruned.to_undirected()
+    communities = community_louvain.best_partition(G2)
+    communities_plot = nx.spring_layout(G2)
+
+    cmap = cm.get_cmap('viridis', max(communities.values()) + 1)
+    nx.draw_networkx_nodes(G2, communities_plot, communities.keys(), node_size=40,
+                           cmap=cmap, node_color=list(communities.values()))
+    nx.draw_networkx_edges(G2, communities_plot, alpha=0.5)
+
+    communities_grouped = col.defaultdict(list)
+    for k, v in communities.items():
+        communities_grouped[v].append(k)
+
+    if save:
+        plt.savefig(communities_plot_save_path, bbox_inches='tight')
+
+        with open(communities_save_path, 'w') as f:
+            json.dump(communities_grouped, f)
+
+    print("number of clusters created:", len(communities_grouped))
+    return communities_grouped, communities_plot
