@@ -1,33 +1,22 @@
-# from dash_data.engagements import get_formatted_quoted_tweets, \
-#     get_quoted_tweets_by_date, \
-#     get_bursty_quoted_tweets, \
-#     generate_dash_bursty_quotes_by_sentiment, \
-#     get_most_spread_quoted_by_sentiment_with_rate
 from constant import BASE_PATH
 from wordcloud import WordCloud, STOPWORDS
 import plotly.express as px
 import dash
+from dash_constants import *
 from dash.dependencies import Output, Input
-import dash_core_components as dcc
+# import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 import dash_html_components as html
 import pandas as pd
 from utils.common import human_format
 from components import *
 import warnings
-import os
+# import os
 from dash_data.basics import generate_dash_hashtags, \
     generate_dash_mentions, \
     generate_dash_sentiments, \
-    generate_dash_potentially_sensitive_tweets, \
     get_date_range
-# from base_algos.image_tsne import generate_image_tsne_plot
-# from base_algos.generate_wordcloud import plotly_wordcloud
-# import pycountry
-# import json
-# import dload
-# import math
-# from datetime import datetime as dt
+
 
 # setup
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
@@ -66,7 +55,7 @@ def generate_rts_info(tw):
                         html.Span(tw["retweeted_user_screenname"]),
                         html.Span(" | Created on: " +
                                   dt.strftime(dt.strptime(
-                                      tw["tweet_date"], DATE_FORMAT), DASH_FORMAT)),
+                                      tw["retweeted_tweet_date"], DATE_FORMAT), DASH_FORMAT)),
                         html.Span(
                             " | 🔁 ", className='quoted-endorsements'),
                         html.Span(
@@ -85,15 +74,12 @@ def generate_rts_info(tw):
                 )
             ],
             className="tw-card-body",
-            style={"borderLeft":  '10px solid {}'.format(tw["color"]),
+            style={"borderRight":  '10px solid {}'.format(tw["color"]),
                    "borderBottom":  '2px solid {}'.format(tw["color"])
                    }
         ))
 
     # ])
-
-
-COUNTRY = 'Singapore'
 
 
 def plotly_wordcloud(tweets_text, filtered_for):
@@ -213,15 +199,15 @@ def psts_output(date=min_date):
     [Output('fig_hashtags', 'figure'),
      Output('fig_mentions', 'figure'),
      Output('fig_sentiments', 'figure')],
-    Input('hash_mention_sent_datepick', 'start_date'),
-    Input('hash_mention_sent_datepick', 'end_date'))
+    Input('hash-mention-sent-datepick', 'start_date'),
+    Input('hash-mention-sent-datepick', 'end_date'))
 def update_hash_mentions_sent_output(start_date, end_date):
     df_hashtags = generate_dash_hashtags(sg_tweets, start_date, end_date)
     fig_hashtags = px.bar(df_hashtags, x="counts", y="hashtag",
                           orientation='h', template=DASH_TEMPLATE)
     fig_hashtags.update_layout(
         title="Top hashtags distribution",
-        margin=dict(l=0, r=0, t=30, b=4),
+        margin=dict(l=200, r=0, t=30, b=4),
         xaxis_title=None,
         yaxis_title=None
     )
@@ -252,39 +238,25 @@ def update_hash_mentions_sent_output(start_date, end_date):
 #######################################################################################################################
 #######################################################################################################################
 # local --------
-all_local_rts_trend = pd.read_csv(
-    BASE_PATH + 'output/rts/local/all_local_rts_trend.csv')
-all_local_rts_info = pd.read_csv(
-    BASE_PATH + 'output/rts/local/all_local_rts_info.csv', index_col=0)
+all_local_rts_trend = pd.read_csv(ALL_LOCAL_RTS_TREND_PATH)
+all_local_rts_info = pd.read_csv(ALL_LOCAL_RTS_INFO_PATH)
 
-pos_local_rts_trend = pd.read_csv(
-    BASE_PATH + 'output/rts/local/pos_local_rts_trend.csv')
-pos_local_rts_info = pd.read_csv(
-    BASE_PATH + 'output/rts/local/pos_local_rts_info.csv', index_col=0)
+pos_local_rts_trend = pd.read_csv(POS_LOCAL_RTS_TREND_PATH)
+pos_local_rts_info = pd.read_csv(POS_LOCAL_RTS_INFO_PATH)
 
-neg_local_rts_trend = pd.read_csv(
-    BASE_PATH + 'output/rts/local/neg_local_rts_trend.csv')
-
-neg_local_rts_info = pd.read_csv(
-    BASE_PATH + 'output/rts/local/neg_local_rts_info.csv', index_col=0)
+neg_local_rts_trend = pd.read_csv(NEG_LOCAL_RTS_TREND_PATH)
+neg_local_rts_info = pd.read_csv(NEG_LOCAL_RTS_INFO_PATH)
 
 
 # global --------
-all_global_rts_trend = pd.read_csv(
-    BASE_PATH + 'output/rts/global/all_global_rts_trend.csv')
-all_global_rts_info = pd.read_csv(
-    BASE_PATH + 'output/rts/global/all_global_rts_info.csv', index_col=0)
+all_global_rts_trend = pd.read_csv(ALL_GLOBAL_RTS_TREND_PATH)
+all_global_rts_info = pd.read_csv(ALL_GLOBAL_RTS_INFO_PATH)
 
-pos_global_rts_trend = pd.read_csv(
-    BASE_PATH + 'output/rts/global/pos_global_rts_trend.csv')
-pos_global_rts_info = pd.read_csv(
-    BASE_PATH + 'output/rts/global/pos_global_rts_info.csv', index_col=0)
+pos_global_rts_trend = pd.read_csv(POS_GLOBAL_RTS_TREND_PATH)
+pos_global_rts_info = pd.read_csv(POS_GLOBAL_RTS_INFO_PATH)
 
-neg_global_rts_trend = pd.read_csv(
-    BASE_PATH + 'output/rts/global/neg_global_rts_trend.csv')
-
-neg_global_rts_info = pd.read_csv(
-    BASE_PATH + 'output/rts/global/neg_global_rts_info.csv', index_col=0)
+neg_global_rts_trend = pd.read_csv(NEG_GLOBAL_RTS_TREND_PATH)
+neg_global_rts_info = pd.read_csv(NEG_GLOBAL_RTS_INFO_PATH)
 
 
 @app.callback(
@@ -422,18 +394,7 @@ def get_global_rts_trend(selected_sentiment):
 
     rts_info = [generate_rts_info(tw) for _, tw in info_data.iterrows()]
 
-    # data = info_data.to_dict('records')
-    # columns = [{"name": i, "id": i} for i in info_data.columns]
-
     return (fig_trend_cum, fig_trend_delta, rts_info)
-
-
-#######################################################################################################################
-#######################################################################################################################
-#######################################################################################################################
-#######################################################################################################################
-
-
 
 
 # @app.callback(

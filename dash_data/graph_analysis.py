@@ -135,6 +135,7 @@ def generate_dash_influential_users(sg_tweets, top_ranking,
 
     if save:
         pd.DataFrame.to_csv(influential_users, influential_users_save_path)
+        print("Saved:", influential_users_save_path)
 
     print(top_ranking)
     return influential_users
@@ -165,6 +166,7 @@ def generate_dash_influential_users_tweets(sg_tweets, top_ranking,
     if save:
         pd.DataFrame.to_csv(influential_users_tweets,
                             influential_users_tweets_save_path)
+        print("Saved:", influential_users_tweets_save_path)
 
     return influential_users_tweets
 
@@ -218,6 +220,7 @@ def get_communities(G_pruned, save=False,
 
         with open(communities_save_path, 'w') as f:
             json.dump(communities_grouped, f)
+            print("Saved:", communities_save_path)
 
     print("number of clusters created:", len(communities_grouped))
     return communities_grouped, communities_plot

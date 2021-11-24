@@ -80,11 +80,12 @@ def get_bursty_tweets_info(tweets_df, engagement_type):
 #     engagement_date_label = RT_TWEET_DATE_LABEL if engagement_type == RETWEET else Q_TWEET_DATE_LABEL
     engagement_user_label = RT_TWEET_USER_LABEL if engagement_type == RETWEET else Q_TWEET_USER_LABEL
     engagement_user_verified_label = RT_TWEET_USER_LABEL if engagement_type == RETWEET else Q_TWEET_USER_LABEL
+    engagement_date = RT_TWEET_DATE_LABEL if engagement_type == RETWEET else Q_TWEET_DATE_LABEL
 
     # remove @ from RTs
     tweets_df['tweet_text_'] = [re.sub(
         "RT @[A-Z_a-z_0-9:]+", "", txt).strip() for txt in tweets_df['tweet_text']]
-    details_tweets_df = tweets_df[['tweet_text_', 'tweet_date', 'tweet_sentiment', engagement_user_label, 'total_engagement',
+    details_tweets_df = tweets_df[['tweet_text_', 'tweet_date', 'tweet_sentiment', engagement_date, engagement_user_label, 'total_engagement',
                                    engagement_user_verified_label, engagement_id_label]] \
         .groupby(engagement_id_label) \
         .apply(pd.DataFrame.sort_values, 'total_engagement') \
@@ -103,6 +104,7 @@ def generate_dash_bursty_retweets(eng_tweets,
                                   tweets_limit=25,
                                   percentile=PERCENTILE,
                                   top_tweets_count=TOP_RTS_POS_NEG):
+
     c_ids = get_tweet_id_by_count(eng_tweets, RETWEET, top_tweets_count)
     s_ids = get_tweet_id_by_spike(eng_tweets, RETWEET, percentile)
 
