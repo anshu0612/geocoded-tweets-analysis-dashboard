@@ -21,16 +21,20 @@ def generate_dash_basic_stats(sg_tweets, save=False, basics_save_path=BASICS_PAT
     avg_tweets = sum(daily_tweets['count'][:-1]) / \
         len(daily_tweets['count'][:-1])
 
+    users = sg_tweets['user_id_x'].nunique()
+
     basic = {
         'total_tweets': total_tweets,
         'min_date': min_date,
         'max_date': max_date,
+        'users_count': users,
         'avg_tweets': int(avg_tweets)
     }
 
     if save:
         with open(basics_save_path, 'w') as fp:
             json.dump(basic, fp)
+            print("Saved:", basics_save_path)
 
     return basic
 
@@ -40,6 +44,8 @@ def generate_dash_daily_tweets(sg_tweets, save=False, daily_tweets_save_path=DAI
         'tweet_date')['tweet_id'].count().reset_index(name='count')
     if save:
         pd.DataFrame.to_csv(daily_tweets, daily_tweets_save_path)
+        print("Saved:", daily_tweets_save_path)
+
     return daily_tweets
 
 
@@ -53,9 +59,9 @@ def generate_dash_hashtags(sg_tweets, from_date, to_date, save=False, hashtags_s
     sg_tweets_hashtags = sg_tweets[sg_tweets['entity_hashtags'].notna(
     ) & sg_tweets['tweet_date'].between(from_date, to_date, inclusive='both')]['entity_hashtags']
 
-    print("Count of tweets with hashtags {}".format(len(sg_tweets_hashtags)))
-    print("% of tweets with hashtags {}".format(
-        len(sg_tweets_hashtags)/len(sg_tweets)*100))
+    # print("Count of tweets with hashtags {}".format(len(sg_tweets_hashtags)))
+    # print("% of tweets with hashtags {}".format(
+    #     len(sg_tweets_hashtags)/len(sg_tweets)*100))
 
     hashtags = []
 
@@ -64,8 +70,8 @@ def generate_dash_hashtags(sg_tweets, from_date, to_date, save=False, hashtags_s
             'Singapore', 'singapore', 'sg']]
         hashtags.extend(h_list)
 
-    print("Total hashtags:", len(hashtags))
-    print("Total unique hashtags:", len(set(hashtags)))
+    # print("Total hashtags:", len(hashtags))
+    # print("Total unique hashtags:", len(set(hashtags)))
 
     count_hashtags = col.Counter(hashtags).most_common()
     hashtags = [c[0] for c in count_hashtags[:top_hash_count]]
@@ -81,6 +87,7 @@ def generate_dash_hashtags(sg_tweets, from_date, to_date, save=False, hashtags_s
 
     if save:
         pd.DataFrame.to_csv(df_hashtags_data, hashtags_save_path)
+        print("Saved:", hashtags_save_path)
 
     return df_hashtags_data
 
@@ -95,9 +102,9 @@ def generate_dash_mentions(sg_tweets, from_date, to_date, save=False, mentions_s
     sg_tweets_mentions = sg_tweets[sg_tweets['entity_mentions'].notna(
     ) & sg_tweets['tweet_date'].between(from_date, to_date, inclusive='both')]['entity_mentions']
 
-    print("Count of tweets with mentions {}".format(len(sg_tweets_mentions)))
-    print("% tweets with mentions {}".format(
-        len(sg_tweets_mentions)/len(sg_tweets)*100))
+    # print("Count of tweets with mentions {}".format(len(sg_tweets_mentions)))
+    # print("% tweets with mentions {}".format(
+    #     len(sg_tweets_mentions)/len(sg_tweets)*100))
 
     mentions = []
 
@@ -105,8 +112,8 @@ def generate_dash_mentions(sg_tweets, from_date, to_date, save=False, mentions_s
         m_list = [mm for mm in m.split('|')]
         mentions.extend(m_list)
 
-    print("Total mentions:", len(mentions))
-    print("Total unique mentions:", len(set(mentions)))
+    # print("Total mentions:", len(mentions))
+    # print("Total unique mentions:", len(set(mentions)))
 
     count_mentions = col.Counter(mentions).most_common()
 
@@ -125,6 +132,7 @@ def generate_dash_mentions(sg_tweets, from_date, to_date, save=False, mentions_s
 
     if save:
         pd.DataFrame.to_csv(df_mentions_data, mentions_save_path)
+        print("Saved:", mentions_save_path)
 
     return df_mentions_data
 
@@ -141,6 +149,7 @@ def generate_dash_sentiments(sg_tweets, from_date, to_date, save=False, sentimen
 
     if save:
         pd.DataFrame.to_csv(df_sentiments, sentiments_save_path)
+        print("Saved:", sentiments_save_path)
     return df_sentiments
 
 
@@ -150,21 +159,22 @@ def generate_dash_potentially_sensitive_tweets(sg_tweets, save=False,
                                                percentile=POTENTIALLY_SENSITIVE_TWEETS_DEFAULT_PERCENTILE):
     sg_tweets_pst = sg_tweets[sg_tweets['tweet_possibly_sensitive'] == True]
 
-    print("Total possibily sensitive tweets {}".format(len(sg_tweets_pst)))
-    print("% possibily sensitive tweets {}".format(
-        len(sg_tweets_pst)/len(sg_tweets)*100))
+    # print("Total possibily sensitive tweets {}".format(len(sg_tweets_pst)))
+    # print("% possibily sensitive tweets {}".format(
+    #     len(sg_tweets_pst)/len(sg_tweets)*100))
 
     c_sg_tweets_pst = sg_tweets_pst.value_counts(subset=['tweet_date']).reset_index(name='count') \
         .sort_values(['tweet_date'], ascending=False)
-    print("Average number of Potentially sensitive tweets: ",
-          sum(c_sg_tweets_pst['count'])/len(c_sg_tweets_pst))
+    # print("Average number of Potentially sensitive tweets: ",
+    #       sum(c_sg_tweets_pst['count'])/len(c_sg_tweets_pst))
     spike_value = c_sg_tweets_pst['count'].quantile(percentile)
-    print("spike_value", spike_value)
+    # print("spike_value", spike_value)
 #     pst_counts = c_sg_tweets_pst[c_sg_tweets_pst['count'] > spike_value]
     pst_tweets = sg_tweets_pst[['tweet_date', 'processed_tweet_text']]
 
     if save:
         pd.DataFrame.to_csv(c_sg_tweets_pst, pst_count_save_path)
         pd.DataFrame.to_csv(pst_tweets, pst_tweets_save_path)
+        print("Saved:", pst_count_save_path, pst_tweets_save_path)
 
     return (c_sg_tweets_pst, pst_tweets)

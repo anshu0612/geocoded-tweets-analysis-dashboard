@@ -30,13 +30,13 @@ def get_top_influential_countries(sg_tweets, top_countries_count=10):
     quoted_rts_geo = list(quoted_sg_tweets['quoted_user_geo_coding']) + \
         list(rts_sg_tweets['retweeted_user_geo_coding'])
     c_quoted_rts_geo = col.Counter(quoted_rts_geo).most_common()
-    plot_top_influential_countries(c_quoted_rts_geo)
+    # plot_top_influential_countries(c_quoted_rts_geo)
     return c_quoted_rts_geo[:top_countries_count]
 
 
 def generate_dash_influential_countries(top_country_influencer, save=False,
                                         top_country_influencer_save_path=TOP_COUNTRY_INFLUENCER_PATH):
-    
+
     countries_data = pd.read_csv(COUNTRIES_DATA_PATH)
     top_influential_countries_data = {
         'country': [],
@@ -64,6 +64,7 @@ def generate_dash_influential_countries(top_country_influencer, save=False,
     if save:
         pd.DataFrame.to_csv(top_influential_countries_df,
                             top_country_influencer_save_path)
+        print("Saved:", top_country_influencer_save_path)
 
     return top_influential_countries_df
 
@@ -77,4 +78,6 @@ def generate_dash_influential_countries_tweets(sg_tweets, top_influential_countr
     if save:
         pd.DataFrame.to_csv(top_countries_tweets_df,
                             top_country_influencer_tweets_save_path)
+        print("Saved:", top_country_influencer_tweets_save_path)
+
     return top_countries_tweets_df

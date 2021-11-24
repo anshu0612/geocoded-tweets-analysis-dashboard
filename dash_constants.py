@@ -31,11 +31,14 @@ RT_TWEET_ID_LABEL = 'retweeted_tweet_id'
 RT_TWEET_DATE_LABEL = 'retweeted_tweet_date'
 RT_TWEET_USER_LABEL = 'retweeted_user_screenname'
 RT_TWEET_USER_VERIFIED_LABEL = 'retweeted_user_verified'
+RT_TWEET_DATE_LABEL = 'retweeted_tweet_date'
 
 Q_TWEET_ID_LABEL = 'quoted_tweet_id'
 Q_TWEET_DATE_LABEL = 'quoted_tweet_date'
 Q_TWEET_USER_LABEL = 'quoted_user_screenname'
 Q_TWEET_USER_VERIFIED_LABEL = 'quoted_user_verified'
+Q_TWEET_DATE_LABEL = 'quoted_tweet_date'
+
 SENTIMENT_SPREAD_THRESHOLD = 80
 
 RETWEET = 'retweet'

@@ -34,7 +34,7 @@ class DashGenerator():
         top_influential_countries_df = generate_dash_influential_countries(top_influential_countries, True)
 
         # Saving tweets from the top influential countries for word frequencies analysis 
-        generate_dash_influential_countries_tweets(top_influential_countries_df, True)
+        generate_dash_influential_countries_tweets(self.sg_tweets ,top_influential_countries_df, True)
 
 
     def generate_influential_users(self):
@@ -42,7 +42,7 @@ class DashGenerator():
         weighted_interacting_edges = get_weighted_interacting_edges(self.sg_tweets)
         G = create_weighted_directed_graph(all_interacting_users, weighted_interacting_edges)
         top_ranking = get_top_ranked_users(G)
-        generate_dash_influential_users(top_ranking, True)
+        generate_dash_influential_users(self.sg_tweets, top_ranking, True)
 
 
     def generate_bursty_quoted(self):

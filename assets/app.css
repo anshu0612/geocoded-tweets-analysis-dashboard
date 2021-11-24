@@ -6,13 +6,26 @@ body {
     margin-bottom: 0;
 }
 
+.DateInput_input {
+    width: 8em;
+}
+
+.outburst {
+    max-height: 30em !important;
+    overflow-y: scroll !important;
+} 
+
+
 .alert-heading  {
     text-align: center;
 }
 
 .main-navbar {
-    background-color: #F5F5F5;
-    box-shadow: 0 4px 8px 0 rgb(0 0 0 / 20%), 0 6px 20px 0 rgb(0 0 0 / 19%);
+    justify-content: center;
+    margin: 2em;
+    border: 2px solid;
+    border-image: linear-gradient(to left, lightsalmon, #89CFF0) 1 0;
+    border-top: none;
 }
 
 .alert-success {
@@ -37,6 +50,11 @@ body {
 
 .rts-jumbotron {
     font-size: 0.9em;
+}
+
+.datepick-label {
+    margin: 0.5em 1em;
+    font-size: 1.2em;
 }
 
 .country-rts-jumbotron {
