@@ -1,11 +1,12 @@
 import re
 import spacy
 from geopy.geocoders import Nominatim
-from constant import ALPHA2_TO_COUNTRY
+from constants import ALPHA2_TO_COUNTRY
 
 
 locator = Nominatim(user_agent="anshu")
 nlp = spacy.load('en_core_web_sm')
+
 
 def get_geo_user_location(location_desc):
     '''
@@ -27,7 +28,6 @@ def get_geo_user_location(location_desc):
                     return get_geo_latlng(loc.raw['lon'], loc.raw['lat'])
             except Exception as e:
                 print("here is the error:", e)
-
 
     return None
 
@@ -72,3 +72,35 @@ def get_geo_raw_address(lng, lat):
     except Exception as e:
         print(e)
         return None
+
+
+def geo_coding(tweet):
+    country_info = None
+    coding_type = None
+    try:
+        u = tweet['user']
+        if tweet['coordinates']:  # exact location
+            country_info = get_geo_latlng(
+                tweet['coordinates']['coordinates'][0], tweet['coordinates']['coordinates'][1])
+            coding_type = 'Coordinates'
+        elif 'place' in tweet and tweet['place']:  # specific place or country
+            p = tweet['place']  # p['country']
+            country_info = (
+                ALPHA2_TO_COUNTRY[p['country_code']], p['country_code'])
+            coding_type = 'Place'
+        elif u['location']:
+            if 'singapore' in u['location'].lower():
+                # prevent unncessary API call
+                country_info = ('Singapore', 'SG')
+            else:
+                country_info = get_geo_user_location(u['location'])
+
+            if country_info:
+                coding_type = 'Location'
+        if not country_info and u['description']:
+            country_info = get_geo_user_location(u['description'])
+            if country_info:
+                coding_type = 'Description'
+    except Exception as e:
+        print(e)
+    return country_info, coding_type
