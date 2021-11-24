@@ -1,18 +1,20 @@
 import json
+import pandas as pd
+from datetime import datetime as dt
+
+# import dash_table
+# import dash_cytoscape as cyto
 import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 import dash_html_components as html
 from dash_html_components.Img import Img
+
+import plotly.express as px
 import plotly.graph_objects as go
 
-# import dash_table
-import plotly.express as px
-import pandas as pd
-from constant import *
-from datetime import datetime as dt
-# import dash_cytoscape as cyto
-from utils.common import human_format
+from constants import *
 from dash_constants import *
+from utils.common import human_format
 
 # Load basic stats data
 with open(BASICS_PATH) as json_file:
@@ -62,7 +64,6 @@ most_influential_country = str(
     country_data.iloc[country_data['count'].idxmax()]['country'])
 
 # Static data
-country_data = pd.read_csv(BASE_PATH + 'output/influencers/top_countries.csv')
 quoted_spread_data = pd.read_csv(QUOTED_SENTIMENT_SPEAD_PATH)
 quoted_spread_data_pos = quoted_spread_data[quoted_spread_data['spread_type'] == 'positive']
 quoted_spread_data_neg = quoted_spread_data[quoted_spread_data['spread_type'] == 'negative']
@@ -74,8 +75,10 @@ def create_quoted_card(tw):
             dbc.Row([
                 dbc.Col(
                     [
-                        html.P(style={'fontSize': '1em',
+                        html.A(html.P(style={'fontSize': '1em',
                                       'color': '#000'}, children=tw["quoted_tweet_text"]),
+                               target="blank_",
+                               href=TWITTER_STATUS_PATH.format(tw["quoted_user_screenname"], tw["quoted_tweet_id"])),
                         html.P(
                             className="quoted-info",
                             children=[
@@ -151,7 +154,7 @@ BASIC_STATS = dbc.Card(
                             html.Span(basic_data['users_count'], style={
                                 "fontWeight": 'bold'}),
                             html.Span(
-                                " unique Singapore-based twitter users (potentially)")
+                                " unique Singapore-based twitter users")
                         ]),
                         html.P([
                             html.Span(basic_data['avg_tweets'], style={
@@ -200,16 +203,37 @@ MENTIONS_HASHTAGS_SENTIMENT = [
         ), className="col-md-4")
 ]
 
-DATEPICK_MENTIONS_HASHTAGS_SENTIMENT = [
-    html.Div(children="Filter by date", className="datepick-label"),
-    dcc.DatePickerRange(
-        id='hash-mention-sent-datepick',
-        min_date_allowed=basic_data["min_date"],
-        max_date_allowed=basic_data["max_date"],
-        initial_visible_month=basic_data["min_date"]
-        # end_date=date()
+DATEPICK_MENTIONS_HASHTAGS_SENTIMENT = dcc.DatePickerRange(
+    id='hash-mention-sent-datepick',
+    min_date_allowed=basic_data["min_date"],
+    max_date_allowed=basic_data["max_date"],
+    initial_visible_month=basic_data["min_date"]
+    # end_date=date()
+)
+
+MENTIONS_HASHTAGS_SENTIMENT_INFO = dbc.Jumbotron(
+    dbc.Row(
+        [dbc.Col(
+            children=[
+                html.Span("Trending hashtags, mentions and public sentiment",
+                          style={'color': '#0096FF', 'marginRight': '10px'}),
+                html.P(MENTIONS_HASHTAGS_SENTIMENT_INFO_CONTENT)
+            ],
+            className="col-md-8"
+        ),
+            dbc.Col([
+                html.Span("Filter by date", style={
+                    "fontSize": "0.8em"}),
+                DATEPICK_MENTIONS_HASHTAGS_SENTIMENT
+            ],
+            className="col-md-4"
+        ),
+        ],
+        className="col-md-12"
     ),
-]
+    style={'margin': '1em 0 2em 0'},
+    className="col-md-12")
+
 
 DATEPICK_PSTS = dcc.DatePickerSingle(
     id='psts-datepick',
@@ -228,8 +252,7 @@ PSTS_INFO = dbc.Jumbotron(
             children=[
                 html.Span("Potentially sensitive tweets: ",
                           style={'color': '#0096FF', 'marginRight': '10px'}),
-                html.P("Tweets containing a link that may contain content or media identified as sensitive."
-                       "It does not pertain to a tweet content itself")
+                html.P(PSTS_INFO_CONTENT)
             ],
             className="col-md-8"
         ),
@@ -275,14 +298,10 @@ INFLUENTIAL_USERS_INFO = dbc.Jumbotron(
             children=[
                 html.Span("Interactions graph: ",
                           style={'color': '#000', 'marginRight': '10px'}),
-                html.P(
-                    "A directed weighted graph of interactions - replies, retweets, and quoted tweets"
-                    " between the users.  The weights denote the number of interactions between two users."),
+                html.P(INTERACTIONS_GRAPH_INFO_CONTENT),
                 html.Span("Influential users: ",
                           style={'color': '#0096FF', 'marginRight': '10px'}),
-                html.P(
-                    "Applied PageRanking on interactions graph to get the top 50 users."
-                    " The number signifies the ranking of a user. "),
+                html.P(INFLUENTIAL_USERS_INFO_CONTENT),
             ],
             className="col-md-8"
         ),
@@ -305,30 +324,13 @@ INFLUENTIAL_USERS_INFO = dbc.Jumbotron(
     className="col-md-12")
 
 
-INFLUENTIAL_USERS = [
-    dbc.Row(
-        html.H5(["Influential users"]),
-        className="col-md-12"
-    ),
-    dbc.Row(
-        INFLUENTIAL_USERS_INFO,
-        className="col-md-12"
-    ),
-    dbc.Row(
-        children=[],
-        id="influencers-chips-row"
-    )]
-
-
 INFLUENTIAL_COUNTRIES_INFO = dbc.Jumbotron(
     dbc.Row(
         [dbc.Col(
             children=[
                 html.Span("Influential countries: ",
                           style={'color': '#0096FF', 'marginRight': '10px'}),
-                html.P(
-                    "Tweets by non-Singapore based users with a high number of engagements - retweets and quoted tweets, by Singapore users."
-                    " Bubble sizes reflect the relative total engagements, received by country-specific tweets."),
+                html.P(INFLUENTIAL_COUNTRIES_INFO_CONTENT),
             ],
             className="col-md-8"
         ),
@@ -352,6 +354,21 @@ INFLUENTIAL_COUNTRIES_INFO = dbc.Jumbotron(
     ),
     style={'margin': '1em 0 2em 0'},
     className="col-md-12")
+
+
+INFLUENTIAL_USERS = [
+    dbc.Row(
+        html.H5(["Influential users"]),
+        className="col-md-12"
+    ),
+    dbc.Row(
+        INFLUENTIAL_USERS_INFO,
+        className="col-md-12"
+    ),
+    dbc.Row(
+        children=[],
+        id="influencers-chips-row"
+    )]
 
 
 INFLUENTIAL_COUNTRIES = [
@@ -391,9 +408,8 @@ BURSTY_QUOTED_TWEETS = [
                         html.Span("Viral quoted tweets: ",
                                   style={'color': '#000', 'marginRight': '10px'}),
                         html.P(
-                            "Tweets created between {} and {} that are (1) highly quoted by count or (2)"
-                            " received an unusual number of endorsements - retweets and favorites"
-                            .format(
+
+                            VIRAL_QUOTED_INFO_CONTENT.format(
                                 dt.strftime(dt.strptime(
                                             basic_data["min_date"], DATE_FORMAT), DASH_NO_YEAR_FORMAT),
                                 dt.strftime(dt.strptime(
@@ -401,8 +417,7 @@ BURSTY_QUOTED_TWEETS = [
                         ),
                         html.Span("Reactive tweets: ",
                                   style={'color': '#0096FF', 'marginRight': '10px'}),
-                        html.P(
-                            "Viral quoted tweets with high intensity ( >= 80% ) of extreme sentiments (positive and negative sentiments)"),
+                        html.P(REACTIVE_TWEETS_INFO_CONTENT),
                     ],
                     className="col-md-12"
                 )
@@ -450,7 +465,7 @@ VIRAL_LOCAL_RETWEETS = [
                         html.Span("Viral local retweets:",
                                   style={'color': '#0096FF', 'marginRight': '10px'}),
                         html.Span(
-                            "Tweets created between {} and {} that are (1) by "
+                            VIRAL_RETWEETS_DATE_INFO_CONTENT
                             .format(
                                 dt.strftime(dt.strptime(
                                             basic_data["min_date"], DATE_FORMAT), DASH_NO_YEAR_FORMAT),
@@ -458,8 +473,8 @@ VIRAL_LOCAL_RETWEETS = [
                                             basic_data["max_date"], DATE_FORMAT), DASH_FORMAT)), className="rts-jumbotron"),
                         html.Span("Singapore geocoded accounts ",
                                   className="country-rts-jumbotron"),
-                        html.Span(
-                            "(2) highly retweeted by count or (3) received an unusual number of endorsements - retweets and favorites", className="rts-jumbotron"),
+                        html.Span(VIRAL_RETWEETS_INFO_CONTENT,
+                                  className="rts-jumbotron"),
                     ],
                     className="col-md-8"
                 ),
@@ -518,7 +533,7 @@ VIRAL_GLOBAL_RETWEETS = [
                         html.Span("Viral global retweets:",
                                   style={'color': '#0096FF', 'marginRight': '10px'}),
                         html.Span(
-                            "Tweets created between {} and {} that are (1) by ".
+                            VIRAL_RETWEETS_DATE_INFO_CONTENT.
                             format(
                                 dt.strftime(dt.strptime(
                                             basic_data["min_date"], DATE_FORMAT), DASH_NO_YEAR_FORMAT),
@@ -527,7 +542,7 @@ VIRAL_GLOBAL_RETWEETS = [
                         html.Span("Non-Singapore geocoded accounts ",
                                   className="country-rts-jumbotron"),
                         html.Span(
-                            "(2) highly retweeted by count or (3) received an unusual number of endorsements - retweets and favorites", className="rts-jumbotron"),
+                            VIRAL_RETWEETS_INFO_CONTENT, className="rts-jumbotron"),
                     ],
                     className="col-md-8"
                 ),
@@ -587,7 +602,7 @@ MAIN_CONTAINER = dbc.Container([
 
     html.Hr(),
     dbc.Row(
-        DATEPICK_MENTIONS_HASHTAGS_SENTIMENT,
+        MENTIONS_HASHTAGS_SENTIMENT_INFO,
         className="col-md-12"
     ),
     dbc.Row(
@@ -661,7 +676,7 @@ NAVBAR = dbc.Row(
             src="assets/pulse.png"
         ),
         html.P("Singapore's Pulse Monitoring through Twitter's Lens",
-               style={"fontSize": "1.2em", "margin-top": "0.4em", "color": "#C70039"}),
+               style={"fontSize": "1.2em", "marginTop": "0.4em", "color": "#C70039"}),
         Img(
             style={"margin": "0 0.7em", "width": "1.8%", "height": "1%"},
             src="assets/twitter-logo.png"

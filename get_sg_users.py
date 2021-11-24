@@ -1,3 +1,4 @@
+from io import DEFAULT_BUFFER_SIZE
 import os
 import time
 
@@ -5,25 +6,14 @@ from dotenv import load_dotenv
 from twython import Twython
 from collections import Counter
 
+from constants import DEFAULT_MIN_FOLLOWING_REQUIRED, MIN_SG_ACCOUNTS_FOLLWERS_PATH, SCREEN_NAMES, SG_ACCOUNTS_FOLLOWERS_PATH, USER_TXT_PATH
+
 load_dotenv()
 
 APP_KEY = os.environ.get('TWITTER_APP_KEY')
 APP_SECRET = os.environ.get('TWITTER_APP_SECRET')
 OAUTH_TOKEN = os.environ.get('TWITTER_OAUTH_TOKEN')
 OAUTH_TOKEN_SECRET = os.environ.get('TWITTER_OAUTH_TOKEN_SECRET')
-
-SCREEN_NAMES = ['mindefsg', 'MOEsg', 'sporeMOH', 'LTAsg', 'SMRT_Singapore', 'SBSTransit_Ltd',
-                'SingaporeHDB', 'MNDSingapore', 'mhasingapore', 'SingaporePolice', 'URAsg',
-                'MAS_sg', 'MOFsg', 'ICASingapore', 'SingaporeMCI', 'nlbsingapore', 'IMDAsg',
-                'NEAsg', 'nparksbuzz', 'SGSportsHub', 'govsingapore', 'SingaporeCAAS', 'MFAsg',
-                'iremembersg', 'youthsg', 'NUSingapore', 'NTUsg', 'sgSMU', 'sutdsg', 'SGRedCross',
-                'STcom', 'ChannelNewsAsia', 'TODAYonline', 'asiaonecom', 'thenewpaper', 'MothershipSG',
-                'Singtel', 'StarHub', 'MyRepublicSG', 'M1Singapore', 'temasekpoly', 'singaporetech',
-                'SingaporePoly', 'PUBsingapore', 'NgeeAnnNP', 'ITESpore', 'mediacorp', 'YahooSG',
-                'TimeOutSG', 'VisitSingapore', 'stb_sg', 'GovTechSG', 'SGmagazine', 'mySingapore',
-                'sgelection', 'SGAG_SG', 'TEDxSingapore', 'STATravelSG', 'STPix']
-
-USER_TXT_PATH = "sg_accounts/"
 
 twitter = Twython(APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET)
 
@@ -60,7 +50,7 @@ def _merge_all_followers(sg_accounts_followers):
     print("total files (accounts)", len(os.listdir(USER_TXT_PATH)))
 
 
-def _get_min_following_followers_id(min_following_required):
+def _get_min_following_followers_id(sg_accounts_followers, min_following_required):
     '''
         Filtering and saving the list of followers who follow atleast 
         `min_following_required`  Singapore-based accounts
@@ -68,25 +58,31 @@ def _get_min_following_followers_id(min_following_required):
     users_count = Counter(sg_accounts_followers)
     users_2 = [k for k, v in users_count.items() if v >=
                min_following_required]
-    f = open("data/min_2_following_users.txt", "w")
+    f = open(MIN_SG_ACCOUNTS_FOLLWERS_PATH, "w")
     for u in users_2:
         f.write("{}\n".format(u))
     f.flush()
     f.close()
 
 
-if __name__ == "__main__":
+def get_sg_users(min_following_required=DEFAULT_MIN_FOLLOWING_REQUIRED):
     for screen_name in SCREEN_NAMES:
-        file = open('{}.txt'.format(screen_name), 'a+')
-        print(screen_name)
+
+        file = open(os.path.join(SG_ACCOUNTS_FOLLOWERS_PATH,
+                    '{}.txt'.format(screen_name)), 'a+')
         follower_ids = _get_all_followers(screen_name)
         if follower_ids is not None:
             for follower_id in follower_ids:
-                file.write('{}\n'.format(follower_id))
+                file.write('{}'.format(follower_id))
         time.sleep(61)
         file.flush()
         file.close()
 
     sg_accounts_followers = list()
     _merge_all_followers(sg_accounts_followers, )
-    _get_min_following_followers_id(2)
+    _get_min_following_followers_id(
+        sg_accounts_followers, min_following_required)
+
+
+if __name__ == "__main__":
+    get_sg_users()

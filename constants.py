@@ -1,4 +1,8 @@
 COUNTRY = 'Singapore'
+COUNTRY_CODE = 'SG'
+
+TWITTER_BASE_URL = "https://twitter.com/"
+TWITTER_STATUS_PATH = TWITTER_BASE_URL + "{}/status/{}"
 
 BASE_LOCAL_URL = "data/"
 BASE_PROD_URL = "https://sg-pulse-monitoring.s3.ap-southeast-1.amazonaws.com/"
@@ -23,6 +27,25 @@ US_LNG = 98.5795
 
 DISPLAY_NONE = {'display': 'none'}
 DISPLAY_INLINE = {'display': 'inline'}
+
+DEFAULT_MIN_FOLLOWING_REQUIRED = 2
+SCREEN_NAMES = ['mindefsg', 'MOEsg', 'sporeMOH', 'LTAsg', 'SMRT_Singapore', 'SBSTransit_Ltd',
+                'SingaporeHDB', 'MNDSingapore', 'mhasingapore', 'SingaporePolice', 'URAsg',
+                'MAS_sg', 'MOFsg', 'ICASingapore', 'SingaporeMCI', 'nlbsingapore', 'IMDAsg',
+                'NEAsg', 'nparksbuzz', 'SGSportsHub', 'govsingapore', 'SingaporeCAAS', 'MFAsg',
+                'iremembersg', 'youthsg', 'NUSingapore', 'NTUsg', 'sgSMU', 'sutdsg', 'SGRedCross',
+                'STcom', 'ChannelNewsAsia', 'TODAYonline', 'asiaonecom', 'thenewpaper', 'MothershipSG',
+                'Singtel', 'StarHub', 'MyRepublicSG', 'M1Singapore', 'temasekpoly', 'singaporetech',
+                'SingaporePoly', 'PUBsingapore', 'NgeeAnnNP', 'ITESpore', 'mediacorp', 'YahooSG',
+                'TimeOutSG', 'VisitSingapore', 'stb_sg', 'GovTechSG', 'SGmagazine', 'mySingapore',
+                'sgelection', 'SGAG_SG', 'TEDxSingapore', 'STATravelSG', 'STPix']
+
+USER_TXT_PATH = "sg_accounts/"
+SG_ACCOUNTS_FOLLOWERS_PATH = 'data/sg_accounts_followers'
+MIN_SG_ACCOUNTS_FOLLWERS_PATH = "data/min_following_users.txt"
+
+FRAGMENTED_TWEETS_PATH = "data/fragmented_data/tweets_sg/{}_{}.csv"
+FRAGMENTED_TWEETS_ENGAGEMENTS_PATH = "data/fragmented_data/tweets_engagements_sg/{}_{}.csv"
 
 # from pycountry package
 COUNTRY_TO_ALPHA2 = {'Aruba': 'AW',

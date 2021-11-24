@@ -1,18 +1,18 @@
-from constant import BASE_PATH
-from wordcloud import WordCloud, STOPWORDS
-import plotly.express as px
+import pandas as pd
+import warnings
+
 import dash
-from dash_constants import *
 from dash.dependencies import Output, Input
-# import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 import dash_html_components as html
-import pandas as pd
-from utils.common import human_format
+from wordcloud import WordCloud, STOPWORDS
+import plotly.express as px
+
+from constants import BASE_PATH
 from components import *
-import warnings
-# import os
-from dash_data.basics import generate_dash_hashtags, \
+from dash_constants import *
+from utils.common import human_format
+from dash_modules.basics import generate_dash_hashtags, \
     generate_dash_mentions, \
     generate_dash_sentiments, \
     get_date_range
@@ -38,6 +38,16 @@ influential_users = pd.read_csv(
 country_data = pd.read_csv(BASE_PATH + 'output/influencers/top_countries.csv')
 
 
+dummy_fig = px.treemap(
+    names=["Oops! Not enough tweets. Try other filter value."],
+    parents=[""]
+)
+dummy_fig.update_traces(root_color="lightblue")
+dummy_fig.update_layout(font=dict(
+    family="Verdana, monospace",
+    size=40
+),)
+
 GRAPHS_TEMPLATE = 'plotly_white'
 
 
@@ -45,8 +55,12 @@ def generate_rts_info(tw):
     return (
         dbc.CardBody(
             [
-                html.P(style={'fontSize': '1em',
+                html.A(html.P(style={'fontSize': '1em',
                               'color': '#000'}, children=tw["tweet_text_"]),
+                       target="blank_",
+                       href=TWITTER_STATUS_PATH.format(
+                           tw["retweeted_user_screenname"], tw["retweeted_tweet_id"]),
+                       ),
 
                 html.P(
                     className="quoted-info",
@@ -83,6 +97,11 @@ def generate_rts_info(tw):
 
 
 def plotly_wordcloud(tweets_text, filtered_for):
+
+    if len(tweets_text) < 10:
+        print("NOT ENOUGH TWEETS")
+        return None
+
     text = " ".join(list(tweets_text))
 
     STOPWORDS.update([COUNTRY])
@@ -111,7 +130,8 @@ def plotly_wordcloud(tweets_text, filtered_for):
 
     frequency_fig_data.update_traces(marker_color='#40B5AD')
     frequency_fig_data.update_layout(
-        title="Frequent words for " + filtered_for,
+        title="Frequent words for {} on {} tweets".format(
+            filtered_for, len(tweets_text)),
         font=dict(
             family="Verdana, monospace",
             size=10
@@ -173,7 +193,12 @@ def gen_influential_countries_wordfreq(country):
         x=0.01
     ))
 
-    return (fig_world_influence, plotly_wordcloud(list(x), country))
+    words_freq = plotly_wordcloud(list(x), country)
+
+    if not words_freq:
+        words_freq = dummy_fig
+
+    return (fig_world_influence, words_freq)
 
 
 pst_tweets = pd.read_csv(POTENTIALLY_SENSITIVE_TWEETS_PATH)
@@ -188,7 +213,13 @@ def psts_output(date=min_date):
         pst_tweets['processed_tweet_text'].notna() &
         pst_tweets['tweet_date'].between(
             date, date, inclusive='both')]['processed_tweet_text']
-    return plotly_wordcloud(list(pst_tweets_by_date), str(date))
+
+    words_freq = plotly_wordcloud(list(pst_tweets_by_date), str(date))
+
+    if not words_freq:
+        words_freq = dummy_fig
+
+    return words_freq
 
 
 # df_hashtags = pd.read_csv(HASHTAGS_PATH)
@@ -235,8 +266,6 @@ def update_hash_mentions_sent_output(start_date, end_date):
     return (fig_hashtags, fig_mentions, fig_sentiments)
 
 
-#######################################################################################################################
-#######################################################################################################################
 # local --------
 all_local_rts_trend = pd.read_csv(ALL_LOCAL_RTS_TREND_PATH)
 all_local_rts_info = pd.read_csv(ALL_LOCAL_RTS_INFO_PATH)
@@ -437,7 +466,11 @@ def generate_influential_users(idx, tw):
             html.P(
                 className="influencer-chip",
                 children=[
-                    html.Span(str(idx + 1) + ". " + tw["user_screenname"]),
+                    html.A(html.Span(str(
+                        idx + 1) + ". " + tw["user_screenname"]),
+                        style={"cursor": "pointer"},
+                        target="blank_",
+                        href=TWITTER_BASE_URL + tw["user_screenname"],),
                     html.Span(children=' ☑' if tw["user_verified"] else '', style={
                         'color': '#0096FF'}),
                     html.Span(
@@ -445,7 +478,7 @@ def generate_influential_users(idx, tw):
                             className="influencer-flag",
                             style={"width": "2em"},
                             src="https://cdn.countryflags.com/thumbs/{}/flag-400.png".format(
-                                tw['user_geo_coding'].lower())
+                                tw['user_geo_coding'].lower() if tw['user_geo_coding'].lower() != "united states" else "united-states-of-america")
                             if tw['user_geo_coding'] != "Unknown" else ""
                         )
                     )

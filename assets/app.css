@@ -15,6 +15,10 @@ body {
     overflow-y: scroll !important;
 } 
 
+hr {
+    border: 1.2px solid;
+    border-image: linear-gradient(to left, lightsalmon, #89CFF0) 1 0;
+}
 
 .alert-heading  {
     text-align: center;
@@ -35,6 +39,8 @@ body {
 
 .tweets-stats-body {
     padding: 0.5rem 4em;
+    border: 1.2px solid;
+    border-image: linear-gradient(to left,#ffe5b4,#de5d83) 1 1;
 }
 
 .jumbotron {
