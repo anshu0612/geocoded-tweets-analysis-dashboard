@@ -1,89 +1,52 @@
-from dash_data.basics import generate_dash_hashtags, generate_dash_mentions, generate_dash_sentiments
-import os
-import warnings
+# from dash_data.engagements import get_formatted_quoted_tweets, \
+#     get_quoted_tweets_by_date, \
+#     get_bursty_quoted_tweets, \
+#     generate_dash_bursty_quotes_by_sentiment, \
+#     get_most_spread_quoted_by_sentiment_with_rate
+from constant import BASE_PATH
+from wordcloud import WordCloud, STOPWORDS
+import plotly.express as px
+import dash
+from dash.dependencies import Output, Input
+import dash_core_components as dcc
+import dash_bootstrap_components as dbc
+import dash_html_components as html
+import pandas as pd
+from utils.common import human_format
 from components import *
+import warnings
+import os
+from dash_data.basics import generate_dash_hashtags, \
+    generate_dash_mentions, \
+    generate_dash_sentiments, \
+    generate_dash_potentially_sensitive_tweets, \
+    get_date_range
 # from base_algos.image_tsne import generate_image_tsne_plot
 # from base_algos.generate_wordcloud import plotly_wordcloud
-from utils.common import human_format
-import pandas as pd
-import dash_html_components as html
-import dash_bootstrap_components as dbc
-import dash_core_components as dcc
-from dash.dependencies import Output, Input
-import dash
-import plotly.express as px
-from wordcloud import WordCloud, STOPWORDS
 # import pycountry
 # import json
 # import dload
 # import math
 # from datetime import datetime as dt
-from constant import BASE_URL
 
-app_env = 'prod'  # 'local'
-
-# DEPLOY_PATH = "https://rpm-dashboard-data.s3.ap-southeast-1.amazonaws.com"
-# LOCAL_PATH = "dash-data"
-
-# DATA_PATH = DEPLOY_PATH
-
-########################
+# setup
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
-# server = app.server
-# style={'backgroundColor': '#ffffff'}
 app.layout = html.Div(children=[NAVBAR, MAIN_CONTAINER])
 
+# load the tweets
+sg_tweets = pd.read_csv(SG_TWEETS_PATH)
 
-BASE_PATH = 'data/'
-sg_tweets = pd.read_csv(BASE_PATH + "sg.csv")
-
-
-# local --------
-all_local_rts_trend = pd.read_csv(
-    BASE_URL + 'output/rts/local/all_local_rts_trend.csv')
-all_local_rts_info = pd.read_csv(
-    BASE_URL + 'output/rts/local/all_local_rts_info.csv', index_col=0)
-
-pos_local_rts_trend = pd.read_csv(
-    BASE_URL + 'output/rts/local/pos_local_rts_trend.csv')
-pos_local_rts_info = pd.read_csv(
-    BASE_URL + 'output/rts/local/pos_local_rts_info.csv', index_col=0)
-
-neg_local_rts_trend = pd.read_csv(
-    BASE_URL + 'output/rts/local/neg_local_rts_trend.csv')
-
-neg_local_rts_info = pd.read_csv(
-    BASE_URL + 'output/rts/local/neg_local_rts_info.csv', index_col=0)
-
-
-# global --------
-all_global_rts_trend = pd.read_csv(
-    BASE_URL + 'output/rts/global/all_global_rts_trend.csv')
-all_global_rts_info = pd.read_csv(
-    BASE_URL + 'output/rts/global/all_global_rts_info.csv', index_col=0)
-
-pos_global_rts_trend = pd.read_csv(
-    BASE_URL + 'output/rts/global/pos_global_rts_trend.csv')
-pos_global_rts_info = pd.read_csv(
-    BASE_URL + 'output/rts/global/pos_global_rts_info.csv', index_col=0)
-
-neg_global_rts_trend = pd.read_csv(
-    BASE_URL + 'output/rts/global/neg_global_rts_trend.csv')
-
-neg_global_rts_info = pd.read_csv(
-    BASE_URL + 'output/rts/global/neg_global_rts_info.csv', index_col=0)
-
+min_date, max_date = get_date_range(sg_tweets)
 
 # influencial countries
 top_countries_data = pd.read_csv(
-    BASE_URL + 'output/influencers/top_countries_data.csv')
-
+    BASE_PATH + 'output/influencers/top_countries_data.csv')
 
 influential_users = pd.read_csv(
-    BASE_URL + 'output/influencers/top_users.csv')
+    BASE_PATH + 'output/influencers/top_users.csv')
 
 
-country_data = pd.read_csv(BASE_URL + 'output/influencers/top_countries.csv')
+country_data = pd.read_csv(BASE_PATH + 'output/influencers/top_countries.csv')
 
 
 GRAPHS_TEMPLATE = 'plotly_white'
@@ -154,7 +117,7 @@ def plotly_wordcloud(tweets_text, filtered_for):
     freq_list_top = freq_list[:25]
 
     frequency_fig_data = px.bar(
-        template="plotly_white",
+        template=DASH_TEMPLATE,
         x=freq_list_top[::-1],
         y=word_list_top[::-1],
         orientation='h'
@@ -179,7 +142,7 @@ def plotly_wordcloud(tweets_text, filtered_for):
         Output("word-cloud-influential-country", "figure")],
     Input("dropdown-top-influence-countries", "value"),
 )
-def gen_global_temporal_tweets_count(country):
+def gen_influential_countries_wordfreq(country):
 
     x = top_countries_data[top_countries_data['retweeted_user_geo_coding']
                            == country]['processed_tweet_text']
@@ -227,19 +190,24 @@ def gen_global_temporal_tweets_count(country):
     return (fig_world_influence, plotly_wordcloud(list(x), country))
 
 
-pst_tweets = pd.read_csv(BASE_URL + "output/basics/pst_tweets.csv")
+pst_tweets = pd.read_csv(POTENTIALLY_SENSITIVE_TWEETS_PATH)
+# pst_tweets = generate_dash_potentially_sensitive_tweets(sg_tweets)
 
 
 @app.callback(
     Output('freq-count-psts-tweets', 'figure'),
     Input('psts-datepick', 'date'))
-def psts_output(date):
+def psts_output(date=min_date):
     pst_tweets_by_date = pst_tweets[
         pst_tweets['processed_tweet_text'].notna() &
         pst_tweets['tweet_date'].between(
-        date, date, inclusive='both')]['processed_tweet_text']
+            date, date, inclusive='both')]['processed_tweet_text']
     return plotly_wordcloud(list(pst_tweets_by_date), str(date))
 
+
+# df_hashtags = pd.read_csv(HASHTAGS_PATH)
+# df_mentions = pd.read_csv(MENTIONS_PATH)
+# df_sentiments = pd.read_csv(SENTIMENTS_PATH)
 
 @app.callback(
     [Output('fig_hashtags', 'figure'),
@@ -250,8 +218,7 @@ def psts_output(date):
 def update_hash_mentions_sent_output(start_date, end_date):
     df_hashtags = generate_dash_hashtags(sg_tweets, start_date, end_date)
     fig_hashtags = px.bar(df_hashtags, x="counts", y="hashtag",
-                          orientation='h', template="plotly_white")
-
+                          orientation='h', template=DASH_TEMPLATE)
     fig_hashtags.update_layout(
         title="Top hashtags distribution",
         margin=dict(l=0, r=0, t=30, b=4),
@@ -261,7 +228,7 @@ def update_hash_mentions_sent_output(start_date, end_date):
 
     df_mentions = generate_dash_mentions(sg_tweets, start_date, end_date)
     fig_mentions = px.bar(df_mentions, x="counts", y="mention",
-                          orientation='h', template="plotly_white")
+                          orientation='h', template=DASH_TEMPLATE)
     fig_mentions.update_layout(
         title="Top mentions distribution",
         margin=dict(l=0, r=0, t=30, b=4),
@@ -271,7 +238,7 @@ def update_hash_mentions_sent_output(start_date, end_date):
 
     df_sentiments = generate_dash_sentiments(sg_tweets, start_date, end_date)
     fig_sentiments = px.bar(df_sentiments, x="count", y="tweet_sentiment",
-                            orientation='h', template="plotly_white", color="tweet_sentiment")
+                            orientation='h', template=DASH_TEMPLATE, color="tweet_sentiment")
     fig_sentiments.update_layout(
         title="Sentiments distribution",
         margin=dict(l=0, r=0, t=30, b=4),
@@ -280,6 +247,44 @@ def update_hash_mentions_sent_output(start_date, end_date):
     )
 
     return (fig_hashtags, fig_mentions, fig_sentiments)
+
+
+#######################################################################################################################
+#######################################################################################################################
+# local --------
+all_local_rts_trend = pd.read_csv(
+    BASE_PATH + 'output/rts/local/all_local_rts_trend.csv')
+all_local_rts_info = pd.read_csv(
+    BASE_PATH + 'output/rts/local/all_local_rts_info.csv', index_col=0)
+
+pos_local_rts_trend = pd.read_csv(
+    BASE_PATH + 'output/rts/local/pos_local_rts_trend.csv')
+pos_local_rts_info = pd.read_csv(
+    BASE_PATH + 'output/rts/local/pos_local_rts_info.csv', index_col=0)
+
+neg_local_rts_trend = pd.read_csv(
+    BASE_PATH + 'output/rts/local/neg_local_rts_trend.csv')
+
+neg_local_rts_info = pd.read_csv(
+    BASE_PATH + 'output/rts/local/neg_local_rts_info.csv', index_col=0)
+
+
+# global --------
+all_global_rts_trend = pd.read_csv(
+    BASE_PATH + 'output/rts/global/all_global_rts_trend.csv')
+all_global_rts_info = pd.read_csv(
+    BASE_PATH + 'output/rts/global/all_global_rts_info.csv', index_col=0)
+
+pos_global_rts_trend = pd.read_csv(
+    BASE_PATH + 'output/rts/global/pos_global_rts_trend.csv')
+pos_global_rts_info = pd.read_csv(
+    BASE_PATH + 'output/rts/global/pos_global_rts_info.csv', index_col=0)
+
+neg_global_rts_trend = pd.read_csv(
+    BASE_PATH + 'output/rts/global/neg_global_rts_trend.csv')
+
+neg_global_rts_info = pd.read_csv(
+    BASE_PATH + 'output/rts/global/neg_global_rts_info.csv', index_col=0)
 
 
 @app.callback(
@@ -305,7 +310,7 @@ def get_local_rts_trend(selected_sentiment):
         info_data = pos_local_rts_info
 
     fig_trend_cum = px.line(trend_data,
-                            color_discrete_sequence=px.colors.qualitative.Pastel,
+                            color_discrete_sequence=px.colors.qualitative.Alphabet,
                             x="tweet_date",
                             y="total_engagement",
                             hover_name="retweeted_user_screenname",
@@ -326,7 +331,7 @@ def get_local_rts_trend(selected_sentiment):
     )
 
     fig_trend_delta = px.line(trend_data,
-                              color_discrete_sequence=px.colors.qualitative.Pastel,
+                              color_discrete_sequence=px.colors.qualitative.Alphabet,
                               x="tweet_date",
                               y="delta_engagement",
                               hover_name="retweeted_user_screenname",
@@ -367,7 +372,6 @@ def get_local_rts_trend(selected_sentiment):
     # ],
 )
 def get_global_rts_trend(selected_sentiment):
-
     trend_data = all_global_rts_trend
     info_data = all_global_rts_info
     if selected_sentiment == 'Negative':
@@ -379,7 +383,7 @@ def get_global_rts_trend(selected_sentiment):
 
     # pull csv based on sentiment
     fig_trend_cum = px.line(trend_data,
-                            color_discrete_sequence=px.colors.qualitative.Pastel,
+                            color_discrete_sequence=px.colors.qualitative.Alphabet,
                             x="tweet_date",
                             y="total_engagement",
                             hover_name="retweeted_user_screenname",
@@ -397,7 +401,7 @@ def get_global_rts_trend(selected_sentiment):
     )
 
     fig_trend_delta = px.line(trend_data,
-                              color_discrete_sequence=px.colors.qualitative.Pastel,
+                              color_discrete_sequence=px.colors.qualitative.Alphabet,
                               x="tweet_date",
                               y="delta_engagement",
                               hover_name="retweeted_user_screenname",
@@ -423,6 +427,47 @@ def get_global_rts_trend(selected_sentiment):
 
     return (fig_trend_cum, fig_trend_delta, rts_info)
 
+
+#######################################################################################################################
+#######################################################################################################################
+#######################################################################################################################
+#######################################################################################################################
+
+
+
+
+# @app.callback(
+#     [Output('pos-quotes-sentiment', 'children'),
+#      Output('neg-quotes-sentiment', 'children')],
+#     Input('quoted-bursty-datepick', 'start_date'),
+#     Input('quoted-bursty-datepick', 'end_date'))
+# def update_quoted_sentiments_by_date(start_date, end_date):
+#     min_date, max_date = get_date_range(sg_tweets)
+
+#     tweet_enagagement_quotes = get_formatted_quoted_tweets(sg_tweets)
+#     quoted_tweets = get_quoted_tweets_by_date(
+#         tweet_enagagement_quotes, min_date, max_date, start_date, end_date)
+#     bursty_quoted_tweets = get_bursty_quoted_tweets(quoted_tweets)
+
+#     most_spread_quoted_by_sentiment_with_rate = get_most_spread_quoted_by_sentiment_with_rate(
+#         bursty_quoted_tweets)
+#     quoted_spread_data = generate_dash_bursty_quotes_by_sentiment(
+#         bursty_quoted_tweets, most_spread_quoted_by_sentiment_with_rate)
+
+#     quoted_spread_data = pd.read_csv(
+#         BASE_PATH + 'output/quoted/sentiment_spread.csv')
+#     quoted_spread_data_pos = quoted_spread_data[quoted_spread_data['spread_type'] == 'positive']
+#     quoted_spread_data_neg = quoted_spread_data[quoted_spread_data['spread_type'] == 'negative']
+
+#     bursty_pos = [create_quoted_card(tw)
+#                   for _, tw in quoted_spread_data_pos.iterrows()]
+#     bursty_neg = [create_quoted_card(tw)
+#                   for _, tw in quoted_spread_data_neg.iterrows()]
+
+#     print("bursty_pos ---- : ", len(bursty_pos))
+#     print("bursty_neg --- : ", len(bursty_neg))
+
+#     return (bursty_pos, bursty_neg)
 
 def generate_influential_users(idx, tw):
     return (

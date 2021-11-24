@@ -1,8 +1,8 @@
 
 from constant import BASE_PATH
 
-BASE_PATH + "sg.csv"
-
+SG_TWEETS_PATH = BASE_PATH + "sg.csv"
+DASH_TEMPLATE = "plotly_white"
 
 # -------- Basics ----------
 BASICS_PATH = BASE_PATH + 'output/basics/basic.json'
@@ -15,9 +15,11 @@ SENTIMENTS_PATH = BASE_PATH + 'output/basics/sentiments.csv'
 
 POTENTIALLY_SENSITIVE_TWEETS_COUNT_PATH = BASE_PATH + "output/basics/pst_counts.csv"
 POTENTIALLY_SENSITIVE_TWEETS_PATH = BASE_PATH + "output/basics/pst_tweets.csv"
-
+POTENTIALLY_SENSITIVE_TWEETS_DEFAULT_PERCENTILE = 0.95
 
 # ---------- Influential countries ----------
+COUNTRIES_DATA_PATH = BASE_PATH + "countries_geolocation.csv"
+
 TOP_COUNTRY_INFLUENCER_PATH = BASE_PATH + 'output/influencers/top_countries.csv'
 TOP_COUNTRY_INFLUENCER_TWEETS_PATH = BASE_PATH + 'output/influencers/top_countries_tweets.csv'
 
@@ -73,9 +75,4 @@ INFLUENTIAL_USERS_TWEETS_PATH = BASE_PATH + "output/influencers/top_users_tweets
 
 COMMUNITIES_PLOT_PATH = BASE_PATH + "output/communities/clusters"
 COMMUNITIES_PATH = BASE_PATH + "output/communities/clusters.json"
-
-influential_users_save_path
-influential_users_tweets_save_path
-communities_plot_save_path
-communities_save_path
 # ----------  ----------

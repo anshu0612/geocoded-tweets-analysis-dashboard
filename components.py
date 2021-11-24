@@ -1,4 +1,5 @@
 import json
+from re import TEMPLATE
 from dash_bootstrap_components._components.CardBody import CardBody
 from dash_bootstrap_components._components.Row import Row
 from dash_core_components.Graph import Graph
@@ -23,32 +24,48 @@ from utils.common import human_format
 
 import pandas as pd
 
-# add basic json
-quoted_spread_data = pd.read_csv(
-    BASE_URL + 'output/quoted/sentiment_spread.csv')
-quoted_spread_data_pos = quoted_spread_data[quoted_spread_data['spread_type'] == 'positive']
-quoted_spread_data_neg = quoted_spread_data[quoted_spread_data['spread_type'] == 'negative']
+from dash_constants import *
+
+# Load basic stats data
+with open(BASICS_PATH) as json_file:
+    basic_data = json.load(json_file)
+
+# Load daily tweets data
+df_tweets_daily_count = pd.read_csv(DAILY_TWEETS_PATH)
+fig_tweets_daily_count = px.line(
+    df_tweets_daily_count, x='tweet_date', y='count', template=DASH_TEMPLATE)
 
 
-country_data = pd.read_csv(BASE_URL + 'output/influencers/top_countries.csv')
+# Load potentially sensitive tweets data
+c_sg_tweets_pst = pd.read_csv(POTENTIALLY_SENSITIVE_TWEETS_COUNT_PATH)
+spike_value = c_sg_tweets_pst['count'].quantile(
+    POTENTIALLY_SENSITIVE_TWEETS_DEFAULT_PERCENTILE)
+colors = ["red" if cc > spike_value else "green" for cc in c_sg_tweets_pst['count']]
+fig_psts = px.bar(c_sg_tweets_pst, x="tweet_date", y="count", template=DASH_TEMPLATE, color=colors,
+                  height=spike_value)
+fig_psts.update_layout(showlegend=False)
+
+
+# Load influential users
+influential_users = pd.read_csv(INFLUENTIAL_USERS_PATH)
+influential_users_countries = list(
+    influential_users['user_geo_coding'].unique())
+influential_users_countries.append('All')
+influential_users_countries = sorted(influential_users_countries)
+
+
+# Load influential users
+country_data = pd.read_csv(TOP_COUNTRY_INFLUENCER_PATH)
 most_influential_country = str(
     country_data.iloc[country_data['count'].idxmax()]['country'])
 
-# cytoscape_data = None
-# with open('data/output/interactions/cytoscape.json') as json_file:
-#     cytoscape_data = json.load(json_file)
+# Static data
+country_data = pd.read_csv(BASE_PATH + 'output/influencers/top_countries.csv')
+quoted_spread_data = pd.read_csv(QUOTED_SENTIMENT_SPEAD_PATH)
+quoted_spread_data_pos = quoted_spread_data[quoted_spread_data['spread_type'] == 'positive']
+quoted_spread_data_neg = quoted_spread_data[quoted_spread_data['spread_type'] == 'negative']
 
-# with urllib.request.urlopen(BASE_URL + 'output/basics/basic.json') as url:
-#     basic_data = json.loads(url.read().decode())
-
-
-with open(BASE_URL + 'output/basics/basic.json') as json_file:
-    basic_data = json.load(json_file)
-
-
-def generate_quoted_data(tw):
-    print("-"*10)
-    print(tw)
+def create_quoted_card(tw):
     return (
         dbc.CardBody(
             dbc.Row([
@@ -103,75 +120,6 @@ def generate_quoted_data(tw):
             ],
                 className="tw-card-body"
             )))
-
-
-# Static data
-QUOTED_POS = []
-
-# default_stylesheet = [
-#     {
-#         'selector': 'node',
-#         'style': {
-#             'background-color': '#BFD7B5',
-#             'label': 'data(label)',
-#             'width': "4%",
-#             'height': "4%"
-#         }
-#     }
-# ]
-
-influential_users = pd.read_csv(
-    BASE_URL + 'output/influencers/top_users.csv')
-influential_users_countries = list(
-    influential_users['user_geo_coding'].unique())
-influential_users_countries.append('All')
-influential_users_countries = sorted(influential_users_countries)
-
-df_hashtags = pd.read_csv(BASE_URL + 'output/basics/hashtags.csv')
-df_mentions = pd.read_csv(BASE_URL + 'output/basics/mentions.csv')
-df_sentiments = pd.read_csv(BASE_URL + 'output/basics/sentiments.csv')
-
-fig_hashtags = px.bar(df_hashtags, x="counts", y="hashtag",
-                      orientation='h', template="plotly_white")
-fig_hashtags.update_layout(
-    title="Top hashtags distribution",
-    margin=dict(l=0, r=0, t=30, b=4),
-    xaxis_title=None,
-    yaxis_title=None
-)
-
-fig_mentions = px.bar(df_mentions, x="counts", y="mention",
-                      orientation='h', template="plotly_white")
-fig_mentions.update_layout(
-    title="Top mentions distribution",
-    margin=dict(l=0, r=0, t=30, b=4),
-    xaxis_title=None,
-    yaxis_title=None
-)
-
-fig_sentiments = px.bar(df_sentiments, x="count", y="tweet_sentiment",
-                        orientation='h', template="plotly_white", color="tweet_sentiment")
-fig_sentiments.update_layout(
-    title="Sentiments distribution",
-    margin=dict(l=0, r=0, t=30, b=4),
-    xaxis_title=None,
-    yaxis_title=None
-)
-
-
-df_tweets_daily_count = pd.read_csv(
-    BASE_URL + "output/basics/daily_tweets.csv")
-fig_tweets_daily_count = px.line(
-    df_tweets_daily_count, x='tweet_date', y='count', template="plotly_white")
-
-
-c_sg_tweets_pst = pd.read_csv(BASE_URL + "output/basics/pst_counts.csv")
-spike_value = c_sg_tweets_pst['count'].quantile(0.95)
-colors = ["red" if cc > spike_value else "green" for cc in c_sg_tweets_pst['count']]
-fig_psts = px.bar(c_sg_tweets_pst, x="tweet_date", y="count", template='plotly_white', color=colors,
-                  height=spike_value)
-fig_psts.update_layout(showlegend=False)
-# fig.show()
 
 
 MAIN_CONTAINER = dbc.Container([
@@ -243,17 +191,14 @@ MAIN_CONTAINER = dbc.Container([
         [
             dcc.Graph(
                 id="fig_hashtags",
-                figure=fig_hashtags,
                 className="col-md-4"
             ),
             dcc.Graph(
                 id="fig_mentions",
-                figure=fig_mentions,
                 className="col-md-4"
             ),
             dcc.Graph(
                 id="fig_sentiments",
-                figure=fig_sentiments,
                 className="col-md-4"
             )
         ],
@@ -287,6 +232,57 @@ MAIN_CONTAINER = dbc.Container([
                 className="col-md-4"
             )
         ]
+    ),
+
+    dbc.Row(
+        [
+            dbc.Row(
+                html.H5(["Influential users"]),
+                className="col-md-12"
+            ),
+            dbc.Row(
+                dbc.Jumbotron(
+                    dbc.Row(
+                        [dbc.Col(
+                            children=[
+                                html.Span("Interactions graph: ",
+                                          style={'color': '#000', 'marginRight': '10px'}),
+                                html.P(
+                                    "A directed weighted graph of interactions - replies, retweets, and quoted tweets"
+                                    " between the users.  The weights denote the number of interactions between two users."),
+                                html.Span("Influential users: ",
+                                          style={'color': '#0096FF', 'marginRight': '10px'}),
+                                html.P(
+                                    "Applied PageRanking on interactions graph to get the top 50 users."
+                                    " The number signifies the ranking of a user. "),
+                            ],
+                            className="col-md-8"
+                        ),
+                            dbc.Col([
+                                html.Span("Filter by country", style={
+                                          "fontSize": "0.8em"}),
+                                dcc.Dropdown(
+                                    id="dropdown-top-influence-users-countries",
+                                    options=[
+                                        {"label": i, "value": i}
+                                        for i in influential_users_countries
+                                    ],
+                                    value='Singapore')],
+                                    className="col-md-4"
+                                    ),
+                        ],
+                        className="col-md-12"
+                    ),
+                    style={'margin': '1em 0 2em 0'},
+                    className="col-md-12"),
+                className="col-md-12"
+            ),
+            dbc.Row(
+                children=[],
+                id="influencers-chips-row"
+            )],
+        style={"margin": "3em 0"},
+        className="col-md-12"
     ),
 
 
@@ -401,73 +397,21 @@ MAIN_CONTAINER = dbc.Container([
                         [
                             dbc.Alert("Positive outburst",
                                       className="alert-heading", style={"color": 'green'}),
-                            dbc.Row([generate_quoted_data(tw)
-                                     for _, tw in quoted_spread_data_pos.iterrows()])
+                            dbc.Row(children=[create_quoted_card(tw) for _, tw in quoted_spread_data_pos.iterrows()])
                         ]
                     ),
                     dbc.Col(
                         [
                             dbc.Alert("Negative outburst",
                                       className="alert-heading", style={"color": '#C70039'}),
-                            dbc.Row([generate_quoted_data(tw)
-                                     for _, tw in quoted_spread_data_neg.iterrows()])
+                            dbc.Row(id="neg-quotes-sentiment", 
+                            children=[create_quoted_card(tw) for _, tw in quoted_spread_data_neg.iterrows()])
                         ]
                     )
                 ]
             ),
 
         ],
-        style={"margin": "3em 0"},
-        className="col-md-12"
-    ),
-
-    dbc.Row(
-        [
-            dbc.Row(
-                html.H5(["Influential users"]),
-                className="col-md-12"
-            ),
-            dbc.Row(
-                dbc.Jumbotron(
-                    dbc.Row(
-                        [dbc.Col(
-                            children=[
-                                html.Span("Interactions graph: ",
-                                          style={'color': '#000', 'marginRight': '10px'}),
-                                html.P(
-                                    "A directed weighted graph of interactions - replies, retweets, and quoted tweets"
-                                    " between the users.  The weights denote the number of interactions between two users."),
-                                html.Span("Influential users: ",
-                                          style={'color': '#0096FF', 'marginRight': '10px'}),
-                                html.P(
-                                    "Applied PageRanking on interactions graph to get the top 50 users."
-                                    " The number signifies the ranking of a user. "),
-                            ],
-                            className="col-md-8"
-                        ),
-                            dbc.Col([
-                                html.Span("Filter by country", style={
-                                          "fontSize": "0.8em"}),
-                                dcc.Dropdown(
-                                    id="dropdown-top-influence-users-countries",
-                                    options=[
-                                        {"label": i, "value": i}
-                                        for i in influential_users_countries
-                                    ],
-                                    value='Singapore')],
-                                    className="col-md-4"
-                                    ),
-                        ],
-                        className="col-md-12"
-                    ),
-                    style={'margin': '1em 0 2em 0'},
-                    className="col-md-12"),
-                className="col-md-12"
-            ),
-            dbc.Row(
-                children=[],
-                id="influencers-chips-row"
-            )],
         style={"margin": "3em 0"},
         className="col-md-12"
     ),
@@ -653,3 +597,11 @@ NAVBAR = dbc.Navbar(
 #         # ]
 #     )
 # ]),
+
+
+# cytoscape_data = None
+# with open('data/output/interactions/cytoscape.json') as json_file:
+#     cytoscape_data = json.load(json_file)
+
+# with urllib.request.urlopen(BASE_PATH + 'output/basics/basic.json') as url:
+#     basic_data = json.loads(url.read().decode())

@@ -34,8 +34,10 @@ def get_top_influential_countries(sg_tweets, top_countries_count=10):
     return c_quoted_rts_geo[:top_countries_count]
 
 
-def generate_dash_influential_countries(countries_data, top_country_influencer, save=False,
+def generate_dash_influential_countries(top_country_influencer, save=False,
                                         top_country_influencer_save_path=TOP_COUNTRY_INFLUENCER_PATH):
+    
+    countries_data = pd.read_csv(COUNTRIES_DATA_PATH)
     top_influential_countries_data = {
         'country': [],
         'lat': [],
