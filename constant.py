@@ -1,3 +1,5 @@
+COUNTRY = 'Singapore'
+
 BASE_LOCAL_URL = "data/"
 BASE_PROD_URL = "https://sg-pulse-monitoring.s3.ap-southeast-1.amazonaws.com/"
 BASE_PATH = BASE_LOCAL_URL

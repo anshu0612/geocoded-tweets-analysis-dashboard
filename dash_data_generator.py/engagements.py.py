@@ -1,2 +1,0 @@
-# influencial countries
-# 
