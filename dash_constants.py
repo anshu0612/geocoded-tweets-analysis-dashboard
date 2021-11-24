@@ -105,6 +105,10 @@ INFLUENTIAL_USERS_PATH = BASE_PATH + "output/influencers/top_users.csv"
 INFLUENTIAL_USERS_TWEETS_PATH = BASE_PATH + \
     "output/influencers/top_users_tweets.csv"
 
-COMMUNITIES_PLOT_PATH = BASE_PATH + "output/communities/clusters"
-COMMUNITIES_PATH = BASE_PATH + "output/communities/clusters.json"
+COMMUNITIES_PLOT_PATH = BASE_PATH + "output/networking/clusters"
+COMMUNITIES_PATH = BASE_PATH + "output/networking/clusters.json"
+USER_TO_COMMUNITY_PATH = BASE_PATH + "output/networking/user_to_cluster.json"
+
+NETWORKING_DATA = BASE_PATH + "output/networking/networking.json"
+NETWORKING_GRAPH_DATA = BASE_PATH + "/output/networking/networking.json"
 # ----------  ----------

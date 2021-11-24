@@ -187,21 +187,10 @@ def quality_check_pagerank(sg_tweets, top_ranking, top_users_count):
     return len(z)/top_users_count*100
 
 
-def remove_low_degree_edges(G, min_degree=MIN_DEGREE_TO_HAVE):
-    G_pruned = G.copy()
-    low_degree_nodes = [node for node, degree in dict(
-        G_pruned.degree()).items() if degree < min_degree]
-    print("Number of users to be removed with degree less than {}: {}".format(
-        min_degree, len(low_degree_nodes)))
-    G_pruned.remove_nodes_from(low_degree_nodes)
-
-    print("New graph:", G_pruned.size(), G_pruned.order())
-    return G_pruned
-
-
 def get_communities(G_pruned, save=False,
                     communities_save_path=COMMUNITIES_PATH,
-                    communities_plot_save_path=COMMUNITIES_PLOT_PATH):
+                    communities_plot_save_path=COMMUNITIES_PLOT_PATH,
+                    user_to_community_save_path=USER_TO_COMMUNITY_PATH):
     G2 = G_pruned.to_undirected()
     communities = community_louvain.best_partition(G2)
     communities_plot = nx.spring_layout(G2)
@@ -218,9 +207,60 @@ def get_communities(G_pruned, save=False,
     if save:
         plt.savefig(communities_plot_save_path, bbox_inches='tight')
 
+        with open(user_to_community_save_path, 'w') as f:
+            json.dump(communities, f)
+
         with open(communities_save_path, 'w') as f:
             json.dump(communities_grouped, f)
-            print("Saved:", communities_save_path)
+            print("Saved:", communities_save_path, user_to_community_save_path)
 
     print("number of clusters created:", len(communities_grouped))
     return communities_grouped, communities_plot
+
+
+def get_min_graph_degree(Graph):
+    degrees = [val for (_, val) in Graph.degree()]
+    print("The minimum degree of the graph is " + str(np.min(degrees)))
+    return np.min(degrees)
+
+
+def remove_low_degree_edges(G):
+    G_pruned = G.copy()
+    low_degree_nodes = [node for node, degree in dict(
+        G_pruned.degree()).items() if degree < 10]
+    # print("Number of users to be removed with degree less than {}: {}".format(en(low_degree_nodes)))
+    G_pruned.remove_nodes_from(low_degree_nodes)
+
+    print("New graph:", G_pruned.size(), G_pruned.order())
+    return G_pruned
+
+
+def get_min_degree_graph(G, min_degree):
+    while get_min_graph_degree(G) < min_degree:
+        G = remove_low_degree_edges(G)
+    return G
+
+
+def generate_cytograph_data(G):
+    G_pos = nx.spring_layout(G)
+    cyto_data = {'data': []}
+
+    file = open(NETWORKING_GRAPH_DATA, 'w')
+
+    with open(USER_TO_COMMUNITY_PATH, 'r') as f:
+        user_community = json.load(f)
+
+    for node in G.nodes:
+        node_data = {'data': {'id': node, 'label': node},
+                     'classes': str(user_community[node]),
+                     'position': {'x': G_pos[node][0], 'y': G_pos[node][1]}}
+        cyto_data['data'].append(node_data)
+
+    for edge in G.edges:
+        edge_data = {'data': {'source': edge[0], 'target': edge[1]}}
+        cyto_data['data'].append(edge_data)
+        # file.write(node_data)
+
+    json.dump(cyto_data, file)
+    file.close()
+    return cyto_data
