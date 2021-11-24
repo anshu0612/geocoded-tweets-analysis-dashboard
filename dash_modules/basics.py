@@ -11,6 +11,10 @@ def get_date_range(sg_tweets):
     return min_date, max_date
 
 
+def get_user_is_verified(sg_tweets):
+    sg_tweets[sg_tweets['user_']]
+
+
 def generate_dash_basic_stats(sg_tweets, save=False, basics_save_path=BASICS_PATH):
     total_tweets = len(sg_tweets)
 
@@ -51,6 +55,7 @@ def generate_dash_daily_tweets(sg_tweets, save=False, daily_tweets_save_path=DAI
 
 def generate_dash_hashtags(sg_tweets, from_date, to_date, save=False, hashtags_save_path=HASHTAGS_PATH, top_hash_count=20):
     min_date, max_date = get_date_range(sg_tweets)
+    # print("----&&&&&&&&&&&-------", min_date, max_date)
     if not from_date:
         from_date = min_date
     if not to_date:

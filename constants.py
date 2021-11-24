@@ -1,6 +1,9 @@
 COUNTRY = 'Singapore'
 COUNTRY_CODE = 'SG'
 
+NETWORKING_PATH = '/networking'
+ENGAGEMENTS_PATH = '/engagements'
+
 TWITTER_BASE_URL = "https://twitter.com/"
 TWITTER_STATUS_PATH = TWITTER_BASE_URL + "{}/status/{}"
 

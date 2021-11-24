@@ -19,6 +19,8 @@ class DashGenerator():
         self.max_date = self.sg_tweets['tweet_date'].max()
 
         self.retweets = get_retweets(self.sg_tweets)
+        self.G = None
+        self.G_pruned = None
 
     def generate_basic(self):
         generate_dash_basic_stats(self.sg_tweets, True)
@@ -47,10 +49,17 @@ class DashGenerator():
         all_interacting_users = get_all_interacting_users(self.sg_tweets)
         weighted_interacting_edges = get_weighted_interacting_edges(
             self.sg_tweets)
-        G = create_weighted_directed_graph(
+        self.G = create_weighted_directed_graph(
             all_interacting_users, weighted_interacting_edges)
-        top_ranking = get_top_ranked_users(G)
+        top_ranking = get_top_ranked_users(self.G)
         generate_dash_influential_users(self.sg_tweets, top_ranking, True)
+
+    def generate_networking_data(self):
+        generate_cytograph_data(self.G_pruned)
+
+    def generate_communities(self):
+        self.G_pruned = get_min_degree_graph(self.G, 5)
+        get_communities(self.G_pruned, True)
 
     def generate_bursty_quoted(self):
         quoted_tws = get_quoted_tweets(self.sg_tweets)
@@ -105,11 +114,14 @@ class DashGenerator():
 if __name__ == "__main__":
     dg = DashGenerator()
 
-    dg.generate_basic()
+    # dg.generate_basic()
 
-    dg.generate_influential_countries()
+    # dg.generate_influential_countries()
     dg.generate_influential_users()
 
-    dg.generate_global_retweets()
-    dg.generate_local_retweets()
-    dg.generate_bursty_quoted()
+    # dg.generate_global_retweets()
+    # dg.generate_local_retweets()
+    # dg.generate_bursty_quoted()
+
+    dg.generate_communities()
+    dg.generate_networking_data()

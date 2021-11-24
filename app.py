@@ -1,3 +1,4 @@
+from os import path
 import pandas as pd
 import warnings
 
@@ -20,7 +21,33 @@ from dash_modules.basics import generate_dash_hashtags, \
 
 # setup
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
-app.layout = html.Div(children=[NAVBAR, MAIN_CONTAINER])
+# app.layout = html.Div(children=[NAVBAR, MAIN_CONTAINER])
+
+app.layout = html.Div([
+    # represents the URL bar, doesn't render anything
+    dcc.Location(id='url', refresh=False),
+
+    dbc.Row(
+        [dcc.Link('Dashboard', href='/', style={"margin": "1em 2em"}),
+         dcc.Link('Engagements', href=ENGAGEMENTS_PATH,
+                  style={"margin": "1em 1em"}),
+         dcc.Link('Networking', href=NETWORKING_PATH, style={"margin": "1em 1em"})],
+    ),
+    # content will be rendered in this element
+    html.Div(id='page-content')
+])
+
+
+@app.callback(dash.dependencies.Output('page-content', 'children'),
+              [dash.dependencies.Input('url', 'pathname')])
+def display_page(pathname):
+    if pathname == NETWORKING_PATH:
+        return html.Div(children=[NAVBAR, CYTO_DATA])
+    elif pathname == ENGAGEMENTS_PATH:
+        return html.Div(children=[NAVBAR, VIRAL_ENGAGEMENTS])
+    else:
+        return html.Div(children=[NAVBAR, MAIN_CONTAINER])
+
 
 # load the tweets
 sg_tweets = pd.read_csv(SG_TWEETS_PATH)
@@ -99,7 +126,6 @@ def generate_rts_info(tw):
 def plotly_wordcloud(tweets_text, filtered_for):
 
     if len(tweets_text) < 10:
-        print("NOT ENOUGH TWEETS")
         return None
 
     text = " ".join(list(tweets_text))
@@ -233,6 +259,8 @@ def psts_output(date=min_date):
     Input('hash-mention-sent-datepick', 'start_date'),
     Input('hash-mention-sent-datepick', 'end_date'))
 def update_hash_mentions_sent_output(start_date, end_date):
+    print("initial", start_date)
+    print("****"*10)
     df_hashtags = generate_dash_hashtags(sg_tweets, start_date, end_date)
     fig_hashtags = px.bar(df_hashtags, x="counts", y="hashtag",
                           orientation='h', template=DASH_TEMPLATE)
@@ -263,6 +291,10 @@ def update_hash_mentions_sent_output(start_date, end_date):
         yaxis_title=None
     )
 
+    if df_hashtags is None:
+        print("YESSSS")
+    # print("****", df_hashtags)
+    print("&"*10, df_hashtags)
     return (fig_hashtags, fig_mentions, fig_sentiments)
 
 

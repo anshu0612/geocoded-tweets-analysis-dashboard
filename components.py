@@ -1,3 +1,4 @@
+import dash_cytoscape as cyto
 import json
 import pandas as pd
 from datetime import datetime as dt
@@ -587,6 +588,105 @@ VIRAL_GLOBAL_RETWEETS = [
     ])
 ]
 
+CYTO_INFO = dbc.Row(
+    dbc.Jumbotron(
+        dbc.Row(
+            [dbc.Col(
+                children=[
+                    html.Span("Communities",
+                              style={'color': '#0096FF', 'marginRight': '10px'}),
+                    # html.Span(
+                    #     "".
+                    #     format(
+                    #         dt.strftime(dt.strptime(
+                    #             basic_data["min_date"], DATE_FORMAT), DASH_NO_YEAR_FORMAT),
+                    #         dt.strftime(dt.strptime(
+                    #             basic_data["max_date"], DATE_FORMAT), DASH_FORMAT)), className="rts-jumbotron"),
+                    # html.Span("Non-Singapore geocoded accounts ",
+                    #           className="country-rts-jumbotron"),
+                    # html.Span(
+                    #     VIRAL_RETWEETS_INFO_CONTENT, className="rts-jumbotron"),
+                ],
+                className="col-md-8"
+            ),
+                # dbc.Col([
+                #     html.Span("Filter by sentiment",
+                #               style={"fontSize": "0.8em"}),
+                #     dcc.Dropdown(
+                #         id="global-rts-sentiment-select",
+                #         options=[
+                #             {"label": i, "value": i}
+                #             for i in ['All', 'Positive', 'Negative']
+                #         ],
+                #         value='Negative')],
+                #         className="col-md-4"
+                #         ),
+            ],
+            className="col-md-12"
+        ),
+        style={'margin': '1em 0 2em 0'},
+        className="col-md-12"),
+    className="col-md-12"
+),
+# Load extra layouts
+# cyto.load_extra_layouts()
+
+with open(NETWORKING_DATA, 'r') as f:
+    cyto_data = json.load(f)
+
+CIRCLE_SIZE = "10px"
+FONT_SIZE = "8px"
+LINE_WIDTH = "0.2px"
+CYTO_DATA = cyto.Cytoscape(
+    id='cytoscape-nodes',
+    layout={'name': 'cose'},
+    style={'width': '100%', 'height': '800px'},
+    elements=cyto_data['data'],
+    stylesheet=[
+        # Group selectors
+        {
+            'selector': '.0',
+            'style': {
+                'background-color': '#DE3163',
+                'content': 'data(label)',
+                "height": CIRCLE_SIZE,
+                "width": CIRCLE_SIZE,
+                "lineWidth": LINE_WIDTH,
+                "font-size": FONT_SIZE
+            }
+        },
+        {
+            'selector': '.1',
+            'style': {
+                'background-color': '#90EE90',
+                'content': 'data(label)',
+                "height": CIRCLE_SIZE,
+                "width": CIRCLE_SIZE,
+                "lineWidth": LINE_WIDTH,
+                "font-size": FONT_SIZE
+            }
+        },
+        {
+            'selector': '.2',
+            'style': {
+                'background-color': '#89CFF0',
+                'content': 'data(label)',
+                "height": CIRCLE_SIZE,
+                "width": CIRCLE_SIZE,
+                "lineWidth": LINE_WIDTH,
+                "font-size": FONT_SIZE
+            }
+        }
+        # {
+        #     'selector': '.triangle',
+        #     'style': {
+        #         'shape': 'triangle'
+        #     }
+        # }
+    ]
+)
+
+
 MAIN_CONTAINER = dbc.Container([
     dbc.Row(
         [
@@ -646,28 +746,30 @@ MAIN_CONTAINER = dbc.Container([
     ),
     html.Hr(),
 
+
+    # dbc.Row(CYTO_INFO),
+    # dbc.Row(
+    #     CYTO_DATA
+    # ),
+])
+
+VIRAL_ENGAGEMENTS = dbc.Container([
     dbc.Row(
         BURSTY_QUOTED_TWEETS,
         style={"margin": "3em 0"},
         className="col-md-12"
     ),
     html.Hr(),
-
     dbc.Row(
         VIRAL_LOCAL_RETWEETS,
         style={"margin": "3em 0"},
-        className="col-md-12"
-    ),
+        className="col-md-12"),
     html.Hr(),
-
-
     dbc.Row(
         VIRAL_GLOBAL_RETWEETS,
         style={"margin": "3em 0"},
-        className="col-md-12"
-    ),
-    html.Hr()
-])
+        className="col-md-12"),
+    html.Hr()])
 
 NAVBAR = dbc.Row(
     children=[
