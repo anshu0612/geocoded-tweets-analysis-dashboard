@@ -20,26 +20,26 @@ def get_all_interacting_users(sg_tweets):
     # merged csvs created user_screenname_x and user_screenname_y
     for u in sg_tweets['user_screenname_x']:
         sg_users.add(u)
-    print("Count unique SG users: ", len(sg_users))
+    print('Count unique SG users: ', len(sg_users))
 
     for u in sg_tweets[sg_tweets['replied_to_user_screenname'].notna()]['replied_to_user_screenname']:
         if u == u:
             replied_users.add(u)
-    print("Count unique replied users: ", len(replied_users))
+    print('Count unique replied users: ', len(replied_users))
 
     for u in sg_tweets[sg_tweets['retweeted_user_screenname'].notna()]['retweeted_user_screenname']:
         if u == u:
             retweeted_users.add(u)
-    print("Count unique retweeted users: ", len(retweeted_users))
+    print('Count unique retweeted users: ', len(retweeted_users))
 
     for u in sg_tweets[sg_tweets['quoted_user_screenname'].notna()]['quoted_user_screenname']:
         if u == u:
             quoted_users.add(u)
-    print("Count unique quoted users: ", len(quoted_users))
+    print('Count unique quoted users: ', len(quoted_users))
 
     common_interacting_users = set.intersection(
         sg_users, replied_users, retweeted_users, quoted_users)
-    print("{} total unique common interacting users".format(
+    print('{} total unique common interacting users'.format(
         len(common_interacting_users)))
 
     return set.union(sg_users, replied_users, retweeted_users, quoted_users)
@@ -94,11 +94,11 @@ def create_weighted_directed_graph(nodes, edges):
 
 def graph_details(G):
     degrees = [val for (node, val) in G.degree()]
-    print("The maximum degree of the graph is " + str(np.max(degrees)))
-    print("The minimum degree of the graph is " + str(np.min(degrees)))
-    print("There are " + str(G.number_of_nodes()) + " nodes and " +
-          str(G.number_of_edges()) + " edges present in the graph")
-    print("The average degree of the nodes in the graph is " + str(np.mean(degrees)))
+    print('The maximum degree of the graph is ' + str(np.max(degrees)))
+    print('The minimum degree of the graph is ' + str(np.min(degrees)))
+    print('There are ' + str(G.number_of_nodes()) + ' nodes and ' +
+          str(G.number_of_edges()) + ' edges present in the graph')
+    print('The average degree of the nodes in the graph is ' + str(np.mean(degrees)))
 
 
 def get_top_ranked_users(G, top_users_count=50):
@@ -116,7 +116,6 @@ def generate_dash_influential_users(sg_tweets, top_ranking,
     # sg_tweets = sg_tweets.dropna(axis=0, subset=['user_id_x'])
     # sg_tweets = sg_tweets.dropna(axis=0, subset=['retweeted_user_id'])
     # sg_tweets = sg_tweets.dropna(axis=0, subset=['quoted_user_id'])
-
 
     # sg_tweets[['user_id_x', 'retweeted_user_id', 'quoted_user_id']] = sg_tweets[[
     #     'user_id_x', 'retweeted_user_id', 'quoted_user_id']].fillna(0).astype(int)
@@ -146,7 +145,7 @@ def generate_dash_influential_users(sg_tweets, top_ranking,
 
     if save:
         pd.DataFrame.to_csv(influential_users, influential_users_save_path)
-        print("Saved:", influential_users_save_path)
+        print('Saved:', influential_users_save_path)
 
     return influential_users
 
@@ -176,7 +175,7 @@ def generate_dash_influential_users_tweets(sg_tweets, top_ranking,
     if save:
         pd.DataFrame.to_csv(influential_users_tweets,
                             influential_users_tweets_save_path)
-        print("Saved:", influential_users_tweets_save_path)
+        print('Saved:', influential_users_tweets_save_path)
 
     return influential_users_tweets
 
@@ -192,14 +191,15 @@ def quality_check_pagerank(sg_tweets, top_ranking, top_users_count):
     all_verified_users = set(list(sg_verified_users) +
                              list(rt_verified_users) + list(q_verified_users))
     z = set(top_ranking).intersection(all_verified_users)
-    print("The number of verified users in the top {} rankings - {}%".format(
+    print('The number of verified users in the top {} rankings - {}%'.format(
         top_users_count, len(z)/top_users_count*100))
     return len(z)/top_users_count*100
 
 
-def get_communities(G_pruned, save=False,
+def get_communities(G_pruned, sg_tweets, save=False,
                     communities_save_path=COMMUNITIES_PATH,
                     communities_plot_save_path=COMMUNITIES_PLOT_PATH,
+                    communities_tweets_save_path=COMMUNITIES_TWEETS_PATH,
                     user_to_community_save_path=USER_TO_COMMUNITY_PATH):
     G2 = G_pruned.to_undirected()
     communities = community_louvain.best_partition(G2)
@@ -214,6 +214,22 @@ def get_communities(G_pruned, save=False,
     for k, v in communities.items():
         communities_grouped[v].append(k)
 
+    # communities_tweets = {'cluster': [], 'tweets': []}
+    communities_tweets = {}
+    for c, u in communities_grouped.items():
+        # print(u)
+        cluster_tweets = sg_tweets[
+            (sg_tweets['user_screenname_x'].isin(u) |
+             sg_tweets['retweeted_user_screenname'].isin(u) |
+             sg_tweets['quoted_user_screenname'].isin(u) |
+             sg_tweets['replied_to_user_screenname'].isin(u)) &
+            (sg_tweets['processed_tweet_text'].notna())]['processed_tweet_text'].tolist()
+        # cluster_tweets = cluster_tweets
+
+        communities_tweets[c] = cluster_tweets
+        # communities_tweets['cluster'].extend(len(cluster_tweets)*[c])
+        # communities_tweets['cluster'].extend(cluster_tweets)
+
     if save:
         plt.savefig(communities_plot_save_path, bbox_inches='tight')
 
@@ -222,15 +238,20 @@ def get_communities(G_pruned, save=False,
 
         with open(communities_save_path, 'w') as f:
             json.dump(communities_grouped, f)
-            print("Saved:", communities_save_path, user_to_community_save_path)
 
-    print("number of clusters created:", len(communities_grouped))
+        with open(communities_tweets_save_path, 'w') as f:
+            json.dump(communities_tweets, f)
+
+        print('Saved:', communities_save_path,
+              user_to_community_save_path, communities_tweets_save_path)
+
+    print('number of clusters created:', len(communities_grouped))
     return communities_grouped, communities_plot
 
 
 def get_min_graph_degree(Graph):
     degrees = [val for (_, val) in Graph.degree()]
-    print("The minimum degree of the graph is " + str(np.min(degrees)))
+    print('The minimum degree of the graph is ' + str(np.min(degrees)))
     return np.min(degrees)
 
 
@@ -238,10 +259,10 @@ def remove_low_degree_edges(G):
     G_pruned = G.copy()
     low_degree_nodes = [node for node, degree in dict(
         G_pruned.degree()).items() if degree < 10]
-    # print("Number of users to be removed with degree less than {}: {}".format(en(low_degree_nodes)))
+    # print('Number of users to be removed with degree less than {}: {}'.format(en(low_degree_nodes)))
     G_pruned.remove_nodes_from(low_degree_nodes)
 
-    print("New graph:", G_pruned.size(), G_pruned.order())
+    print('New graph:', G_pruned.size(), G_pruned.order())
     return G_pruned
 
 
