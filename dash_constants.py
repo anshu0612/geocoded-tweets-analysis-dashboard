@@ -1,20 +1,34 @@
 
-from constants import BASE_PATH
+from constants import BASE_PATH, TWITTER_BASE_URL
 
 SG_TWEETS_PATH = BASE_PATH + "sg.csv"
 DASH_TEMPLATE = "plotly_white"
 
+ERROR_INSUFFICIENT_TWEETS = "Oops! Not enough tweets. Try other filter value."
+
+NAVBAR_TITLE = "Singapore's Pulse Monitoring through Twitter's Lens"
+TWITTER_LOGO_PATH = "assets/twitter-logo.png"
+APP_LOGO = "assets/pulse.png"
+
+FLAG_FIX_USA = "united-states-of-america"
+FLAG_URL = "https://cdn.countryflags.com/thumbs/{}/flag-400.png"
 # -------- Basics ----------
+TWEETS_STATS_HEADING = "Tweets Stats"
 BASICS_PATH = BASE_PATH + 'output/basics/basic.json'
 
+DAILY_TWEETS_HEADING = "Daily tweets count"
 DAILY_TWEETS_PATH = BASE_PATH + "output/basics/daily_tweets.csv"
 
-MENTIONS_HASHTAGS_SENTIMENT_INFO_CONTENT = "1. Top hashtags and mentions by frequency. \n 2. Sentiments distribution of public"
+# -------------------
+MENTIONS_HASHTAGS_SENTIMENT_HEADING = "Trending hashtags, mentions and public sentiment"
+MENTIONS_HASHTAGS_SENTIMENT_INFO_CONTENT = "1. Top hashtags and mentions by frequency. \n 2." \
+    + "Sentiments distribution of public"
 HASHTAGS_PATH = BASE_PATH + "output/basics/hashtags.csv"
 MENTIONS_PATH = BASE_PATH + "output/basics/mentions.csv"
 SENTIMENTS_PATH = BASE_PATH + 'output/basics/sentiments.csv'
 
-
+# ------------------------
+PSTS_HEADING = "Potentially sensitive tweets: "
 PSTS_INFO_CONTENT = "Tweets containing a link that may contain content or media identified as sensitive. " \
     "It does not pertain to a tweet content itself."
 POTENTIALLY_SENSITIVE_TWEETS_COUNT_PATH = BASE_PATH + "output/basics/pst_counts.csv"
@@ -31,6 +45,8 @@ TOP_COUNTRY_INFLUENCER_PATH = BASE_PATH + \
     'output/influencers/top_countries.csv'
 TOP_COUNTRY_INFLUENCER_TWEETS_PATH = BASE_PATH + \
     'output/influencers/top_countries_tweets.csv'
+TOP_COUNTRIES_CLEANED_DATA = BASE_PATH + \
+    'output/influencers/top_countries_data.csv'
 
 # ---------- Engagements ----------
 PERCENTILE = .90
@@ -41,12 +57,14 @@ RT_TWEET_DATE_LABEL = 'retweeted_tweet_date'
 RT_TWEET_USER_LABEL = 'retweeted_user_screenname'
 RT_TWEET_USER_VERIFIED_LABEL = 'retweeted_user_verified'
 RT_TWEET_DATE_LABEL = 'retweeted_tweet_date'
+RT_USER_GEOCODING = 'retweeted_user_geo_coding'
 
 Q_TWEET_ID_LABEL = 'quoted_tweet_id'
 Q_TWEET_DATE_LABEL = 'quoted_tweet_date'
 Q_TWEET_USER_LABEL = 'quoted_user_screenname'
 Q_TWEET_USER_VERIFIED_LABEL = 'quoted_user_verified'
 Q_TWEET_DATE_LABEL = 'quoted_tweet_date'
+Q_USER_GEOCODING = 'quoted_user_geo_coding'
 
 SENTIMENT_SPREAD_THRESHOLD = 80
 

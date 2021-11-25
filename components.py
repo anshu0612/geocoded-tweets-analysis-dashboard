@@ -1,10 +1,9 @@
-import dash_cytoscape as cyto
 import json
 import pandas as pd
 from datetime import datetime as dt
 
 # import dash_table
-# import dash_cytoscape as cyto
+import dash_cytoscape as cyto
 import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 import dash_html_components as html
@@ -25,7 +24,7 @@ with open(BASICS_PATH) as json_file:
 df_tweets_daily_count = pd.read_csv(DAILY_TWEETS_PATH)
 fig_tweets_daily_count = px.line(
     df_tweets_daily_count, x='tweet_date', y='count', template=DASH_TEMPLATE)
-fig_tweets_daily_count.update_layout(title="Daily tweets count",
+fig_tweets_daily_count.update_layout(title=DAILY_TWEETS_HEADING,
                                      font=dict(
                                          family="Verdana, monospace",
                                          size=14
@@ -90,9 +89,9 @@ def create_quoted_card(tw):
                                 html.Span(
                                     Img(
                                         className='quoted-flag',
-                                        # src="https://cdn.countryflags.com/thumbs/singapore/flag-400.png"
-                                        src="https://cdn.countryflags.com/thumbs/{}/flag-400.png".format(
-                                            tw['quoted_user_geo_coding'].lower())
+                                        src=FLAG_URL.format(
+                                            tw['quoted_user_geo_coding'].lower().replace(' ', '-') \
+                                            if tw['quoted_user_geo_coding'].lower() != "united states" else FLAG_FIX_USA)
                                     )
                                 ),
 
@@ -100,7 +99,6 @@ def create_quoted_card(tw):
                                           dt.strftime(dt.strptime(
                                               tw["quoted_tweet_date"], DATE_FORMAT), DASH_FORMAT)),
 
-                                # tw["quoted_tweet_date"].strftime("%m/%d/%Y")),
                                 html.Span(
                                     " | 🔁 ", className='quoted-endorsements'),
                                 html.Span(
@@ -133,7 +131,7 @@ BASIC_STATS = dbc.Card(
     [
         dbc.CardBody(
             [
-                html.H4("Tweets Stats",
+                html.H4(TWEETS_STATS_HEADING,
                         className="card-title"),
                 html.Div(
                     [html.P([
@@ -179,30 +177,6 @@ DAILY_TWEETS = dcc.Loading(
     type="dot"
 )
 
-MENTIONS_HASHTAGS_SENTIMENT = [
-    dbc.Col(
-        dcc.Loading(
-            id="loading-hashtags",
-            children=[
-                dcc.Graph(id="fig_hashtags")],
-            type="dot",
-
-        ), className="col-md-4"),
-    dbc.Col(
-        dcc.Loading(
-            id="loading-mentions",
-            children=[
-                dcc.Graph(id="fig_mentions")],
-            type="dot"
-        ), className="col-md-4"),
-    dbc.Col(
-        dcc.Loading(
-            id="loading-sentiments",
-            children=[
-                dcc.Graph(id="fig_sentiments")],
-            type="dot"
-        ), className="col-md-4")
-]
 
 DATEPICK_MENTIONS_HASHTAGS_SENTIMENT = dcc.DatePickerRange(
     id='hash-mention-sent-datepick',
@@ -212,18 +186,44 @@ DATEPICK_MENTIONS_HASHTAGS_SENTIMENT = dcc.DatePickerRange(
     # end_date=date()
 )
 
+
+MENTIONS_HASHTAGS_SENTIMENT = [
+    dbc.Col(
+        dcc.Loading(
+            id="loading-hashtags",
+            children=[
+                dcc.Graph(id="fig-hashtags")],
+            type="dot",
+
+        ), className="col-md-4"),
+    dbc.Col(
+        dcc.Loading(
+            id="loading-mentions",
+            children=[
+                dcc.Graph(id="fig-mentions")],
+            type="dot"
+        ), className="col-md-4"),
+    dbc.Col(
+        dcc.Loading(
+            id="loading-sentiments",
+            children=[
+                dcc.Graph(id="fig-sentiments")],
+            type="dot"
+        ), className="col-md-4")
+]
+
 MENTIONS_HASHTAGS_SENTIMENT_INFO = dbc.Jumbotron(
     dbc.Row(
         [dbc.Col(
             children=[
-                html.Span("Trending hashtags, mentions and public sentiment",
+                html.Span(MENTIONS_HASHTAGS_SENTIMENT_HEADING,
                           style={'color': '#0096FF', 'marginRight': '10px'}),
                 html.P(MENTIONS_HASHTAGS_SENTIMENT_INFO_CONTENT)
             ],
             className="col-md-8"
         ),
             dbc.Col([
-                html.Span("Filter by date", style={
+                html.Span("Filter by date range ", style={
                     "fontSize": "0.8em"}),
                 DATEPICK_MENTIONS_HASHTAGS_SENTIMENT
             ],
@@ -251,7 +251,7 @@ PSTS_INFO = dbc.Jumbotron(
     dbc.Row(
         [dbc.Col(
             children=[
-                html.Span("Potentially sensitive tweets: ",
+                html.Span(PSTS_HEADING,
                           style={'color': '#0096FF', 'marginRight': '10px'}),
                 html.P(PSTS_INFO_CONTENT)
             ],
@@ -409,7 +409,6 @@ BURSTY_QUOTED_TWEETS = [
                         html.Span("Viral quoted tweets: ",
                                   style={'color': '#000', 'marginRight': '10px'}),
                         html.P(
-
                             VIRAL_QUOTED_INFO_CONTENT.format(
                                 dt.strftime(dt.strptime(
                                             basic_data["min_date"], DATE_FORMAT), DASH_NO_YEAR_FORMAT),
@@ -634,13 +633,13 @@ CYTO_INFO = dbc.Row(
 with open(NETWORKING_DATA, 'r') as f:
     cyto_data = json.load(f)
 
-CIRCLE_SIZE = "10px"
+CIRCLE_SIZE = "14px"
 FONT_SIZE = "8px"
 LINE_WIDTH = "0.2px"
 CYTO_DATA = cyto.Cytoscape(
     id='cytoscape-nodes',
     layout={'name': 'cose'},
-    style={'width': '100%', 'height': '800px'},
+    style={'width': '100%', 'height': '100vh'},
     elements=cyto_data['data'],
     stylesheet=[
         # Group selectors
@@ -650,8 +649,8 @@ CYTO_DATA = cyto.Cytoscape(
                 'background-color': '#DE3163',
                 'content': 'data(label)',
                 "height": CIRCLE_SIZE,
+                # "size": CIRCLE_SIZE,
                 "width": CIRCLE_SIZE,
-                "lineWidth": LINE_WIDTH,
                 "font-size": FONT_SIZE
             }
         },
@@ -662,7 +661,7 @@ CYTO_DATA = cyto.Cytoscape(
                 'content': 'data(label)',
                 "height": CIRCLE_SIZE,
                 "width": CIRCLE_SIZE,
-                "lineWidth": LINE_WIDTH,
+                # "size": CIRCLE_SIZE,
                 "font-size": FONT_SIZE
             }
         },
@@ -673,8 +672,16 @@ CYTO_DATA = cyto.Cytoscape(
                 'content': 'data(label)',
                 "height": CIRCLE_SIZE,
                 "width": CIRCLE_SIZE,
-                "lineWidth": LINE_WIDTH,
+                # "size": CIRCLE_SIZE,
                 "font-size": FONT_SIZE
+            }
+        },
+        {
+            'selector': 'node :selected',
+            'style': {
+                'background-color': 'red',
+                'line-color': 'red',
+                'width': 10
             }
         }
         # {
@@ -686,8 +693,25 @@ CYTO_DATA = cyto.Cytoscape(
     ]
 )
 
+NAVBAR = dbc.Row(
+    children=[
+        Img(
+            style={"margin": "0.4em", "width": "3em"},
+            src=APP_LOGO
+        ),
+        html.P(NAVBAR_TITLE,
+               style={"fontSize": "1.2em", "marginTop": "0.4em", "color": "#C70039"}),
+        Img(
+            style={"margin": "0 0.7em", "width": "1.8%", "height": "1%"},
+            src=TWITTER_LOGO_PATH
+        ),
+    ],
+    style={"justifyContent":  "center", "fontSize": "1.2em"},
+    className='main-navbar'
+)
 
-MAIN_CONTAINER = dbc.Container([
+# tweets
+TWEETS = dbc.Container([
     dbc.Row(
         [
             dbc.Col(
@@ -719,15 +743,26 @@ MAIN_CONTAINER = dbc.Container([
     dbc.Row(
         PSTS
     ),
-    html.Hr(),
+    html.Hr()
+])
 
+# networking
+NETWORKING = dbc.Container([
+    dbc.Row(CYTO_INFO),
+    dbc.Row(
+        CYTO_DATA),
+    html.Hr()
+])
+
+
+# influencers
+INFLUENCERS = dbc.Container([
     dbc.Row(
         INFLUENTIAL_USERS,
         style={"margin": "3em 0"},
         className="col-md-12"
     ),
     html.Hr(),
-
     dbc.Row(
         [
             dbc.Row(
@@ -745,14 +780,10 @@ MAIN_CONTAINER = dbc.Container([
         className="col-md-12"
     ),
     html.Hr(),
-
-
-    # dbc.Row(CYTO_INFO),
-    # dbc.Row(
-    #     CYTO_DATA
-    # ),
 ])
 
+
+# engagements
 VIRAL_ENGAGEMENTS = dbc.Container([
     dbc.Row(
         BURSTY_QUOTED_TWEETS,
@@ -770,50 +801,3 @@ VIRAL_ENGAGEMENTS = dbc.Container([
         style={"margin": "3em 0"},
         className="col-md-12"),
     html.Hr()])
-
-NAVBAR = dbc.Row(
-    children=[
-        Img(
-            style={"margin": "0.4em", "width": "3em"},
-            src="assets/pulse.png"
-        ),
-        html.P("Singapore's Pulse Monitoring through Twitter's Lens",
-               style={"fontSize": "1.2em", "marginTop": "0.4em", "color": "#C70039"}),
-        Img(
-            style={"margin": "0 0.7em", "width": "1.8%", "height": "1%"},
-            src="assets/twitter-logo.png"
-        ),
-    ],
-    style={"justifyContent":  "center", "fontSize": "1.2em"},
-    className='main-navbar'
-    # color="#f5f5f5",
-    # dark=True,
-    # sticky="top",
-)
-
-
-# html.Div([
-#     cyto.Cytoscape(
-#         id='cytoscape-two-nodes',
-#         layout={'name': 'cose'},
-#         style={'width': '900em', 'height': '100em', 'color': 'red', 'fontSize': '12px'},
-#         elements=cytoscape_data['elements']['nodes']
-#         # stylesheet=default_stylesheet
-
-#         # elements= [
-#         #     {'data': {'id': 'one', 'label': 'Node 1'},
-#         #      'position': {'x': 75, 'y': 75}},
-#         #     {'data': {'id': 'two', 'label': 'Node 2'},
-#         #      'position': {'x': 200, 'y': 200}},
-#         #     {'data': {'source': 'one', 'target': 'two'}}
-#         # ]
-#     )
-# ]),
-
-
-# cytoscape_data = None
-# with open('data/output/interactions/cytoscape.json') as json_file:
-#     cytoscape_data = json.load(json_file)
-
-# with urllib.request.urlopen(BASE_PATH + 'output/basics/basic.json') as url:
-#     basic_data = json.loads(url.read().decode())

@@ -113,22 +113,33 @@ def generate_dash_influential_users(sg_tweets, top_ranking,
                                     save=False,
                                     influential_users_save_path=INFLUENTIAL_USERS_PATH):
     # TODO: Can add followers counts but missing for retweeted_user_screenname and quoted_user_screenname
+    # sg_tweets = sg_tweets.dropna(axis=0, subset=['user_id_x'])
+    # sg_tweets = sg_tweets.dropna(axis=0, subset=['retweeted_user_id'])
+    # sg_tweets = sg_tweets.dropna(axis=0, subset=['quoted_user_id'])
+
+
+    # sg_tweets[['user_id_x', 'retweeted_user_id', 'quoted_user_id']] = sg_tweets[[
+    #     'user_id_x', 'retweeted_user_id', 'quoted_user_id']].fillna(0).astype(int)
+
     normal_users = sg_tweets[sg_tweets['user_screenname_x'].isin(
-        top_ranking)][['user_screenname_x', 'user_geo_coding', 'user_verified']]
+        top_ranking)][['user_id_x', 'user_screenname_x', 'user_geo_coding', 'user_verified']]
     normal_users.rename(
-        columns={'user_screenname_x': 'user_screenname'}, inplace=True)
+        columns={'user_id_x': 'user_id', 'user_screenname_x': 'user_screenname'}, inplace=True)
 
     rts_users = sg_tweets[sg_tweets['retweeted_user_screenname'].isin(top_ranking)][[
-        'retweeted_user_screenname', 'retweeted_user_geo_coding', 'retweeted_user_verified']]
-    rts_users.rename(columns={'retweeted_user_screenname': 'user_screenname',
+        'retweeted_user_id', 'retweeted_user_screenname', 'retweeted_user_geo_coding', 'retweeted_user_verified']]
+    rts_users.rename(columns={'retweeted_user_id': 'user_id',
+                              'retweeted_user_screenname': 'user_screenname',
                               'retweeted_user_geo_coding': 'user_geo_coding',
                               'retweeted_user_verified': 'user_verified'}, inplace=True)
 
     quoted_users = sg_tweets[sg_tweets['quoted_user_screenname'].isin(top_ranking)][[
-        'quoted_user_screenname', 'quoted_user_geo_coding', 'quoted_user_verified']]
-    quoted_users.rename(columns={'quoted_user_screenname': 'user_screenname',
-                                 'quoted_user_geo_coding': 'user_geo_coding',
-                                 'quoted_user_verified': 'user_verified'}, inplace=True)
+        'quoted_user_id', 'quoted_user_screenname', 'quoted_user_geo_coding', 'quoted_user_verified']]
+    quoted_users.rename(columns={
+        'quoted_user_id': 'user_id',
+        'quoted_user_screenname': 'user_screenname',
+        'quoted_user_geo_coding': 'user_geo_coding',
+        'quoted_user_verified': 'user_verified'}, inplace=True)
 
     influential_users = pd.concat(
         [normal_users, rts_users, quoted_users]).drop_duplicates().reset_index(drop=True)
@@ -137,7 +148,6 @@ def generate_dash_influential_users(sg_tweets, top_ranking,
         pd.DataFrame.to_csv(influential_users, influential_users_save_path)
         print("Saved:", influential_users_save_path)
 
-    print(top_ranking)
     return influential_users
 
 

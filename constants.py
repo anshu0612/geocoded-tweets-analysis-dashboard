@@ -1,11 +1,16 @@
 COUNTRY = 'Singapore'
 COUNTRY_CODE = 'SG'
 
+HOME_PATH = '/'
 NETWORKING_PATH = '/networking'
 ENGAGEMENTS_PATH = '/engagements'
+INFLUENCERS_PATH = '/influencers'
+
+GRAPHS_TEMPLATE = 'plotly_white'
 
 TWITTER_BASE_URL = "https://twitter.com/"
 TWITTER_STATUS_PATH = TWITTER_BASE_URL + "{}/status/{}"
+# TWITTER_USER_PHOTO_PATH = "https://pbs.twimg.com/profile_images/{}/Z0mJaRZw_400x400.jpg"
 
 BASE_LOCAL_URL = "data/"
 BASE_PROD_URL = "https://sg-pulse-monitoring.s3.ap-southeast-1.amazonaws.com/"
