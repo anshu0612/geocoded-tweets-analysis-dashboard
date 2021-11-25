@@ -115,9 +115,6 @@ if __name__ == '__main__':
     dg = DashGenerator()
 
     # dg.generate_basic()
-
-
-
     # dg.generate_global_retweets()
     # dg.generate_local_retweets()
     # dg.generate_bursty_quoted()

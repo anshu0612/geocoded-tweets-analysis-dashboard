@@ -27,8 +27,10 @@ hr {
 
 .main-navbar {
     justify-content: center;
-    margin: 2em;
     margin-top: 1em;
+}
+
+.divider {
     border: 2px solid;
     border-image: linear-gradient(to left, lightsalmon, #89CFF0) 1 0;
     border-top: none;

@@ -197,7 +197,7 @@ def quality_check_pagerank(sg_tweets, top_ranking, top_users_count):
 
 
 def get_communities(G_pruned, sg_tweets, save=False,
-                    communities_save_path=COMMUNITIES_PATH,
+                    communities_user_save_path=COMMUNITIES_USERS_PATH,
                     communities_plot_save_path=COMMUNITIES_PLOT_PATH,
                     communities_tweets_save_path=COMMUNITIES_TWEETS_PATH,
                     user_to_community_save_path=USER_TO_COMMUNITY_PATH):
@@ -213,6 +213,13 @@ def get_communities(G_pruned, sg_tweets, save=False,
     communities_grouped = col.defaultdict(list)
     for k, v in communities.items():
         communities_grouped[v].append(k)
+
+    communities_grouped_ = {}
+    for k, v in communities_grouped.items():
+        communities_grouped_[k] = {
+            "users": v,
+            "color": CLUSTER_COLORS_DICT[str(k)]
+        }
 
     # communities_tweets = {'cluster': [], 'tweets': []}
     communities_tweets = {}
@@ -236,13 +243,13 @@ def get_communities(G_pruned, sg_tweets, save=False,
         with open(user_to_community_save_path, 'w') as f:
             json.dump(communities, f)
 
-        with open(communities_save_path, 'w') as f:
-            json.dump(communities_grouped, f)
+        with open(communities_user_save_path, 'w') as f:
+            json.dump(communities_grouped_, f)
 
         with open(communities_tweets_save_path, 'w') as f:
             json.dump(communities_tweets, f)
 
-        print('Saved:', communities_save_path,
+        print('Saved:', communities_user_save_path,
               user_to_community_save_path, communities_tweets_save_path)
 
     print('number of clusters created:', len(communities_grouped))
