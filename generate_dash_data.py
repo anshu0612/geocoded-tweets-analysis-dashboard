@@ -117,11 +117,11 @@ if __name__ == "__main__":
     # dg.generate_basic()
 
     # dg.generate_influential_countries()
-    dg.generate_influential_users()
+    # dg.generate_influential_users()
 
-    # dg.generate_global_retweets()
-    # dg.generate_local_retweets()
-    # dg.generate_bursty_quoted()
+    dg.generate_global_retweets()
+    dg.generate_local_retweets()
+    dg.generate_bursty_quoted()
 
-    dg.generate_communities()
-    dg.generate_networking_data()
+    # dg.generate_communities()
+    # dg.generate_networking_data()

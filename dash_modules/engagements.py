@@ -81,11 +81,12 @@ def get_bursty_tweets_info(tweets_df, engagement_type):
     engagement_user_label = RT_TWEET_USER_LABEL if engagement_type == RETWEET else Q_TWEET_USER_LABEL
     engagement_user_verified_label = RT_TWEET_USER_LABEL if engagement_type == RETWEET else Q_TWEET_USER_LABEL
     engagement_date = RT_TWEET_DATE_LABEL if engagement_type == RETWEET else Q_TWEET_DATE_LABEL
+    engagement_geocoding_label = RT_USER_GEOCODING if engagement_type == RETWEET else Q_USER_GEOCODING
 
     # remove @ from RTs
     tweets_df['tweet_text_'] = [re.sub(
         "RT @[A-Z_a-z_0-9:]+", "", txt).strip() for txt in tweets_df['tweet_text']]
-    details_tweets_df = tweets_df[['tweet_text_', 'tweet_date', 'tweet_sentiment', engagement_date, engagement_user_label, 'total_engagement',
+    details_tweets_df = tweets_df[['tweet_text_', 'tweet_date', 'tweet_sentiment', engagement_geocoding_label, engagement_date, engagement_user_label, 'total_engagement',
                                    engagement_user_verified_label, engagement_id_label]] \
         .groupby(engagement_id_label) \
         .apply(pd.DataFrame.sort_values, 'total_engagement') \

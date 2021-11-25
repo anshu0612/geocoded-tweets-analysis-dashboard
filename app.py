@@ -1,4 +1,4 @@
-from os import path
+# from os import path
 import pandas as pd
 import warnings
 
@@ -8,6 +8,8 @@ import dash_bootstrap_components as dbc
 import dash_html_components as html
 from wordcloud import WordCloud, STOPWORDS
 import plotly.express as px
+from dash.exceptions import PreventUpdate
+
 
 from constants import BASE_PATH
 from components import *
@@ -20,7 +22,8 @@ from dash_modules.basics import generate_dash_hashtags, \
 
 
 # setup
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = dash.Dash(__name__, suppress_callback_exceptions=True,
+                external_stylesheets=[dbc.themes.BOOTSTRAP])
 # app.layout = html.Div(children=[NAVBAR, MAIN_CONTAINER])
 
 app.layout = html.Div([
@@ -28,25 +31,30 @@ app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
 
     dbc.Row(
-        [dcc.Link('Dashboard', href='/', style={"margin": "1em 2em"}),
-         dcc.Link('Engagements', href=ENGAGEMENTS_PATH,
+        [dcc.Link('Tweets', href=HOME_PATH, style={"margin": "1em 2em 1em 4em"}),
+         dcc.Link('Retweets/Quoted Tweets', href=ENGAGEMENTS_PATH,
+                  style={"margin": "1em 1em"}),
+         dcc.Link('Influencers', href=INFLUENCERS_PATH,
                   style={"margin": "1em 1em"}),
          dcc.Link('Networking', href=NETWORKING_PATH, style={"margin": "1em 1em"})],
+        style={"display": "flex", "justifyContent": "center"}
     ),
     # content will be rendered in this element
     html.Div(id='page-content')
 ])
 
 
-@app.callback(dash.dependencies.Output('page-content', 'children'),
-              [dash.dependencies.Input('url', 'pathname')])
+@app.callback(Output('page-content', 'children'),
+              [Input('url', 'pathname')])
 def display_page(pathname):
     if pathname == NETWORKING_PATH:
-        return html.Div(children=[NAVBAR, CYTO_DATA])
+        return html.Div(children=[NAVBAR, NETWORKING])
     elif pathname == ENGAGEMENTS_PATH:
         return html.Div(children=[NAVBAR, VIRAL_ENGAGEMENTS])
+    elif pathname == INFLUENCERS_PATH:
+        return html.Div(children=[NAVBAR, INFLUENCERS])
     else:
-        return html.Div(children=[NAVBAR, MAIN_CONTAINER])
+        return html.Div(children=[NAVBAR, TWEETS])
 
 
 # load the tweets
@@ -55,27 +63,16 @@ sg_tweets = pd.read_csv(SG_TWEETS_PATH)
 min_date, max_date = get_date_range(sg_tweets)
 
 # influencial countries
-top_countries_data = pd.read_csv(
-    BASE_PATH + 'output/influencers/top_countries_data.csv')
-
-influential_users = pd.read_csv(
-    BASE_PATH + 'output/influencers/top_users.csv')
-
-
-country_data = pd.read_csv(BASE_PATH + 'output/influencers/top_countries.csv')
+top_countries_data = pd.read_csv(TOP_COUNTRIES_CLEANED_DATA)
+influential_users = pd.read_csv(INFLUENTIAL_USERS_PATH)
+country_data = pd.read_csv(TOP_COUNTRY_INFLUENCER_PATH)
 
 
 dummy_fig = px.treemap(
-    names=["Oops! Not enough tweets. Try other filter value."],
+    names=[ERROR_INSUFFICIENT_TWEETS],
     parents=[""]
 )
-dummy_fig.update_traces(root_color="lightblue")
-dummy_fig.update_layout(font=dict(
-    family="Verdana, monospace",
-    size=40
-),)
-
-GRAPHS_TEMPLATE = 'plotly_white'
+dummy_fig.update_layout(margin=dict(t=40, l=40, r=40, b=25))
 
 
 def generate_rts_info(tw):
@@ -94,6 +91,15 @@ def generate_rts_info(tw):
                     children=[
                         html.Span('Posted by: '),
                         html.Span(tw["retweeted_user_screenname"]),
+                        html.Span(
+                            Img(
+                                className='quoted-flag',
+                                src=FLAG_URL.format(
+                                    tw['retweeted_user_geo_coding'].lower().replace(
+                                        ' ', '-')
+                                    if tw['retweeted_user_geo_coding'].lower() != "united states" else FLAG_FIX_USA)
+                            )
+                        ),
                         html.Span(" | Created on: " +
                                   dt.strftime(dt.strptime(
                                       tw["retweeted_tweet_date"], DATE_FORMAT), DASH_FORMAT)),
@@ -156,7 +162,7 @@ def plotly_wordcloud(tweets_text, filtered_for):
 
     frequency_fig_data.update_traces(marker_color='#40B5AD')
     frequency_fig_data.update_layout(
-        title="Frequent words for {} on {} tweets".format(
+        title="Frequent words on {} tweets for {}".format(
             filtered_for, len(tweets_text)),
         font=dict(
             family="Verdana, monospace",
@@ -170,11 +176,65 @@ def plotly_wordcloud(tweets_text, filtered_for):
 
 
 @app.callback(
+    [Output('fig-hashtags', 'figure'),
+     Output('fig-mentions', 'figure'),
+     Output('fig-sentiments', 'figure')],
+    Input('url', 'pathname'),
+    Input('hash-mention-sent-datepick', 'start_date'),
+    Input('hash-mention-sent-datepick', 'end_date'))
+def update_hash_mentions_sent_output(pathname, start_date, end_date):
+    print("*"*30)
+    if not pathname == HOME_PATH:
+        raise PreventUpdate
+
+    print("initial", start_date)
+    print("****"*10)
+    df_hashtags = generate_dash_hashtags(sg_tweets, start_date, end_date)
+    fig_hashtags = px.bar(df_hashtags, x="counts", y="hashtag",
+                          orientation='h', template=DASH_TEMPLATE)
+    fig_hashtags.update_layout(
+        title="Top hashtags distribution",
+        margin=dict(l=200, r=0, t=30, b=4),
+        xaxis_title=None,
+        yaxis_title=None
+    )
+
+    df_mentions = generate_dash_mentions(sg_tweets, start_date, end_date)
+    fig_mentions = px.bar(df_mentions, x="counts", y="mention",
+                          orientation='h', template=DASH_TEMPLATE)
+    fig_mentions.update_layout(
+        title="Top mentions distribution",
+        margin=dict(l=0, r=0, t=30, b=4),
+        xaxis_title=None,
+        yaxis_title=None
+    )
+
+    df_sentiments = generate_dash_sentiments(sg_tweets, start_date, end_date)
+    fig_sentiments = px.bar(df_sentiments, x="count", y="tweet_sentiment",
+                            orientation='h', template=DASH_TEMPLATE, color="tweet_sentiment")
+    fig_sentiments.update_layout(
+        title="Sentiments distribution",
+        margin=dict(l=0, r=0, t=30, b=4),
+        xaxis_title=None,
+        yaxis_title=None
+    )
+
+    if df_hashtags is None:
+        print("YESSSS")
+    # print("****", df_hashtags)
+    print("&"*10, df_hashtags)
+    return (fig_hashtags, fig_mentions, fig_sentiments)
+
+
+@app.callback(
     [Output("fig-world-influence", "figure"),
         Output("word-cloud-influential-country", "figure")],
+    Input('url', 'pathname'),
     Input("dropdown-top-influence-countries", "value"),
 )
-def gen_influential_countries_wordfreq(country):
+def gen_influential_countries_wordfreq(pathname, country):
+    if not pathname == INFLUENCERS_PATH:
+        raise PreventUpdate
 
     x = top_countries_data[top_countries_data['retweeted_user_geo_coding']
                            == country]['processed_tweet_text']
@@ -233,8 +293,12 @@ pst_tweets = pd.read_csv(POTENTIALLY_SENSITIVE_TWEETS_PATH)
 
 @app.callback(
     Output('freq-count-psts-tweets', 'figure'),
+    Input('url', 'pathname'),
     Input('psts-datepick', 'date'))
-def psts_output(date=min_date):
+def psts_output(pathname, date=min_date):
+    if not pathname == HOME_PATH:
+        raise PreventUpdate
+
     pst_tweets_by_date = pst_tweets[
         pst_tweets['processed_tweet_text'].notna() &
         pst_tweets['tweet_date'].between(
@@ -251,52 +315,6 @@ def psts_output(date=min_date):
 # df_hashtags = pd.read_csv(HASHTAGS_PATH)
 # df_mentions = pd.read_csv(MENTIONS_PATH)
 # df_sentiments = pd.read_csv(SENTIMENTS_PATH)
-
-@app.callback(
-    [Output('fig_hashtags', 'figure'),
-     Output('fig_mentions', 'figure'),
-     Output('fig_sentiments', 'figure')],
-    Input('hash-mention-sent-datepick', 'start_date'),
-    Input('hash-mention-sent-datepick', 'end_date'))
-def update_hash_mentions_sent_output(start_date, end_date):
-    print("initial", start_date)
-    print("****"*10)
-    df_hashtags = generate_dash_hashtags(sg_tweets, start_date, end_date)
-    fig_hashtags = px.bar(df_hashtags, x="counts", y="hashtag",
-                          orientation='h', template=DASH_TEMPLATE)
-    fig_hashtags.update_layout(
-        title="Top hashtags distribution",
-        margin=dict(l=200, r=0, t=30, b=4),
-        xaxis_title=None,
-        yaxis_title=None
-    )
-
-    df_mentions = generate_dash_mentions(sg_tweets, start_date, end_date)
-    fig_mentions = px.bar(df_mentions, x="counts", y="mention",
-                          orientation='h', template=DASH_TEMPLATE)
-    fig_mentions.update_layout(
-        title="Top mentions distribution",
-        margin=dict(l=0, r=0, t=30, b=4),
-        xaxis_title=None,
-        yaxis_title=None
-    )
-
-    df_sentiments = generate_dash_sentiments(sg_tweets, start_date, end_date)
-    fig_sentiments = px.bar(df_sentiments, x="count", y="tweet_sentiment",
-                            orientation='h', template=DASH_TEMPLATE, color="tweet_sentiment")
-    fig_sentiments.update_layout(
-        title="Sentiments distribution",
-        margin=dict(l=0, r=0, t=30, b=4),
-        xaxis_title=None,
-        yaxis_title=None
-    )
-
-    if df_hashtags is None:
-        print("YESSSS")
-    # print("****", df_hashtags)
-    print("&"*10, df_hashtags)
-    return (fig_hashtags, fig_mentions, fig_sentiments)
-
 
 # local --------
 all_local_rts_trend = pd.read_csv(ALL_LOCAL_RTS_TREND_PATH)
@@ -328,10 +346,13 @@ neg_global_rts_info = pd.read_csv(NEG_GLOBAL_RTS_INFO_PATH)
         # Output("local-rts-table", "columns")
         # Output("local-rts-table", "colors")
     ],
+    Input('url', 'pathname'),
     Input("local-rts-sentiment-select", "value")
     # ],
 )
-def get_local_rts_trend(selected_sentiment):
+def get_local_rts_trend(pathname, selected_sentiment):
+    if not pathname == ENGAGEMENTS_PATH:
+        raise PreventUpdate
 
     trend_data = all_local_rts_trend
     info_data = all_local_rts_info
@@ -401,10 +422,14 @@ def get_local_rts_trend(selected_sentiment):
         # Output("global-rts-table", "columns")
         # Output("global-rts-table", "colors")
     ],
+    Input('url', 'pathname'),
     Input("global-rts-sentiment-select", "value")
     # ],
 )
-def get_global_rts_trend(selected_sentiment):
+def get_global_rts_trend(pathname, selected_sentiment):
+    if not pathname == ENGAGEMENTS_PATH:
+        raise PreventUpdate
+
     trend_data = all_global_rts_trend
     info_data = all_global_rts_info
     if selected_sentiment == 'Negative':
@@ -458,6 +483,56 @@ def get_global_rts_trend(selected_sentiment):
     return (fig_trend_cum, fig_trend_delta, rts_info)
 
 
+def generate_influential_users(idx, tw):
+    return (
+
+        dbc.Row(
+            html.P(
+                className="influencer-chip",
+                children=[
+                    html.A(html.Span(str(
+                        idx + 1) + ". " + tw["user_screenname"]),
+                        style={"cursor": "pointer"},
+                        target="blank_",
+                        href=TWITTER_BASE_URL + tw["user_screenname"],),
+                    html.Span(children=' ☑' if tw["user_verified"] else '', style={
+                        'color': '#0096FF'}),
+                    html.Span(
+                        Img(
+                            className="influencer-flag",
+                            style={"width": "2em"},
+                            src=FLAG_URL.format(
+                                tw['user_geo_coding'].lower().replace(' ', '-') if tw['user_geo_coding'].lower() != "united states" else FLAG_FIX_USA)
+                            if tw['user_geo_coding'] != "Unknown" else ""
+                        )
+                    )
+                ]),
+            className='influencer-badge'
+        )
+    )
+
+
+@ app.callback(
+    Output("influencers-chips-row", "children"),
+    Input('url', 'pathname'),
+    Input("dropdown-top-influence-users-countries", "value")
+)
+def gen_infuential_users_by_country(pathname, country):
+    if not pathname == INFLUENCERS_PATH:
+        raise PreventUpdate
+    if country == 'All':
+        filtered_users = influential_users
+    else:
+        filtered_users = influential_users[influential_users['user_geo_coding'] == country]
+
+    return [generate_influential_users(i, tw) for i, tw in filtered_users.iterrows()]
+
+
+warnings.filterwarnings('ignore')
+if __name__ == "__main__":
+    app.run_server(debug=True, port=8051)
+
+
 # @app.callback(
 #     [Output('pos-quotes-sentiment', 'children'),
 #      Output('neg-quotes-sentiment', 'children')],
@@ -490,49 +565,3 @@ def get_global_rts_trend(selected_sentiment):
 #     print("bursty_neg --- : ", len(bursty_neg))
 
 #     return (bursty_pos, bursty_neg)
-
-def generate_influential_users(idx, tw):
-    return (
-
-        dbc.Row(
-            html.P(
-                className="influencer-chip",
-                children=[
-                    html.A(html.Span(str(
-                        idx + 1) + ". " + tw["user_screenname"]),
-                        style={"cursor": "pointer"},
-                        target="blank_",
-                        href=TWITTER_BASE_URL + tw["user_screenname"],),
-                    html.Span(children=' ☑' if tw["user_verified"] else '', style={
-                        'color': '#0096FF'}),
-                    html.Span(
-                        Img(
-                            className="influencer-flag",
-                            style={"width": "2em"},
-                            src="https://cdn.countryflags.com/thumbs/{}/flag-400.png".format(
-                                tw['user_geo_coding'].lower() if tw['user_geo_coding'].lower() != "united states" else "united-states-of-america")
-                            if tw['user_geo_coding'] != "Unknown" else ""
-                        )
-                    )
-                ]),
-            className='influencer-badge'
-        )
-    )
-
-
-@app.callback(
-    Output("influencers-chips-row", "children"),
-    Input("dropdown-top-influence-users-countries", "value")
-)
-def gen_infuential_users_by_country(country):
-    if country == 'All':
-        filtered_users = influential_users
-    else:
-        filtered_users = influential_users[influential_users['user_geo_coding'] == country]
-
-    return [generate_influential_users(i, tw) for i, tw in filtered_users.iterrows()]
-
-
-warnings.filterwarnings('ignore')
-if __name__ == "__main__":
-    app.run_server(debug=True, port=8051)
