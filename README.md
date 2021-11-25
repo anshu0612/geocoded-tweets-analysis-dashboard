@@ -17,4 +17,5 @@ First, the Twitter streaming data is ingested into MongoDB, data wrangling is pe
 
 ### Insights are presented on the dashboard with the help of visualizations. 
 
-![Alt text](assets/sg-pulse-monitor.png?raw=true "Title")
+<!-- ![Alt text](assets/dash_v1.png?raw=true "Title") -->
+![Alt text](assets/dash_v2.png?raw=true "Title")
