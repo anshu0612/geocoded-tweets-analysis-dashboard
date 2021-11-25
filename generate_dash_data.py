@@ -8,7 +8,7 @@ from dash_modules.graph_analysis import *
 from constants import COUNTRY
 
 import warnings
-warnings.filterwarnings("ignore")
+warnings.filterwarnings('ignore')
 
 
 class DashGenerator():
@@ -59,7 +59,7 @@ class DashGenerator():
 
     def generate_communities(self):
         self.G_pruned = get_min_degree_graph(self.G, 5)
-        get_communities(self.G_pruned, True)
+        get_communities(self.G_pruned, self.sg_tweets, True)
 
     def generate_bursty_quoted(self):
         quoted_tws = get_quoted_tweets(self.sg_tweets)
@@ -111,17 +111,19 @@ class DashGenerator():
             all_local_retweet, True, ALL_LOCAL_RTS_TREND_PATH, ALL_LOCAL_RTS_INFO_PATH)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     dg = DashGenerator()
 
     # dg.generate_basic()
 
+
+
+    # dg.generate_global_retweets()
+    # dg.generate_local_retweets()
+    # dg.generate_bursty_quoted()
+
     # dg.generate_influential_countries()
-    # dg.generate_influential_users()
 
-    dg.generate_global_retweets()
-    dg.generate_local_retweets()
-    dg.generate_bursty_quoted()
-
-    # dg.generate_communities()
-    # dg.generate_networking_data()
+    dg.generate_influential_users()
+    dg.generate_communities()
+    dg.generate_networking_data()

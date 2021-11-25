@@ -23,12 +23,14 @@ with open(BASICS_PATH) as json_file:
 # Load daily tweets data
 df_tweets_daily_count = pd.read_csv(DAILY_TWEETS_PATH)
 fig_tweets_daily_count = px.line(
-    df_tweets_daily_count, x='tweet_date', y='count', template=DASH_TEMPLATE)
+    df_tweets_daily_count, x='tweet_date', y='count',
+    color_discrete_sequence=['#1ca9c9'], template=DASH_TEMPLATE)
 fig_tweets_daily_count.update_layout(title=DAILY_TWEETS_HEADING,
                                      font=dict(
-                                         family="Verdana, monospace",
+                                         family='Verdana, monospace',
                                          size=14
                                      ),
+
                                      margin=dict(l=0, r=0, t=100, b=0),
                                      xaxis_title=None,
                                      yaxis_title=None)
@@ -37,12 +39,15 @@ fig_tweets_daily_count.update_layout(title=DAILY_TWEETS_HEADING,
 c_sg_tweets_pst = pd.read_csv(POTENTIALLY_SENSITIVE_TWEETS_COUNT_PATH)
 spike_value = c_sg_tweets_pst['count'].quantile(
     POTENTIALLY_SENSITIVE_TWEETS_DEFAULT_PERCENTILE)
-colors = ["red" if cc > spike_value else "green" for cc in c_sg_tweets_pst['count']]
-fig_psts = px.bar(c_sg_tweets_pst, x="tweet_date", y="count", template=DASH_TEMPLATE, color=colors,
+colors = ['R' if cc > spike_value else
+          'G' for cc in c_sg_tweets_pst['count']]
+fig_psts = px.bar(c_sg_tweets_pst, x='tweet_date', y='count',
+                  color_discrete_sequence=['#CD5C5C', '#8B0000'],
+                  template=DASH_TEMPLATE, color=colors,
                   width=700, height=420)
-fig_psts.update_layout(title="Daily potentially sensitive tweets count",
+fig_psts.update_layout(title='Daily potentially sensitive tweets count',
                        font=dict(
-                           family="Verdana, monospace",
+                           family='Verdana, monospace',
                            size=10
                        ),
                        margin=dict(l=0, r=0, t=30, b=0),
@@ -76,54 +81,55 @@ def create_quoted_card(tw):
                 dbc.Col(
                     [
                         html.A(html.P(style={'fontSize': '1em',
-                                      'color': '#000'}, children=tw["quoted_tweet_text"]),
-                               target="blank_",
-                               href=TWITTER_STATUS_PATH.format(tw["quoted_user_screenname"], tw["quoted_tweet_id"])),
+                                      'color': '#000'}, children=tw['quoted_tweet_text']),
+                               target='blank_',
+                               href=TWITTER_STATUS_PATH.format(tw['quoted_user_screenname'], tw['quoted_tweet_id'])),
                         html.P(
-                            className="quoted-info",
+                            className='quoted-info',
                             children=[
                                 html.Span('Posted by: '),
-                                html.Span(tw["quoted_user_screenname"]),
-                                html.Span(children=' ☑' if tw["quoted_user_verified"] else '', style={
+                                html.Span(tw['quoted_user_screenname']),
+                                html.Span(children=' ☑' if tw['quoted_user_verified'] else '', style={
                                     'color': '#0096FF'}),
                                 html.Span(
                                     Img(
                                         className='quoted-flag',
                                         src=FLAG_URL.format(
-                                            tw['quoted_user_geo_coding'].lower().replace(' ', '-') \
-                                            if tw['quoted_user_geo_coding'].lower() != "united states" else FLAG_FIX_USA)
+                                            tw['quoted_user_geo_coding'].lower().replace(
+                                                ' ', '-')
+                                            if tw['quoted_user_geo_coding'].lower() != 'united states' else FLAG_FIX_USA)
                                     )
                                 ),
 
-                                html.Span(" | Created on: " +
+                                html.Span(' | Created on: ' +
                                           dt.strftime(dt.strptime(
-                                              tw["quoted_tweet_date"], DATE_FORMAT), DASH_FORMAT)),
+                                              tw['quoted_tweet_date'], DATE_FORMAT), DASH_FORMAT)),
 
                                 html.Span(
-                                    " | 🔁 ", className='quoted-endorsements'),
+                                    ' | 🔁 ', className='quoted-endorsements'),
                                 html.Span(
-                                    "+", className='quoted-endorsements'),
+                                    '+', className='quoted-endorsements'),
                                 html.Span(
-                                    "🤍 : ", className='quoted-endorsements'),
-                                html.Span(human_format(tw["total_engagement"]))
+                                    '🤍 : ', className='quoted-endorsements'),
+                                html.Span(human_format(tw['total_engagement']))
 
                             ]),
 
                         dbc.Progress(
-                            value=str(tw["spread_rate"]),
-                            max="100",
+                            value=str(tw['spread_rate']),
+                            max='100',
                             # animated=True,
-                            children=str(tw["spread_rate"]) + "%",
-                            className="mb-3",
-                            color="#32CD32" if str(
-                                tw["spread_type"]) == 'positive' else '#C70039',
+                            children=str(tw['spread_rate']) + '%',
+                            className='mb-3',
+                            color='#32CD32' if str(
+                                tw['spread_type']) == 'positive' else '#C70039',
                             style={'height': '1.4em', 'fontSize': '0.8em'}
                         )
 
                     ],
                 ),
             ],
-                className="tw-card-body"
+                className='tw-card-body'
             )))
 
 
@@ -132,34 +138,34 @@ BASIC_STATS = dbc.Card(
         dbc.CardBody(
             [
                 html.H4(TWEETS_STATS_HEADING,
-                        className="card-title"),
+                        className='card-title'),
                 html.Div(
                     [html.P([
                         html.Span(basic_data['total_tweets'], style={
-                            "fontWeight": 'bold'}),
-                        html.Span(" tweets")
+                            'fontWeight': 'bold'}),
+                        html.Span(' tweets')
                     ]
                     ),
                         html.P([
-                            html.Span("{} to {}".format(
+                            html.Span('{} to {}'.format(
                                 dt.strftime(dt.strptime(
-                                    basic_data["min_date"], DATE_FORMAT), DASH_NO_YEAR_FORMAT),
+                                    basic_data['min_date'], DATE_FORMAT), DASH_NO_YEAR_FORMAT),
                                 dt.strftime(dt.strptime(
-                                    basic_data["max_date"], DATE_FORMAT), DASH_FORMAT)),
-                                style={"fontWeight": 'bold'}),
-                            html.Span(" duration")
+                                    basic_data['max_date'], DATE_FORMAT), DASH_FORMAT)),
+                                style={'fontWeight': 'bold'}),
+                            html.Span(' duration')
                         ]),
                         html.P([
                             html.Span(basic_data['users_count'], style={
-                                "fontWeight": 'bold'}),
+                                'fontWeight': 'bold'}),
                             html.Span(
-                                " unique Singapore-based twitter users")
+                                ' unique Singapore-based twitter users')
                         ]),
                         html.P([
                             html.Span(basic_data['avg_tweets'], style={
-                                "fontWeight": 'bold'}),
+                                'fontWeight': 'bold'}),
                             html.Span(
-                                " average no. of tweets per day")
+                                ' average no. of tweets per day')
                         ])]
                 )
             ],
@@ -171,45 +177,46 @@ BASIC_STATS = dbc.Card(
 
 
 DAILY_TWEETS = dcc.Loading(
-    id="loading-daily-tweets",
+    id='loading-daily-tweets',
     children=[
         dcc.Graph(figure=fig_tweets_daily_count)],
-    type="dot"
+    type='dot'
 )
 
 
 DATEPICK_MENTIONS_HASHTAGS_SENTIMENT = dcc.DatePickerRange(
     id='hash-mention-sent-datepick',
-    min_date_allowed=basic_data["min_date"],
-    max_date_allowed=basic_data["max_date"],
-    initial_visible_month=basic_data["min_date"]
-    # end_date=date()
+    min_date_allowed=basic_data['min_date'],
+    max_date_allowed=basic_data['max_date'],
+    initial_visible_month=basic_data['min_date'],
+    start_date=basic_data['min_date'],
+    end_date=basic_data['max_date']
 )
 
 
 MENTIONS_HASHTAGS_SENTIMENT = [
     dbc.Col(
         dcc.Loading(
-            id="loading-hashtags",
+            id='loading-hashtags',
             children=[
-                dcc.Graph(id="fig-hashtags")],
-            type="dot",
+                dcc.Graph(id='fig-hashtags')],
+            type='dot',
 
-        ), className="col-md-4"),
+        ), className='col-md-4'),
     dbc.Col(
         dcc.Loading(
-            id="loading-mentions",
+            id='loading-mentions',
             children=[
-                dcc.Graph(id="fig-mentions")],
-            type="dot"
-        ), className="col-md-4"),
+                dcc.Graph(id='fig-mentions')],
+            type='dot'
+        ), className='col-md-4'),
     dbc.Col(
         dcc.Loading(
-            id="loading-sentiments",
+            id='loading-sentiments',
             children=[
-                dcc.Graph(id="fig-sentiments")],
-            type="dot"
-        ), className="col-md-4")
+                dcc.Graph(id='fig-sentiments')],
+            type='dot'
+        ), className='col-md-4')
 ]
 
 MENTIONS_HASHTAGS_SENTIMENT_INFO = dbc.Jumbotron(
@@ -220,30 +227,30 @@ MENTIONS_HASHTAGS_SENTIMENT_INFO = dbc.Jumbotron(
                           style={'color': '#0096FF', 'marginRight': '10px'}),
                 html.P(MENTIONS_HASHTAGS_SENTIMENT_INFO_CONTENT)
             ],
-            className="col-md-8"
+            className='col-md-8'
         ),
             dbc.Col([
-                html.Span("Filter by date range ", style={
-                    "fontSize": "0.8em"}),
+                html.Span('Filter by date range ', style={
+                    'fontSize': '0.8em'}),
                 DATEPICK_MENTIONS_HASHTAGS_SENTIMENT
             ],
-            className="col-md-4"
+            className='col-md-4'
         ),
         ],
-        className="col-md-12"
+        className='col-md-12'
     ),
     style={'margin': '1em 0 2em 0'},
-    className="col-md-12")
+    className='col-md-12')
 
 
 DATEPICK_PSTS = dcc.DatePickerSingle(
     id='psts-datepick',
-    className="datepick-label",
-    min_date_allowed=basic_data["min_date"],
-    max_date_allowed=basic_data["max_date"],
-    initial_visible_month=basic_data["min_date"],
-    date=basic_data["min_date"],
-    style={"width": "3em"}
+    className='datepick-label',
+    min_date_allowed=basic_data['min_date'],
+    max_date_allowed=basic_data['max_date'],
+    initial_visible_month=basic_data['min_date'],
+    date=basic_data['min_date'],
+    style={'width': '3em'}
 )
 
 
@@ -255,40 +262,40 @@ PSTS_INFO = dbc.Jumbotron(
                           style={'color': '#0096FF', 'marginRight': '10px'}),
                 html.P(PSTS_INFO_CONTENT)
             ],
-            className="col-md-8"
+            className='col-md-8'
         ),
             dbc.Col([
-                html.Span("Filter by date", style={
-                    "fontSize": "0.8em"}),
+                html.Span('Filter by date', style={
+                    'fontSize': '0.8em'}),
                 DATEPICK_PSTS
             ],
-            className="col-md-4"
+            className='col-md-4'
         ),
         ],
-        className="col-md-12"
+        className='col-md-12'
     ),
     style={'margin': '1em 0 2em 0'},
-    className="col-md-12")
+    className='col-md-12')
 
 PSTS = [
     dbc.Col(
         dcc.Loading(
-            id="loading-psts",
+            id='loading-psts',
             children=[
                 dcc.Graph(figure=fig_psts)],
-            type="dot"
+            type='dot'
         ),
-        className="col-md-8"
+        className='col-md-8'
     ),
 
     dbc.Col(
         dcc.Loading(
-            id="loading-psts-tweets",
+            id='loading-psts-tweets',
             children=[
-                dcc.Graph(id="freq-count-psts-tweets")],
-            type="dot",
+                dcc.Graph(id='freq-count-psts-tweets')],
+            type='dot',
         ),
-        className="col-md-4"
+        className='col-md-4'
     )
 ]
 
@@ -297,152 +304,152 @@ INFLUENTIAL_USERS_INFO = dbc.Jumbotron(
     dbc.Row(
         [dbc.Col(
             children=[
-                html.Span("Interactions graph: ",
+                html.Span('Interactions graph: ',
                           style={'color': '#000', 'marginRight': '10px'}),
                 html.P(INTERACTIONS_GRAPH_INFO_CONTENT),
-                html.Span("Influential users: ",
+                html.Span('Influential users: ',
                           style={'color': '#0096FF', 'marginRight': '10px'}),
                 html.P(INFLUENTIAL_USERS_INFO_CONTENT),
             ],
-            className="col-md-8"
+            className='col-md-8'
         ),
             dbc.Col([
-                html.Span("Filter by country", style={
-                    "fontSize": "0.8em"}),
+                html.Span('Filter by country', style={
+                    'fontSize': '0.8em'}),
                 dcc.Dropdown(
-                    id="dropdown-top-influence-users-countries",
+                    id='dropdown-top-influence-users-countries',
                     options=[
-                        {"label": i, "value": i}
+                        {'label': i, 'value': i}
                         for i in influential_users_countries
                     ],
                     value='Singapore')],
-                    className="col-md-4"
+                    className='col-md-4'
                     ),
         ],
-        className="col-md-12"
+        className='col-md-12'
     ),
     style={'margin': '1em 0 2em 0'},
-    className="col-md-12")
+    className='col-md-12')
 
 
 INFLUENTIAL_COUNTRIES_INFO = dbc.Jumbotron(
     dbc.Row(
         [dbc.Col(
             children=[
-                html.Span("Influential countries: ",
+                html.Span('Influential countries: ',
                           style={'color': '#0096FF', 'marginRight': '10px'}),
                 html.P(INFLUENTIAL_COUNTRIES_INFO_CONTENT),
             ],
-            className="col-md-8"
+            className='col-md-8'
         ),
             dbc.Col([
-                html.Span("Filter by country", style={
-                    "fontSize": "0.8em"}),
+                html.Span('Filter by country', style={
+                    'fontSize': '0.8em'}),
                 dcc.Dropdown(
-                    id="dropdown-top-influence-countries",
-                    # clearable=False, style={"cursor": "pointer", 'borderRadius': 0, "width": "200px",
-                    #                         "margin": '0.5em', "fontSize": "0.8em"},
+                    id='dropdown-top-influence-countries',
+                    # clearable=False, style={'cursor': 'pointer', 'borderRadius': 0, 'width': '200px',
+                    #                         'margin': '0.5em', 'fontSize': '0.8em'},
                     options=[
-                        {"label": i, "value": i}
+                        {'label': i, 'value': i}
                         for i in sorted(list(country_data['country']))
                     ],
                     value=most_influential_country)
             ],
-            className="col-md-4",
+            className='col-md-4',
         ),
         ],
-        className="col-md-12"
+        className='col-md-12'
     ),
     style={'margin': '1em 0 2em 0'},
-    className="col-md-12")
+    className='col-md-12')
 
 
 INFLUENTIAL_USERS = [
     dbc.Row(
-        html.H5(["Influential users"]),
-        className="col-md-12"
+        html.H5(['Influential users']),
+        className='col-md-12'
     ),
     dbc.Row(
         INFLUENTIAL_USERS_INFO,
-        className="col-md-12"
+        className='col-md-12'
     ),
     dbc.Row(
         children=[],
-        id="influencers-chips-row"
+        id='influencers-chips-row'
     )]
 
 
 INFLUENTIAL_COUNTRIES = [
     dbc.Col(
         dcc.Loading(
-            id="loading-influential-country_map",
+            id='loading-influential-country_map',
             children=[
                 dcc.Graph(
                     id='fig-world-influence'
                 )],
-            type="dot",
+            type='dot',
         ),
-        className="col-md-8"
+        className='col-md-8'
     ),
     dbc.Col(
         dcc.Loading(
-            id="loading-influential-country_words",
+            id='loading-influential-country_words',
             children=[
-                dcc.Graph(id="word-cloud-influential-country")],
-            type="dot",
+                dcc.Graph(id='word-cloud-influential-country')],
+            type='dot',
         ),
-        className="col-md-4"
+        className='col-md-4'
     )
 ]
 
 
 BURSTY_QUOTED_TWEETS = [
     dbc.Row(
-        html.H5(["Reactive tweets"]),
-        className="col-md-12"
+        html.H5(['Reactive tweets']),
+        className='col-md-12'
     ),
     dbc.Row(
         dbc.Jumbotron(
             dbc.Row(
                 [dbc.Col(
                     children=[
-                        html.Span("Viral quoted tweets: ",
+                        html.Span('Viral quoted tweets: ',
                                   style={'color': '#000', 'marginRight': '10px'}),
                         html.P(
                             VIRAL_QUOTED_INFO_CONTENT.format(
                                 dt.strftime(dt.strptime(
-                                            basic_data["min_date"], DATE_FORMAT), DASH_NO_YEAR_FORMAT),
+                                            basic_data['min_date'], DATE_FORMAT), DASH_NO_YEAR_FORMAT),
                                 dt.strftime(dt.strptime(
-                                            basic_data["max_date"], DATE_FORMAT), DASH_FORMAT))
+                                            basic_data['max_date'], DATE_FORMAT), DASH_FORMAT))
                         ),
-                        html.Span("Reactive tweets: ",
+                        html.Span('Reactive tweets: ',
                                   style={'color': '#0096FF', 'marginRight': '10px'}),
                         html.P(REACTIVE_TWEETS_INFO_CONTENT),
                     ],
-                    className="col-md-12"
+                    className='col-md-12'
                 )
                 ],
-                className="col-md-12"
+                className='col-md-12'
             ),
             style={'margin': '1em 0 2em 0'},
-            className="col-md-12"),
-        className="col-md-12"
+            className='col-md-12'),
+        className='col-md-12'
     ),
     dbc.Row(
         [
             dbc.Col(
                 [
-                    dbc.Alert("Positive outburst",
-                              className="alert-heading", style={"color": 'green'}),
+                    dbc.Alert('Positive outburst',
+                              className='alert-heading', style={'color': 'green'}),
                     dbc.Row(children=[create_quoted_card(
                         tw) for _, tw in quoted_spread_data_pos.iterrows()])
-                ], className="outburst", style={"maxHeight": "40em", "overflowY": "scroll"}
+                ], className='outburst', style={'maxHeight': '40em', 'overflowY': 'scroll'}
             ),
             dbc.Col(
                 [
-                    dbc.Alert("Negative outburst",
-                              className="alert-heading", style={"color": '#C70039'}),
-                    dbc.Row(id="neg-quotes-sentiment", className="outburst", style={"maxHeight": "40em", "overflowY": "scroll"},
+                    dbc.Alert('Negative outburst',
+                              className='alert-heading', style={'color': '#C70039'}),
+                    dbc.Row(id='neg-quotes-sentiment', className='outburst', style={'maxHeight': '40em', 'overflowY': 'scroll'},
                             children=[create_quoted_card(tw) for _, tw in quoted_spread_data_neg.iterrows()])
                 ]
             )
@@ -454,66 +461,66 @@ BURSTY_QUOTED_TWEETS = [
 
 VIRAL_LOCAL_RETWEETS = [
     dbc.Row(
-        html.H5(["Viral local Retweets"]),
-        className="col-md-12"
+        html.H5(['Viral local Retweets']),
+        className='col-md-12'
     ),
     dbc.Row(
         dbc.Jumbotron(
             dbc.Row(
                 [dbc.Col(
                     children=[
-                        html.Span("Viral local retweets:",
+                        html.Span('Viral local retweets:',
                                   style={'color': '#0096FF', 'marginRight': '10px'}),
                         html.Span(
                             VIRAL_RETWEETS_DATE_INFO_CONTENT
                             .format(
                                 dt.strftime(dt.strptime(
-                                            basic_data["min_date"], DATE_FORMAT), DASH_NO_YEAR_FORMAT),
+                                            basic_data['min_date'], DATE_FORMAT), DASH_NO_YEAR_FORMAT),
                                 dt.strftime(dt.strptime(
-                                            basic_data["max_date"], DATE_FORMAT), DASH_FORMAT)), className="rts-jumbotron"),
-                        html.Span("Singapore geocoded accounts ",
-                                  className="country-rts-jumbotron"),
+                                            basic_data['max_date'], DATE_FORMAT), DASH_FORMAT)), className='rts-jumbotron'),
+                        html.Span('Singapore geocoded accounts ',
+                                  className='country-rts-jumbotron'),
                         html.Span(VIRAL_RETWEETS_INFO_CONTENT,
-                                  className="rts-jumbotron"),
+                                  className='rts-jumbotron'),
                     ],
-                    className="col-md-8"
+                    className='col-md-8'
                 ),
                     dbc.Col([
-                        html.Span("Filter by sentiment",
-                                  style={"fontSize": "0.8em"}),
+                        html.Span('Filter by sentiment',
+                                  style={'fontSize': '0.8em'}),
                         dcc.Dropdown(
-                            id="local-rts-sentiment-select",
+                            id='local-rts-sentiment-select',
                             options=[
-                                {"label": i, "value": i}
+                                {'label': i, 'value': i}
                                 for i in ['All', 'Positive', 'Negative']
                             ],
                             value='Negative')],
-                            className="col-md-4"
+                            className='col-md-4'
                             ),
                 ],
-                className="col-md-12"
+                className='col-md-12'
             ),
             style={'margin': '1em 0 2em 0'},
-            className="col-md-12"),
-        className="col-md-12"
+            className='col-md-12'),
+        className='col-md-12'
     ),
     dbc.Row([
         dbc.Col(
             dbc.Row(
-                html.Div(id="local-rts", className='rts')),
-            style={'maxHeight': '50em', 'overflow-y': "scroll"},
-            className="col-md-5"
+                html.Div(id='local-rts', className='rts')),
+            style={'maxHeight': '50em', 'overflow-y': 'scroll'},
+            className='col-md-5'
         ),
         dbc.Col(
             [
                 dbc.Row(
-                    dcc.Graph(id="local-rts-cumulative")
+                    dcc.Graph(id='local-rts-cumulative')
                 ),
                 dbc.Row(
-                    dcc.Graph(id="local-rts-delta")
+                    dcc.Graph(id='local-rts-delta')
                 )
             ],
-            className="col-md-6"
+            className='col-md-6'
 
         )
     ])
@@ -522,124 +529,126 @@ VIRAL_LOCAL_RETWEETS = [
 
 VIRAL_GLOBAL_RETWEETS = [
     dbc.Row(
-        html.H5(["Viral global Retweets"]),
-        className="col-md-12"
+        html.H5(['Viral global Retweets']),
+        className='col-md-12'
     ),
     dbc.Row(
         dbc.Jumbotron(
             dbc.Row(
                 [dbc.Col(
                     children=[
-                        html.Span("Viral global retweets:",
+                        html.Span('Viral global retweets:',
                                   style={'color': '#0096FF', 'marginRight': '10px'}),
                         html.Span(
                             VIRAL_RETWEETS_DATE_INFO_CONTENT.
                             format(
                                 dt.strftime(dt.strptime(
-                                            basic_data["min_date"], DATE_FORMAT), DASH_NO_YEAR_FORMAT),
+                                            basic_data['min_date'], DATE_FORMAT), DASH_NO_YEAR_FORMAT),
                                 dt.strftime(dt.strptime(
-                                            basic_data["max_date"], DATE_FORMAT), DASH_FORMAT)), className="rts-jumbotron"),
-                        html.Span("Non-Singapore geocoded accounts ",
-                                  className="country-rts-jumbotron"),
+                                            basic_data['max_date'], DATE_FORMAT), DASH_FORMAT)), className='rts-jumbotron'),
+                        html.Span('Non-Singapore geocoded accounts ',
+                                  className='country-rts-jumbotron'),
                         html.Span(
-                            VIRAL_RETWEETS_INFO_CONTENT, className="rts-jumbotron"),
+                            VIRAL_RETWEETS_INFO_CONTENT, className='rts-jumbotron'),
                     ],
-                    className="col-md-8"
+                    className='col-md-8'
                 ),
                     dbc.Col([
-                        html.Span("Filter by sentiment",
-                                  style={"fontSize": "0.8em"}),
+                        html.Span('Filter by sentiment',
+                                  style={'fontSize': '0.8em'}),
                         dcc.Dropdown(
-                            id="global-rts-sentiment-select",
+                            id='global-rts-sentiment-select',
                             options=[
-                                {"label": i, "value": i}
+                                {'label': i, 'value': i}
                                 for i in ['All', 'Positive', 'Negative']
                             ],
                             value='Negative')],
-                            className="col-md-4"
+                            className='col-md-4'
                             ),
                 ],
-                className="col-md-12"
+                className='col-md-12'
             ),
             style={'margin': '1em 0 2em 0'},
-            className="col-md-12"),
-        className="col-md-12"
+            className='col-md-12'),
+        className='col-md-12'
     ),
     dbc.Row([
         dbc.Col(
             dbc.Row(
-                html.Div(id="global-rts", className='rts')),
-            style={'maxHeight': '50em', 'overflow-y': "scroll"},
-            className="col-md-5"
+                html.Div(id='global-rts', className='rts')),
+            style={'maxHeight': '50em', 'overflow-y': 'scroll'},
+            className='col-md-5'
         ),
         dbc.Col(
             [
                 dbc.Row(
-                    dcc.Graph(id="global-rts-cumulative")
+                    dcc.Graph(id='global-rts-cumulative')
                 ),
                 dbc.Row(
-                    dcc.Graph(id="global-rts-delta")
+                    dcc.Graph(id='global-rts-delta')
                 )
             ],
-            className="col-md-6"
+            className='col-md-6'
 
         )
     ])
 ]
 
-CYTO_INFO = dbc.Row(
-    dbc.Jumbotron(
-        dbc.Row(
-            [dbc.Col(
-                children=[
-                    html.Span("Communities",
-                              style={'color': '#0096FF', 'marginRight': '10px'}),
-                    # html.Span(
-                    #     "".
-                    #     format(
-                    #         dt.strftime(dt.strptime(
-                    #             basic_data["min_date"], DATE_FORMAT), DASH_NO_YEAR_FORMAT),
-                    #         dt.strftime(dt.strptime(
-                    #             basic_data["max_date"], DATE_FORMAT), DASH_FORMAT)), className="rts-jumbotron"),
-                    # html.Span("Non-Singapore geocoded accounts ",
-                    #           className="country-rts-jumbotron"),
-                    # html.Span(
-                    #     VIRAL_RETWEETS_INFO_CONTENT, className="rts-jumbotron"),
-                ],
-                className="col-md-8"
-            ),
-                # dbc.Col([
-                #     html.Span("Filter by sentiment",
-                #               style={"fontSize": "0.8em"}),
-                #     dcc.Dropdown(
-                #         id="global-rts-sentiment-select",
-                #         options=[
-                #             {"label": i, "value": i}
-                #             for i in ['All', 'Positive', 'Negative']
-                #         ],
-                #         value='Negative')],
-                #         className="col-md-4"
-                #         ),
+with open(COMMUNITIES_TWEETS_PATH, 'r') as f:
+    clusters_tweets = json.load(f)
+
+CLUSTERS_INFO = dbc.Jumbotron(
+    dbc.Row(
+        [dbc.Col(
+            children=[
+                html.Span('Clustered users/Communities',
+                          style={'color': '#0096FF', 'marginRight': '10px'}),
+                html.P('Note: The netwokring graph might take a few seconds to load.',
+                       style={'color': '#893843', 'marginRight': '10px', 'fontSize': '0.7em'}),
+                html.P(COMMUNITIES_INFO_CONTENT.format(len(clusters_tweets))),
             ],
-            className="col-md-12"
+            className='col-md-8'
         ),
-        style={'margin': '1em 0 2em 0'},
-        className="col-md-12"),
-    className="col-md-12"
-),
+            dbc.Col([
+                html.Span('Filter by cluster', style={
+                    'fontSize': '0.8em'}),
+                dcc.Dropdown(
+                    id='dropdown-clusters',
+                    options=[
+                        {'label': i, 'value': i}
+                        for i in clusters_tweets.keys()
+                    ],
+                    value='0')],
+                    className='col-md-4'
+                    ),
+        ],
+        className='col-md-12'
+    ),
+    style={'margin': '1em 0 2em 0'},
+    className='col-md-12')
+
 # Load extra layouts
 # cyto.load_extra_layouts()
+
+CLUSTERS_TWEETS_WORD_FREQ = dcc.Loading(
+    id='loading-clusters-tweets',
+    children=[
+        dcc.Graph(id='word-freq-clusters')],
+    type='dot',
+)
+
 
 with open(NETWORKING_DATA, 'r') as f:
     cyto_data = json.load(f)
 
-CIRCLE_SIZE = "14px"
-FONT_SIZE = "8px"
-LINE_WIDTH = "0.2px"
-CYTO_DATA = cyto.Cytoscape(
+CIRCLE_SIZE = '14px'
+FONT_SIZE = '8px'
+LINE_WIDTH = '0.2px'
+NETWORKING_GRAPH_HEIGHT = '500px'
+NETWORKING_GRAPH = cyto.Cytoscape(
     id='cytoscape-nodes',
     layout={'name': 'cose'},
-    style={'width': '100%', 'height': '100vh'},
+    style={'width': '100%', 'height': NETWORKING_GRAPH_HEIGHT, 'margin': '0'},
     elements=cyto_data['data'],
     stylesheet=[
         # Group selectors
@@ -648,10 +657,10 @@ CYTO_DATA = cyto.Cytoscape(
             'style': {
                 'background-color': '#DE3163',
                 'content': 'data(label)',
-                "height": CIRCLE_SIZE,
-                # "size": CIRCLE_SIZE,
-                "width": CIRCLE_SIZE,
-                "font-size": FONT_SIZE
+                'height': CIRCLE_SIZE,
+                # 'size': CIRCLE_SIZE,
+                'width': CIRCLE_SIZE,
+                'font-size': FONT_SIZE
             }
         },
         {
@@ -659,10 +668,10 @@ CYTO_DATA = cyto.Cytoscape(
             'style': {
                 'background-color': '#90EE90',
                 'content': 'data(label)',
-                "height": CIRCLE_SIZE,
-                "width": CIRCLE_SIZE,
-                # "size": CIRCLE_SIZE,
-                "font-size": FONT_SIZE
+                'height': CIRCLE_SIZE,
+                'width': CIRCLE_SIZE,
+                # 'size': CIRCLE_SIZE,
+                'font-size': FONT_SIZE
             }
         },
         {
@@ -670,10 +679,10 @@ CYTO_DATA = cyto.Cytoscape(
             'style': {
                 'background-color': '#89CFF0',
                 'content': 'data(label)',
-                "height": CIRCLE_SIZE,
-                "width": CIRCLE_SIZE,
-                # "size": CIRCLE_SIZE,
-                "font-size": FONT_SIZE
+                'height': CIRCLE_SIZE,
+                'width': CIRCLE_SIZE,
+                # 'size': CIRCLE_SIZE,
+                'font-size': FONT_SIZE
             }
         },
         {
@@ -693,20 +702,38 @@ CYTO_DATA = cyto.Cytoscape(
     ]
 )
 
+# networking
+NETWORKING = dbc.Container([
+    dbc.Row(CLUSTERS_INFO),
+    dbc.Row([
+        dbc.Col(NETWORKING_GRAPH, className='col-md-8'),
+        dbc.Col(
+            CLUSTERS_TWEETS_WORD_FREQ, className='col-md-4')
+    ]),
+    html.Hr(),
+    html.P("List of users in the selected cluster.",
+           style={'textAlign': 'center'}),
+    html.Hr(),
+    dbc.Row(id='clusters-users'),
+    html.Hr()
+])
+
+
 NAVBAR = dbc.Row(
     children=[
         Img(
-            style={"margin": "0.4em", "width": "3em"},
+            style={'margin': '0.4em', 'width': '3em'},
             src=APP_LOGO
         ),
         html.P(NAVBAR_TITLE,
-               style={"fontSize": "1.2em", "marginTop": "0.4em", "color": "#C70039"}),
+               style={'fontSize': '1.2em', 'marginTop': '0.4em', 'color': '#26466D'}),
+        # html.P('Interactive dashboard built using PLotly'),
         Img(
-            style={"margin": "0 0.7em", "width": "1.8%", "height": "1%"},
+            style={'margin': '0 0.7em', 'width': '1.8%', 'height': '1%'},
             src=TWITTER_LOGO_PATH
         ),
     ],
-    style={"justifyContent":  "center", "fontSize": "1.2em"},
+    style={'justifyContent':  'center', 'fontSize': '1.2em'},
     className='main-navbar'
 )
 
@@ -716,41 +743,33 @@ TWEETS = dbc.Container([
         [
             dbc.Col(
                 BASIC_STATS,
-                className="col-md-4"
+                className='col-md-4'
             ),
             dbc.Col(
                 DAILY_TWEETS,
-                className="col-md-8"
+                className='col-md-8'
             )
         ]),
 
     html.Hr(),
     dbc.Row(
         MENTIONS_HASHTAGS_SENTIMENT_INFO,
-        className="col-md-12"
+        className='col-md-12'
     ),
     dbc.Row(
         MENTIONS_HASHTAGS_SENTIMENT,
-        style={"margin": "3em 0"},
-        className="col-md-12"
+        style={'margin': '3em 0'},
+        className='col-md-12'
     ),
     html.Hr(),
 
     dbc.Row(
         PSTS_INFO,
-        className="col-md-12"
+        className='col-md-12'
     ),
     dbc.Row(
         PSTS
     ),
-    html.Hr()
-])
-
-# networking
-NETWORKING = dbc.Container([
-    dbc.Row(CYTO_INFO),
-    dbc.Row(
-        CYTO_DATA),
     html.Hr()
 ])
 
@@ -759,25 +778,25 @@ NETWORKING = dbc.Container([
 INFLUENCERS = dbc.Container([
     dbc.Row(
         INFLUENTIAL_USERS,
-        style={"margin": "3em 0"},
-        className="col-md-12"
+        style={'margin': '3em 0'},
+        className='col-md-12'
     ),
     html.Hr(),
     dbc.Row(
         [
             dbc.Row(
-                html.H5(["Foreign influence"]),
-                className="col-md-12"
+                html.H5(['Foreign influence']),
+                className='col-md-12'
             ),
             dbc.Row(
                 INFLUENTIAL_COUNTRIES_INFO,
-                className="col-md-12"
+                className='col-md-12'
             ),
             dbc.Row(
-                INFLUENTIAL_COUNTRIES, className="col-md-12"
+                INFLUENTIAL_COUNTRIES, className='col-md-12'
             )],
-        style={"margin": "3em 0"},
-        className="col-md-12"
+        style={'margin': '3em 0'},
+        className='col-md-12'
     ),
     html.Hr(),
 ])
@@ -787,17 +806,17 @@ INFLUENCERS = dbc.Container([
 VIRAL_ENGAGEMENTS = dbc.Container([
     dbc.Row(
         BURSTY_QUOTED_TWEETS,
-        style={"margin": "3em 0"},
-        className="col-md-12"
+        style={'margin': '3em 0'},
+        className='col-md-12'
     ),
     html.Hr(),
     dbc.Row(
         VIRAL_LOCAL_RETWEETS,
-        style={"margin": "3em 0"},
-        className="col-md-12"),
+        style={'margin': '3em 0'},
+        className='col-md-12'),
     html.Hr(),
     dbc.Row(
         VIRAL_GLOBAL_RETWEETS,
-        style={"margin": "3em 0"},
-        className="col-md-12"),
+        style={'margin': '3em 0'},
+        className='col-md-12'),
     html.Hr()])
