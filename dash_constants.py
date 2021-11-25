@@ -1,4 +1,5 @@
 
+import plotly.express as px
 from constants import BASE_PATH, TWITTER_BASE_URL
 
 SG_TWEETS_PATH = BASE_PATH + 'sg.csv'
@@ -6,7 +7,7 @@ DASH_TEMPLATE = 'plotly_white'
 
 ERROR_INSUFFICIENT_TWEETS = 'Oops! Not enough tweets. Try other filter value.'
 
-NAVBAR_TITLE = 'Singapore"s Pulse Monitoring through Twitter"s Lens'
+NAVBAR_TITLE = "Singapore's Pulse Monitoring through Twitter's Lens"
 TWITTER_LOGO_PATH = 'assets/twitter-logo.png'
 APP_LOGO = 'assets/pulse.png'
 
@@ -111,6 +112,16 @@ REACTIVE_TWEETS_INFO_CONTENT = 'Viral quoted tweets with high intensity of extre
 QUOTED_SENTIMENT_SPEAD_PATH = BASE_PATH + 'output/quoted/sentiment_spread.csv'
 
 # ---------- Graph analysis ----------
+# Graph styling
+CLUSTER_START_COLOR = 3
+CLUSTER_COLORS_DICT = {str(idx): color for idx, color in enumerate(
+    px.colors.qualitative.Bold[CLUSTER_START_COLOR:])}
+CIRCLE_SIZE = '14px'
+FONT_SIZE = '8px'
+LINE_WIDTH = '0.2px'
+NETWORKING_GRAPH_HEIGHT = '500px'
+
+
 MIN_DEGREE_TO_HAVE = 40
 
 INTERACTIONS_GRAPH_INFO_CONTENT = 'A directed weighted graph of interactions - replies, retweets, and quoted tweets' \
@@ -123,9 +134,9 @@ INFLUENTIAL_USERS_PATH = BASE_PATH + 'output/influencers/top_users.csv'
 INFLUENTIAL_USERS_TWEETS_PATH = BASE_PATH + \
     'output/influencers/top_users_tweets.csv'
 
-COMMUNITIES_INFO_CONTENT = 'Detected {} communtiies.'
+COMMUNITIES_INFO_CONTENT = 'Detected {} communtiies: '
 COMMUNITIES_PLOT_PATH = BASE_PATH + 'output/networking/clusters'
-COMMUNITIES_PATH = BASE_PATH + 'output/networking/clusters.json'
+COMMUNITIES_USERS_PATH = BASE_PATH + 'output/networking/clusters_users.json'
 COMMUNITIES_TWEETS_PATH = BASE_PATH + 'output/networking/clusters_tweets.json'
 USER_TO_COMMUNITY_PATH = BASE_PATH + 'output/networking/user_to_cluster.json'
 

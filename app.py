@@ -31,7 +31,7 @@ ROUTE_TITLE_STYLE = {'margin': '1em 1em', 'color': 'rgb(0, 150, 255)'}
 app.layout = html.Div([
     # represents the URL bar, doesn't render anything
     dcc.Location(id='url', refresh=False),
-
+    NAVBAR,
     dbc.Row(
         [dcc.Link('Tweets', href=HOME_PATH, style=ROUTE_TITLE_STYLE),
          dcc.Link('Retweets/Quoted Tweets', href=ENGAGEMENTS_PATH,
@@ -41,6 +41,7 @@ app.layout = html.Div([
          dcc.Link('Networking', href=NETWORKING_PATH, style=ROUTE_TITLE_STYLE)],
         style={'display': 'flex', 'justifyContent': 'center'}
     ),
+    html.Hr(),
     # content will be rendered in this element
     html.Div(id='page-content')
 ])
@@ -50,13 +51,13 @@ app.layout = html.Div([
               [Input('url', 'pathname')])
 def display_page(pathname):
     if pathname == NETWORKING_PATH:
-        return html.Div(children=[NAVBAR, NETWORKING])
+        return html.Div(children=[NETWORKING])
     elif pathname == ENGAGEMENTS_PATH:
-        return html.Div(children=[NAVBAR, VIRAL_ENGAGEMENTS])
+        return html.Div(children=[VIRAL_ENGAGEMENTS])
     elif pathname == INFLUENCERS_PATH:
-        return html.Div(children=[NAVBAR, INFLUENCERS])
+        return html.Div(children=[INFLUENCERS])
     else:
-        return html.Div(children=[NAVBAR, TWEETS])
+        return html.Div(children=[TWEETS])
 
 
 # load the tweets
@@ -550,7 +551,7 @@ with open(COMMUNITIES_TWEETS_PATH, 'r') as f:
     clusters_tweets = json.load(f)
 
 
-with open(COMMUNITIES_PATH, 'r') as f:
+with open(COMMUNITIES_USERS_PATH, 'r') as f:
     clusters_users = json.load(f)
 
 
@@ -568,7 +569,7 @@ def cluster_user_ui(idx, username):
     Input('url', 'pathname'),
     Input('dropdown-clusters', 'value')
 )
-def gen_infuential_users_by_country(pathname, cluster):
+def gen_clusters_word_freq(pathname, cluster):
     if not pathname == NETWORKING_PATH:
         raise PreventUpdate
 
@@ -578,7 +579,7 @@ def gen_infuential_users_by_country(pathname, cluster):
         words_freq = dummy_fig
 
     cluster_users_ui = []
-    for idx, u in enumerate(clusters_users[cluster]):
+    for idx, u in enumerate(clusters_users[cluster]['users']):
         cluster_users_ui.append(
             cluster_user_ui(idx, u)
             # html.Div([html.A(u, href=TWITTER_BASE_URL + u)])

@@ -594,8 +594,8 @@ VIRAL_GLOBAL_RETWEETS = [
     ])
 ]
 
-with open(COMMUNITIES_TWEETS_PATH, 'r') as f:
-    clusters_tweets = json.load(f)
+with open(COMMUNITIES_USERS_PATH, 'r') as f:
+    clusters_users = json.load(f)
 
 CLUSTERS_INFO = dbc.Jumbotron(
     dbc.Row(
@@ -603,12 +603,13 @@ CLUSTERS_INFO = dbc.Jumbotron(
             children=[
                 html.Span('Clustered users/Communities',
                           style={'color': '#0096FF', 'marginRight': '10px'}),
-                html.P('Note: The netwokring graph might take a few seconds to load.',
-                       style={'color': '#893843', 'marginRight': '10px', 'fontSize': '0.7em'}),
-                html.P(COMMUNITIES_INFO_CONTENT.format(len(clusters_tweets))),
-            ],
-            className='col-md-8'
-        ),
+                html.P('Note: The networking graph might take a few seconds to load.',
+                       style={'color': '#893843', 'marginRight': '10px', 'fontSize': '0.7em'})
+            ] +
+            [html.Div(
+                [COMMUNITIES_INFO_CONTENT.format(len(clusters_users))] +
+                [html.P('Cluster ' + k, style={"color": v['color'], 'margin': '0 0.4em', 'fontSize': '1.2em'})
+                 for k, v in clusters_users.items()], style={"display": "flex"})], className='col-md-8'),
             dbc.Col([
                 html.Span('Filter by cluster', style={
                     'fontSize': '0.8em'}),
@@ -616,12 +617,12 @@ CLUSTERS_INFO = dbc.Jumbotron(
                     id='dropdown-clusters',
                     options=[
                         {'label': i, 'value': i}
-                        for i in clusters_tweets.keys()
+                        for i in clusters_users.keys()
                     ],
                     value='0')],
                     className='col-md-4'
                     ),
-        ],
+         ],
         className='col-md-12'
     ),
     style={'margin': '1em 0 2em 0'},
@@ -637,14 +638,10 @@ CLUSTERS_TWEETS_WORD_FREQ = dcc.Loading(
     type='dot',
 )
 
-
 with open(NETWORKING_DATA, 'r') as f:
     cyto_data = json.load(f)
 
-CIRCLE_SIZE = '14px'
-FONT_SIZE = '8px'
-LINE_WIDTH = '0.2px'
-NETWORKING_GRAPH_HEIGHT = '500px'
+# TODO: Hardcoded
 NETWORKING_GRAPH = cyto.Cytoscape(
     id='cytoscape-nodes',
     layout={'name': 'cose'},
@@ -655,7 +652,7 @@ NETWORKING_GRAPH = cyto.Cytoscape(
         {
             'selector': '.0',
             'style': {
-                'background-color': '#DE3163',
+                'background-color': CLUSTER_COLORS_DICT["0"],
                 'content': 'data(label)',
                 'height': CIRCLE_SIZE,
                 # 'size': CIRCLE_SIZE,
@@ -666,7 +663,7 @@ NETWORKING_GRAPH = cyto.Cytoscape(
         {
             'selector': '.1',
             'style': {
-                'background-color': '#90EE90',
+                'background-color': CLUSTER_COLORS_DICT["1"],
                 'content': 'data(label)',
                 'height': CIRCLE_SIZE,
                 'width': CIRCLE_SIZE,
@@ -677,7 +674,7 @@ NETWORKING_GRAPH = cyto.Cytoscape(
         {
             'selector': '.2',
             'style': {
-                'background-color': '#89CFF0',
+                'background-color': CLUSTER_COLORS_DICT["2"],
                 'content': 'data(label)',
                 'height': CIRCLE_SIZE,
                 'width': CIRCLE_SIZE,
@@ -686,19 +683,14 @@ NETWORKING_GRAPH = cyto.Cytoscape(
             }
         },
         {
-            'selector': 'node :selected',
+            'selector': 'edge :selected',
             'style': {
                 'background-color': 'red',
                 'line-color': 'red',
+                'line-width': '0.5px',
                 'width': 10
             }
         }
-        # {
-        #     'selector': '.triangle',
-        #     'style': {
-        #         'shape': 'triangle'
-        #     }
-        # }
     ]
 )
 
