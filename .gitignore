@@ -9,7 +9,6 @@ tweets.log
 assests
 data/fragmented_data
 data/sg.csv
-# data/output/
 data/img/
 
 glove.twitter.27B.100d.txt
