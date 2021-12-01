@@ -268,8 +268,6 @@ def remove_low_degree_edges(G):
         G_pruned.degree()).items() if degree < 10]
     # print('Number of users to be removed with degree less than {}: {}'.format(en(low_degree_nodes)))
     G_pruned.remove_nodes_from(low_degree_nodes)
-
-    print('New graph:', G_pruned.size(), G_pruned.order())
     return G_pruned
 
 

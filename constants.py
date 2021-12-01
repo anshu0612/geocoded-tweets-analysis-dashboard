@@ -12,9 +12,9 @@ TWITTER_BASE_URL = "https://twitter.com/"
 TWITTER_STATUS_PATH = TWITTER_BASE_URL + "{}/status/{}"
 # TWITTER_USER_PHOTO_PATH = "https://pbs.twimg.com/profile_images/{}/Z0mJaRZw_400x400.jpg"
 
-BASE_LOCAL_URL = "data/"
-BASE_PROD_URL = "https://sg-pulse-monitoring.s3.ap-southeast-1.amazonaws.com/"
-BASE_PATH = BASE_LOCAL_URL
+DATA_PATH = "data/"
+DATA_DASH_PATH = DATA_PATH + "output/"
+# BASE_PROD_URL = "https://sg-pulse-monitoring.s3.ap-southeast-1.amazonaws.com/"
 
 # Dates
 TW_CREATED_AT_FORMAT = "%a %b %d %H:%M:%S +0000 %Y"

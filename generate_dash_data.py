@@ -7,14 +7,21 @@ from dash_modules.influential_countries import *
 from dash_modules.graph_analysis import *
 from constants import COUNTRY
 
+from pathlib import Path
+
 import warnings
 warnings.filterwarnings('ignore')
 
 
 class DashGenerator():
     def __init__(self):
+
+        Path(DATA_DASH_PATH).mkdir(parents=True, exist_ok=True)
+
+        # load the file containing singapore-based tweets
         self.sg_tweets = pd.read_csv(SG_TWEETS_PATH)
 
+        # storing min and max date of the data
         self.min_date = self.sg_tweets['tweet_date'].min()
         self.max_date = self.sg_tweets['tweet_date'].max()
 
@@ -23,6 +30,9 @@ class DashGenerator():
         self.G_pruned = None
 
     def generate_basic(self):
+        # create `basics` directory  if not existing
+        Path(DATA_DASH_PATH + "basics").mkdir(parents=True, exist_ok=True)
+
         generate_dash_basic_stats(self.sg_tweets, True)
         generate_dash_daily_tweets(self.sg_tweets, True)
 
@@ -36,6 +46,9 @@ class DashGenerator():
         generate_dash_potentially_sensitive_tweets(self.sg_tweets, True)
 
     def generate_influential_countries(self):
+        # create `influencers` directory if not existing
+        Path(DATA_DASH_PATH + "influencers").mkdir(parents=True, exist_ok=True)
+
         top_influential_countries = get_top_influential_countries(
             self.sg_tweets)
         top_influential_countries_df = generate_dash_influential_countries(
@@ -46,6 +59,9 @@ class DashGenerator():
             self.sg_tweets, top_influential_countries_df, True)
 
     def generate_influential_users(self):
+        # create `influencers` directory if not existing
+        Path(DATA_DASH_PATH + "influencers").mkdir(parents=True, exist_ok=True)
+
         all_interacting_users = get_all_interacting_users(self.sg_tweets)
         weighted_interacting_edges = get_weighted_interacting_edges(
             self.sg_tweets)
@@ -55,24 +71,28 @@ class DashGenerator():
         generate_dash_influential_users(self.sg_tweets, top_ranking, True)
 
     def generate_networking_data(self):
+        Path(DATA_DASH_PATH + "networking").mkdir(parents=True, exist_ok=True)
+
         generate_cytograph_data(self.G_pruned)
 
     def generate_communities(self):
+        Path(DATA_DASH_PATH + "networking").mkdir(parents=True, exist_ok=True)
         self.G_pruned = get_min_degree_graph(self.G, 5)
         get_communities(self.G_pruned, self.sg_tweets, True)
 
     def generate_bursty_quoted(self):
+        Path(DATA_DASH_PATH + "quoted").mkdir(parents=True, exist_ok=True)
         quoted_tws = get_quoted_tweets(self.sg_tweets)
         quoted_tws = get_quoted_tweets_by_date(
             quoted_tws, self.min_date, self.max_date)
         bursty_quoted_tws = get_bursty_quoted_tweets(quoted_tws)
 
-        quoted_tws_by_sentiment_spreadrate = get_high_spreadrate_quoted_by_sentiment(
-            bursty_quoted_tws, rate=SENTIMENT_SPREAD_THRESHOLD)
+        quoted_tws_by_sentiment_spreadrate = get_high_spreadrate_quoted_by_sentiment(bursty_quoted_tws)
         generate_dash_bursty_quotes_by_sentiment(
             bursty_quoted_tws, quoted_tws_by_sentiment_spreadrate, True)
 
     def generate_global_retweets(self):
+        Path(DATA_DASH_PATH + "rts/global").mkdir(parents=True, exist_ok=True)
         neg_global_retweet = self.retweets[(self.retweets['tweet_sentiment'] == 'negative') &
                                            (self.retweets['retweeted_user_geo_coding'] != COUNTRY) &
                                            (self.retweets['retweeted_tweet_date'].between(self.min_date, self.max_date, inclusive='both'))]
@@ -92,6 +112,7 @@ class DashGenerator():
             all_global_retweet, True, ALL_GLOBAL_RTS_TREND_PATH, ALL_GLOBAL_RTS_INFO_PATH)
 
     def generate_local_retweets(self):
+        Path(DATA_DASH_PATH + "rts/local").mkdir(parents=True, exist_ok=True)
         neg_local_retweet = self.retweets[(self.retweets['tweet_sentiment'] == 'negative') &
                                           (self.retweets['retweeted_user_geo_coding'] == COUNTRY) &
                                           (self.retweets['retweeted_tweet_date'].between(self.min_date, self.max_date, inclusive='both'))]
@@ -115,12 +136,12 @@ if __name__ == '__main__':
     dg = DashGenerator()
 
     # dg.generate_basic()
-    # dg.generate_global_retweets()
-    # dg.generate_local_retweets()
-    # dg.generate_bursty_quoted()
+    dg.generate_global_retweets()
+    dg.generate_local_retweets()
+    dg.generate_bursty_quoted()
 
     # dg.generate_influential_countries()
 
-    dg.generate_influential_users()
-    dg.generate_communities()
-    dg.generate_networking_data()
+    # dg.generate_influential_users()
+    # dg.generate_communities()
+    # dg.generate_networking_data()

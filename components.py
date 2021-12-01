@@ -80,10 +80,12 @@ def create_quoted_card(tw):
             dbc.Row([
                 dbc.Col(
                     [
-                        html.A(html.P(style={'fontSize': '1em',
+                        # html.A(html.P(style={'fontSize': '1em',
+                        #               'color': '#000'}, children=tw['quoted_tweet_text']),
+                        #        target='blank_',
+                        #        href=TWITTER_STATUS_PATH.format(tw['quoted_user_screenname'], tw['quoted_tweet_id'])),
+                        html.P(style={'fontSize': '1em',
                                       'color': '#000'}, children=tw['quoted_tweet_text']),
-                               target='blank_',
-                               href=TWITTER_STATUS_PATH.format(tw['quoted_user_screenname'], tw['quoted_tweet_id'])),
                         html.P(
                             className='quoted-info',
                             children=[
@@ -478,7 +480,7 @@ VIRAL_LOCAL_RETWEETS = [
                                             basic_data['min_date'], DATE_FORMAT), DASH_NO_YEAR_FORMAT),
                                 dt.strftime(dt.strptime(
                                             basic_data['max_date'], DATE_FORMAT), DASH_FORMAT)), className='rts-jumbotron'),
-                        html.Span('Singapore geocoded accounts ',
+                        html.Span('Singapore-based accounts ',
                                   className='country-rts-jumbotron'),
                         html.Span(VIRAL_RETWEETS_INFO_CONTENT,
                                   className='rts-jumbotron'),
@@ -546,7 +548,7 @@ VIRAL_GLOBAL_RETWEETS = [
                                             basic_data['min_date'], DATE_FORMAT), DASH_NO_YEAR_FORMAT),
                                 dt.strftime(dt.strptime(
                                             basic_data['max_date'], DATE_FORMAT), DASH_FORMAT)), className='rts-jumbotron'),
-                        html.Span('Non-Singapore geocoded accounts ',
+                        html.Span('non-Singapore-based accounts ',
                                   className='country-rts-jumbotron'),
                         html.Span(
                             VIRAL_RETWEETS_INFO_CONTENT, className='rts-jumbotron'),
@@ -626,9 +628,6 @@ CLUSTERS_INFO = dbc.Jumbotron(
     style={'margin': '1em 0 2em 0'},
     className='col-md-12')
 
-# Load extra layouts
-# cyto.load_extra_layouts()
-
 CLUSTERS_TWEETS_WORD_FREQ = dcc.Loading(
     id='loading-clusters-tweets',
     children=[
@@ -636,60 +635,43 @@ CLUSTERS_TWEETS_WORD_FREQ = dcc.Loading(
     type='dot',
 )
 
-
 with open(NETWORKING_DATA, 'r') as f:
     cyto_data = json.load(f)
+
+graph_stylesheet = []
+for cluster_no in range(len(clusters_users)):
+    obj = {
+        'selector': '.' + str(cluster_no),
+        'style': {
+            'background-color': CLUSTER_COLORS_DICT[str(cluster_no)],
+            'content': 'data(label)',
+            'height': CIRCLE_SIZE,
+            'width': CIRCLE_SIZE,
+            'font-size': FONT_SIZE
+        }
+    }
+    graph_stylesheet.append(obj)
+
+graph_stylesheet.append(
+    {
+        "selector": 'edge',
+        'style': {
+            "curve-style": "bezier",
+            "opacity": 0.3,
+            "line-color": "#687C97",
+            'width': 1
+        }
+    }
+)
+
+
 # TODO: Hardcoded
 NETWORKING_GRAPH = cyto.Cytoscape(
     id='cytoscape-nodes',
     layout={'name': 'cose'},
     style={'width': '100%', 'height': NETWORKING_GRAPH_HEIGHT, 'margin': '0'},
     elements=cyto_data['data'],
-    stylesheet=[
-        # Group selectors
-        {
-            'selector': '.0',
-            'style': {
-                'background-color': CLUSTER_COLORS_DICT["0"],
-                'content': 'data(label)',
-                'height': CIRCLE_SIZE,
-                # 'size': CIRCLE_SIZE,
-                'width': CIRCLE_SIZE,
-                'font-size': FONT_SIZE
-            }
-        },
-        {
-            'selector': '.1',
-            'style': {
-                'background-color': CLUSTER_COLORS_DICT["1"],
-                'content': 'data(label)',
-                'height': CIRCLE_SIZE,
-                'width': CIRCLE_SIZE,
-                # 'size': CIRCLE_SIZE,
-                'font-size': FONT_SIZE
-            }
-        },
-        {
-            'selector': '.2',
-            'style': {
-                'background-color': CLUSTER_COLORS_DICT["2"],
-                'content': 'data(label)',
-                'height': CIRCLE_SIZE,
-                'width': CIRCLE_SIZE,
-                # 'size': CIRCLE_SIZE,
-                'font-size': FONT_SIZE
-            }
-        },
-        {
-            "selector": 'edge',
-            'style': {
-                "curve-style": "bezier",
-                "opacity": 0.3,
-                "line-color": "#687C97",
-                'width': 1
-            }
-        },
-    ]
+    stylesheet=graph_stylesheet
 )
 
 # networking
@@ -704,7 +686,7 @@ NETWORKING = dbc.Container([
                 dbc.Row(
                     [
                         dbc.Row(dbc.Alert(
-                            [html.P('Note: The networking graph might take a few seconds to load.',
+                            [html.P('Note: The networking graph might take a few seconds to get stable.',
                                     style={'color': '#893843', 'fontSize': '0.7em'}),
                                 "Play around the nodes of this interactive graph once it is stable."],
                             color="light"))]),

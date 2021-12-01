@@ -2,20 +2,21 @@ import json
 import pandas as pd
 import collections as col
 from dash_constants import *
-# import matplotlib.pyplot as plt
 
 
 def get_date_range(sg_tweets):
+    '''
+        Returns the min and max date of the collected singapore-based tweets
+    '''
     max_date = sg_tweets['tweet_date'].max()
     min_date = sg_tweets['tweet_date'].min()
     return min_date, max_date
 
 
-def get_user_is_verified(sg_tweets):
-    sg_tweets[sg_tweets['user_']]
-
-
 def generate_dash_basic_stats(sg_tweets, save=False, basics_save_path=BASICS_PATH):
+    '''
+        Returns total_tweets, min_date, max_date, users_count, avg_tweets
+    '''
     total_tweets = len(sg_tweets)
 
     min_date, max_date = get_date_range(sg_tweets)
@@ -38,8 +39,8 @@ def generate_dash_basic_stats(sg_tweets, save=False, basics_save_path=BASICS_PAT
     if save:
         with open(basics_save_path, 'w') as fp:
             json.dump(basic, fp)
-            print("Saved:", basics_save_path)
-
+            print('Saved:', basics_save_path)
+            print('total_tweets, min_date, max_date, users_count, avg_tweets')
     return basic
 
 
@@ -55,7 +56,6 @@ def generate_dash_daily_tweets(sg_tweets, save=False, daily_tweets_save_path=DAI
 
 def generate_dash_hashtags(sg_tweets, from_date, to_date, save=False, hashtags_save_path=HASHTAGS_PATH, top_hash_count=20):
     min_date, max_date = get_date_range(sg_tweets)
-    # print("----&&&&&&&&&&&-------", min_date, max_date)
     if not from_date:
         from_date = min_date
     if not to_date:
@@ -63,10 +63,6 @@ def generate_dash_hashtags(sg_tweets, from_date, to_date, save=False, hashtags_s
 
     sg_tweets_hashtags = sg_tweets[sg_tweets['entity_hashtags'].notna(
     ) & sg_tweets['tweet_date'].between(from_date, to_date, inclusive='both')]['entity_hashtags']
-
-    # print("Count of tweets with hashtags {}".format(len(sg_tweets_hashtags)))
-    # print("% of tweets with hashtags {}".format(
-    #     len(sg_tweets_hashtags)/len(sg_tweets)*100))
 
     hashtags = []
 
@@ -172,9 +168,9 @@ def generate_dash_potentially_sensitive_tweets(sg_tweets, save=False,
         .sort_values(['tweet_date'], ascending=False)
     # print("Average number of Potentially sensitive tweets: ",
     #       sum(c_sg_tweets_pst['count'])/len(c_sg_tweets_pst))
-    spike_value = c_sg_tweets_pst['count'].quantile(percentile)
+    # spike_value = c_sg_tweets_pst['count'].quantile(percentile)
     # print("spike_value", spike_value)
-#     pst_counts = c_sg_tweets_pst[c_sg_tweets_pst['count'] > spike_value]
+    #pst_counts = c_sg_tweets_pst[c_sg_tweets_pst['count'] > spike_value]
     pst_tweets = sg_tweets_pst[['tweet_date', 'processed_tweet_text']]
 
     if save:
