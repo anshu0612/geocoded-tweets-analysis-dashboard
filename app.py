@@ -26,6 +26,7 @@ from dash_modules.basics import generate_dash_hashtags, \
 app = dash.Dash(__name__, suppress_callback_exceptions=True,
                 external_stylesheets=[dbc.themes.BOOTSTRAP])
 # app.layout = html.Div(children=[NAVBAR, MAIN_CONTAINER])
+server = app.server
 
 ROUTE_TITLE_STYLE = {'margin': '1em 1em', 'color': 'rgb(0, 150, 255)'}
 app.layout = html.Div([
