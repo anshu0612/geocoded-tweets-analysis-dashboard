@@ -8,7 +8,6 @@ tweets.log
 # To be uncommented once dashboard is ready
 assests
 data/fragmented_data
-data/sg.csv
 data/img/
 
 glove.twitter.27B.100d.txt
