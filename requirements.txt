@@ -17,3 +17,4 @@ urllib3==1.26.5
 wordcloud==1.8.1
 pycountry==20.7.3
 dload==0.6
+dash-cytoscape
