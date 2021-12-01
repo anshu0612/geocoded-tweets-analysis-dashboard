@@ -37,9 +37,7 @@ git clone https://github.com/anshu0612/singapore-geocoded-tweets-analysis.git
 
 ###  Step 2: Setting up the environment and running the application
 
-**Manual Setup** 
-
-- Install dependecies 
+- Install dependencies 
 ```
 pip3 install requirements.txt
 ```
@@ -49,8 +47,7 @@ pip3 install requirements.txt
 python3 app.py
 ```
 
-**If** you face environment depencies you can use Docker Image. 
-**Using Docker**
+If you face environment dependencies then you can use **Docker Image** instead. 
 
 - Install Docker on your system 
 
@@ -72,15 +69,3 @@ Open  http://localhost:5000/  to see the application running
 The major challenge and common problem in research is that  less than 0.1% of the tweets have a GPS location data. 
 So how to figure out if a tweet's user is Singapore-based and also collect a sufficient number of tweets for analysis?  
 I developed these credible heuristics and wrote an algorithm for filtering Singapore-based tweets. The data analysis showed the collected tweets gave insights specific to Singapore. 
-
-### Data Insights
-
-
-
-<!-- ## Content -->
-<!-- toc -->
-<!-- - [Singapore-based users' tweets collection](#usage)
-- [Data Insights](#license)
-- [Setup](#setup)
-- [Future Work](#future-work) -->
-<!-- tocstop -->
