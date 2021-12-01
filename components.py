@@ -603,7 +603,7 @@ CLUSTERS_INFO = dbc.Jumbotron(
             children=[
                 html.Span('Clustered users/Communities',
                           style={'color': '#0096FF', 'marginRight': '10px'}),
-                html.P('Note: The networking graph might take a few seconds to load.',
+                html.P('Note: The networking graph might take a few seconds to load. ',
                        style={'color': '#893843', 'marginRight': '10px', 'fontSize': '0.7em'})
             ] +
             [html.Div(
@@ -638,9 +638,9 @@ CLUSTERS_TWEETS_WORD_FREQ = dcc.Loading(
     type='dot',
 )
 
+
 with open(NETWORKING_DATA, 'r') as f:
     cyto_data = json.load(f)
-
 # TODO: Hardcoded
 NETWORKING_GRAPH = cyto.Cytoscape(
     id='cytoscape-nodes',
@@ -683,14 +683,14 @@ NETWORKING_GRAPH = cyto.Cytoscape(
             }
         },
         {
-            'selector': 'edge :selected',
+            "selector": 'edge',
             'style': {
-                'background-color': 'red',
-                'line-color': 'red',
-                'line-width': '0.5px',
-                'width': 10
+                "curve-style": "bezier",
+                "opacity": 0.3,
+                "line-color": "#687C97",
+                'width': 1
             }
-        }
+        },
     ]
 )
 
@@ -698,7 +698,13 @@ NETWORKING_GRAPH = cyto.Cytoscape(
 NETWORKING = dbc.Container([
     dbc.Row(CLUSTERS_INFO),
     dbc.Row([
-        dbc.Col(NETWORKING_GRAPH, className='col-md-8'),
+        dbc.Col(
+            [
+                dbc.Row(dbc.Button("Reset Graph", id='bt-reset',
+                        color="primary", className="me-1", size="sm")),
+                dbc.Row(NETWORKING_GRAPH, className='col-md-8')
+            ]
+        ),
         dbc.Col(
             CLUSTERS_TWEETS_WORD_FREQ, className='col-md-4')
     ]),
