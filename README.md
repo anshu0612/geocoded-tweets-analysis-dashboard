@@ -27,7 +27,7 @@ The repository contains code for:
 
 --------------------------------------------------------------------------------
 
-## Setup 
+## Running the application  
 
 ###  Step 1: Git clone the repository in local
 
@@ -64,8 +64,3 @@ docker container run -d -p 5000:5000 sg-dash
 ### Step 3: Access the application on your local
 Open  http://localhost:5000/  to see the application running 
 
-
-### Singapore-based users' tweets collection
-The major challenge and common problem in research is that  less than 0.1% of the tweets have a GPS location data. 
-So how to figure out if a tweet's user is Singapore-based and also collect a sufficient number of tweets for analysis?  
-I developed these credible heuristics and wrote an algorithm for filtering Singapore-based tweets. The data analysis showed the collected tweets gave insights specific to Singapore. 
