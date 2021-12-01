@@ -1,4 +1,4 @@
-# Singapore-based geocoded tweets analysis
+# Singapore-based Geocoded Tweets Analysis
 
 This is an **interactive**, **configurable** and **generic** dashboard for visualizing key insights from Singapore-based users' tweets. The key insights include:
 - Top influential users and their country
@@ -27,7 +27,7 @@ The repository contains code for:
 
 --------------------------------------------------------------------------------
 
-## Running the application  
+## Running the Application  
 
 ###  Step 1: Git clone the repository in local
 
@@ -63,4 +63,31 @@ docker container run -d -p 5000:5000 sg-dash
 
 ### Step 3: Access the application on your local
 Open  http://localhost:5000/  to see the application running 
+
+
+## Generating Data 
+
+### 1. Fetching followers of the Singapore-based official accounts`
+
+Running the below command fetches the followers of the 59 collected Singapore-based official accounts. 
+```
+python3 get_sg_users.py --min_following_required 2
+```
+
+`min_following_required` default is `2`
+
+The file `/data/min_2_following_users.txt` contains the user ids of the collected twitter Singapore-based official accounts.
+
+### 2. Creating Singapore-based users geocoded tweets data 
+Tweets from the streaming twitter API are first ingested into MongoDB. 
+```
+python3 python3 get_sg_tweets.py --db_name "COVID_VACCINE" --collections 1,2,3,4,5
+```
+
+### 3. Creating dashboard data 
+```
+python3 generate_dash_data.py 
+```
+
+
 
