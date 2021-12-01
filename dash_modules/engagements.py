@@ -4,27 +4,6 @@ import plotly.express as px
 import collections as col
 import matplotlib.pyplot as plt
 from dash_constants import *
-# from basics import get_date_range
-
-
-def get_retweets(sg_tweets):
-    retweets = sg_tweets[sg_tweets['tweet_enagagement_type'] == 'Retweet']
-
-    # retweet time processing
-    retweets['retweeted_tweet_time'] = pd.to_datetime(
-        retweets['retweeted_tweet_time'], errors='coerce')
-    retweets = retweets.dropna(
-        subset=['retweeted_tweet_time'])
-    retweets['retweeted_tweet_date'] = retweets.retweeted_tweet_time.dt.strftime(
-        '%Y-%m-%d')
-
-    # summing RTs + <3
-    retweets['total_engagement'] = retweets['retweeted_retweet_count'] + \
-        retweets['retweeted_favorite_count']
-    retweets[['retweeted_tweet_id', 'total_engagement']] = retweets[[
-        'retweeted_tweet_id', 'total_engagement']].astype(int)
-    retweets = retweets.loc[:, ~retweets.columns.str.contains('^Unnamed')]
-    return retweets
 
 
 def get_tweet_id_by_count(tweets_df, engagement_type, tweets_count=TOP_RTS_POS_NEG):
@@ -98,6 +77,28 @@ def get_bursty_tweets_info(tweets_df, engagement_type):
     return details_tweets_df
 
 
+def get_retweets(sg_tweets):
+    retweets = sg_tweets[sg_tweets['tweet_enagagement_type'] == 'Retweet']
+
+    # `retweeted_tweet_time` processing
+    retweets['retweeted_tweet_time'] = pd.to_datetime(
+        retweets['retweeted_tweet_time'], errors='coerce')
+    retweets = retweets.dropna(
+        subset=['retweeted_tweet_time'])
+    retweets['retweeted_tweet_date'] = retweets.retweeted_tweet_time.dt.strftime(
+        '%Y-%m-%d')
+
+    # adding `total_engagement` = RTs + <3
+    retweets['total_engagement'] = retweets['retweeted_retweet_count'] + \
+        retweets['retweeted_favorite_count']
+
+    # converting `retweeted_tweet_id` and `total_engagement` to int
+    retweets[['retweeted_tweet_id', 'total_engagement']] = retweets[[
+        'retweeted_tweet_id', 'total_engagement']].astype(int)
+    retweets = retweets.loc[:, ~retweets.columns.str.contains('^Unnamed')]
+    return retweets
+
+
 def generate_dash_bursty_retweets(eng_tweets,
                                   save,
                                   trend_save_path,
@@ -109,8 +110,8 @@ def generate_dash_bursty_retweets(eng_tweets,
     c_ids = get_tweet_id_by_count(eng_tweets, RETWEET, top_tweets_count)
     s_ids = get_tweet_id_by_spike(eng_tweets, RETWEET, percentile)
 
-    # temp fix to get only 10
     bursty_trend_df, bursty_tweets_df = get_bursty_tweets(
+        # eng_tweets, list(set(c_ids + s_ids)), RETWEET, True)
         eng_tweets, list(set(c_ids + s_ids))[:tweets_limit], RETWEET, True)
     bursty_info_df = get_bursty_tweets_info(bursty_tweets_df, RETWEET)
 
@@ -123,14 +124,12 @@ def generate_dash_bursty_retweets(eng_tweets,
     return bursty_trend_df, bursty_info_df
 
 
-def plot_countries_with_most_rts_creators(tweet_enagagement_retweet):
+def plot_countries_with_most_rts_creators(tweet_enagagement_retweet, top_x):
     rts_geo = tweet_enagagement_retweet['retweeted_user_geo_coding']
     c_rts_geo = col.Counter(rts_geo).most_common()
 
-    x_top = 20
-
-    rts_geo = [c[0] for c in c_rts_geo[:x_top]]
-    counts = [c[1] for c in c_rts_geo[:x_top]]
+    rts_geo = [c[0] for c in c_rts_geo[:top_x]]
+    counts = [c[1] for c in c_rts_geo[:top_x]]
 
     plt.barh(rts_geo[::-1], counts[::-1])
 
@@ -141,7 +140,6 @@ def plot_countries_with_most_rts_creators(tweet_enagagement_retweet):
     plt.show()
 
 
-###
 def get_quoted_tweets(sg_tweets):
     tweet_enagagement_quotes = sg_tweets[sg_tweets['tweet_enagagement_type'] == 'Quote']
 
@@ -175,17 +173,20 @@ def get_high_spreadrate_quoted_by_sentiment(tweets_df, rate=SENTIMENT_SPREAD_THR
     quoted_by_sentiment = tweets_df.groupby(['quoted_tweet_id', 'tweet_sentiment']).size()\
         .unstack(fill_value=0).reset_index()
 
-    quoted_by_sentiment['pos_count'] = quoted_by_sentiment['positive'] / (quoted_by_sentiment['positive'] +
-                                                                          quoted_by_sentiment['negative'] +
-                                                                          quoted_by_sentiment['neutral'])*100
+    quoted_by_sentiment = quoted_by_sentiment[(
+        quoted_by_sentiment['positive'] > QUOTED_SENTIMENT_COUNT_THRESHOLD) |
+        (quoted_by_sentiment['negative'] > QUOTED_SENTIMENT_COUNT_THRESHOLD)]
 
-    quoted_by_sentiment['neg_count'] = quoted_by_sentiment['negative'] / (quoted_by_sentiment['positive'] +
-                                                                          quoted_by_sentiment['negative'] +
-                                                                          quoted_by_sentiment['neutral'])*100
+    quoted_by_sentiment['pos_percent'] = quoted_by_sentiment['positive'] / (quoted_by_sentiment['positive'] +
+                                                                            quoted_by_sentiment['negative'] +
+                                                                            quoted_by_sentiment['neutral'])*100
 
-    # quoted_by_sentiment = quoted_by_sentiment[quoted_by_sentiment['pos_count'] > 10 | quoted_by_sentiment['neg_count'] > 10]
-    return quoted_by_sentiment[(quoted_by_sentiment['pos_count'] >= SENTIMENT_SPREAD_THRESHOLD) |
-                               (quoted_by_sentiment['neg_count'] >= SENTIMENT_SPREAD_THRESHOLD)]
+    quoted_by_sentiment['neg_percent'] = quoted_by_sentiment['negative'] / (quoted_by_sentiment['positive'] +
+                                                                            quoted_by_sentiment['negative'] +
+                                                                            quoted_by_sentiment['neutral'])*100
+
+    return quoted_by_sentiment[(quoted_by_sentiment['pos_percent'] >= rate) |
+                               (quoted_by_sentiment['neg_percent'] >= rate)]
 
 
 def generate_dash_bursty_quotes_by_sentiment(bursty_quoted_tweets,
@@ -210,13 +211,14 @@ def generate_dash_bursty_quotes_by_sentiment(bursty_quoted_tweets,
 
     # Adding `spread_type` and `spread_rate`. SENTIMENT_SPREAD_THRESHOLD% <= positivity spread and SENTIMENT_SPREAD_THRESHOLD% <= negativity spread
     final_most_spread_quoted['spread_type'] = ['positive' if spread_rate >=
-                                               SENTIMENT_SPREAD_THRESHOLD else 'negative' for spread_rate in final_most_spread_quoted['pos_count']]
-    final_most_spread_quoted['spread_rate'] = [round(row['pos_count'], 2) if row['spread_type'] == 'positive'
-                                               else round(row['neg_count'], 2) for _, row in final_most_spread_quoted.iterrows()]
+                                               SENTIMENT_SPREAD_THRESHOLD else 'negative' for spread_rate in final_most_spread_quoted['pos_percent']]
+    final_most_spread_quoted['spread_rate'] = [round(row['pos_percent'], 2) if row['spread_type'] == 'positive'
+                                               else round(row['neg_percent'], 2) for _, row in final_most_spread_quoted.iterrows()]
 
-    final_most_spread_quoted.drop(['pos_count', 'neg_count'], 1, inplace=True)
+    final_most_spread_quoted.drop(
+        ['pos_percent', 'neg_percent'], 1, inplace=True)
 
-    final_most_spread_quoted = final_most_spread_quoted.head(10)
+    final_most_spread_quoted = final_most_spread_quoted
     if save:
         pd.DataFrame.to_csv(final_most_spread_quoted,
                             sentiment_spread_save_path)

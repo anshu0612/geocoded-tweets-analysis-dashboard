@@ -1,16 +1,28 @@
 # Singapore-based geocoded tweets analysis
 
 ## Overview:
-
-
+The data analyses suggest that curated tweets give credible insights about Singapore. 
+First, the Twitter streaming data is ingested into MongoDB, curate Singapore-based tweets using heuristics. 
+And then comprehensive exploratory data analysis is performed on the curated tweets. 
 
 **Challenge**: Collecting tweets by ***Singapore-based users*** from streaming Twitter data.
 
-Previous research works relied on relaxed and limited heuristics resulting in noisy data containing false positives of Singapore-based users' tweets. 
-This challenging problem is addressed with the help of plausible heuristics to gather Singapore-based users' tweets. The data analyses suggest that curated tweets give credible insights about Singapore. 
+## Content
 
-First, the Twitter streaming data is ingested into MongoDB, data wrangling is performed to curate Singapore-based tweets using heuristics. And then comprehensive exploratory data analysis is performed on the curated tweets. 
-
+<!-- toc -->
+- [Setup](#setup)
+  - [Dependencies](#dependencies)
+  - [Expected directory structure of the data](#expected-directory-structure-of-the-data)
+  - [Diversity in Context and People Dataset](#diversity-in-context-and-people-dataset)
+  - [Pose generation](#pose-generation)
+- [Usage](#usage)
+  - [Training Samples](#training-samples)
+  - [Evaluation Sample](#evaluation-sample)
+- [Contact](#contact)
+- [References](#references)
+- [License](#license)
+<!-- tocstop -->
+<!-- - [Citation](#citation) -->
 
 
 --------------------------------------------------------------------------------

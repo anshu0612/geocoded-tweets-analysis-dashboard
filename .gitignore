@@ -5,9 +5,7 @@ venv
 __pycache__
 tweets.log
 
-# To be uncommented once dashboard is ready
-assests
 data/fragmented_data
 data/img/
-
-glove.twitter.27B.100d.txt
+data/sg.csv
+data/output/

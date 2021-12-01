@@ -12,7 +12,7 @@ import plotly.express as px
 from dash.exceptions import PreventUpdate
 
 
-from constants import BASE_PATH
+from constants import DATA_PATH
 from components import *
 from dash_constants import *
 from utils.common import human_format
@@ -76,20 +76,21 @@ dummy_fig = px.treemap(
     names=[ERROR_INSUFFICIENT_TWEETS],
     parents=['']
 )
-dummy_fig.update_layout(margin=dict(t=40, l=40, r=40, b=25))
+dummy_fig.update_layout(margin=dict(t=20, l=0, r=0, b=0))
 
 
 def generate_rts_info(tw):
     return (
         dbc.CardBody(
             [
-                html.A(html.P(style={'fontSize': '1em',
-                              'color': '#000'}, children=tw['tweet_text_']),
-                       target='blank_',
-                       href=TWITTER_STATUS_PATH.format(
-                           tw['retweeted_user_screenname'], tw['retweeted_tweet_id']),
-                       ),
-
+                # html.A(html.P(style={'fontSize': '1em',
+                #               'color': '#000'}, children=tw['tweet_text_']),
+                #        target='blank_',
+                #        href=TWITTER_STATUS_PATH.format(
+                #            tw['retweeted_user_screenname'], tw['retweeted_tweet_id']),
+                #        ),
+                html.P(style={'fontSize': '1em',
+                                          'color': '#000'}, children=tw['tweet_text_']),
                 html.P(
                     className='quoted-info',
                     children=[
@@ -129,8 +130,6 @@ def generate_rts_info(tw):
                    'borderBottom':  '2px solid {}'.format(tw['color'])
                    }
         ))
-
-    # ])
 
 
 def plotly_wordcloud(tweets_text, filtered_for):
@@ -390,32 +389,12 @@ def get_local_rts_trend(pathname, selected_sentiment):
                             template=GRAPHS_TEMPLATE)
     fig_trend_cum.update_traces(textposition='bottom right')
     fig_trend_cum.update_layout(
-        # autosize=True,
-        # width=900,'
         height=400,
         showlegend=False,
         title=None,
         xaxis_title='Retweet date',
         yaxis_title='Cumulative engagements'
     )
-    # fig_trend_cum.update_layout(
-    #     legend=dict(
-    #         x=0,
-    #         y=1,
-    #         # title='Anshu',
-    #         t: {text: None},
-    #         # traceorder='reversed',
-    #         title_font_family='Times New Roman',
-    #         font=dict(
-    #             family='Courier',
-    #             size=12,
-    #             color='black'
-    #         ),
-    #         bgcolor='LightSteelBlue',
-    #         bordercolor='Black',
-    #         borderwidth=2
-    #     )
-    # )
 
     fig_trend_delta = px.line(trend_data,
                               color_discrete_sequence=px.colors.qualitative.Alphabet,
@@ -604,38 +583,8 @@ def gen_clusters_word_freq(pathname, cluster):
 
 warnings.filterwarnings('ignore')
 if __name__ == '__main__':
-    app.run_server(debug=True, port=8051)
+    # app.run_server(debug=True, port=8051)
 
-
-# @app.callback(
-#     [Output('pos-quotes-sentiment', 'children'),
-#      Output('neg-quotes-sentiment', 'children')],
-#     Input('quoted-bursty-datepick', 'start_date'),
-#     Input('quoted-bursty-datepick', 'end_date'))
-# def update_quoted_sentiments_by_date(start_date, end_date):
-#     min_date, max_date = get_date_range(sg_tweets)
-
-#     tweet_enagagement_quotes = get_formatted_quoted_tweets(sg_tweets)
-#     quoted_tweets = get_quoted_tweets_by_date(
-#         tweet_enagagement_quotes, min_date, max_date, start_date, end_date)
-#     bursty_quoted_tweets = get_bursty_quoted_tweets(quoted_tweets)
-
-#     most_spread_quoted_by_sentiment_with_rate = get_most_spread_quoted_by_sentiment_with_rate(
-#         bursty_quoted_tweets)
-#     quoted_spread_data = generate_dash_bursty_quotes_by_sentiment(
-#         bursty_quoted_tweets, most_spread_quoted_by_sentiment_with_rate)
-
-#     quoted_spread_data = pd.read_csv(
-#         BASE_PATH + 'output/quoted/sentiment_spread.csv')
-#     quoted_spread_data_pos = quoted_spread_data[quoted_spread_data['spread_type'] == 'positive']
-#     quoted_spread_data_neg = quoted_spread_data[quoted_spread_data['spread_type'] == 'negative']
-
-#     bursty_pos = [create_quoted_card(tw)
-#                   for _, tw in quoted_spread_data_pos.iterrows()]
-#     bursty_neg = [create_quoted_card(tw)
-#                   for _, tw in quoted_spread_data_neg.iterrows()]
-
-#     print('bursty_pos ---- : ', len(bursty_pos))
-#     print('bursty_neg --- : ', len(bursty_neg))
-
-#     return (bursty_pos, bursty_neg)
+    app.run_server(debug=True,
+                   host="0.0.0.0",
+                   port=5000)
