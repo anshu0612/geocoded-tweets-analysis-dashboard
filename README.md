@@ -13,6 +13,9 @@ This is a general dashboard for analysing Singapore-based tweets. The key insigh
 - Tweets counts on a daily basis 
 - Basic stats - total tweets, avg no. of tweets per day, no. of unique users and so on
   
+Checkout the [demo](http://sg-tweets-monitoring.herokuapp.com/) here. 
+
+
 The repository contains code for: 
 - Fetching Singapore-based offcial accounts followers 
 - Filtering Singapore-based tweets that are ingested into MangoDB 
