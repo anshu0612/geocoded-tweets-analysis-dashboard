@@ -13,6 +13,12 @@ This is a general dashboard for analysing Singapore-based tweets. The key insigh
 - Tweets counts on a daily basis 
 - Basic stats - total tweets, avg no. of tweets per day, no. of unique users and so on
   
+![Alt text](dash_glimpse.png)
+
+
+
+
+
 Checkout the [demo](http://sg-tweets-monitoring.herokuapp.com/) here. 
 
 
@@ -22,8 +28,6 @@ The repository contains code for:
 - Notebooks containing exploratory data analysis on the collected tweets
 - Pipeline for generating key insights i.e. dashboard data (csv abd json files)
 - Plotly Dash application for visualizing the insights
-
-![Alt text](assets/dash_v2.png?raw=true "Title")
 
 --------------------------------------------------------------------------------
 
