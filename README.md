@@ -39,7 +39,7 @@ git clone https://github.com/anshu0612/singapore-geocoded-tweets-analysis.git
 
 - Install dependencies 
 ```
-pip3 install requirements.txt
+pip3 install -r requirements.txt
 ```
 
 - Run the application 
