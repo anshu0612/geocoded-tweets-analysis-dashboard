@@ -226,6 +226,19 @@ def update_hash_mentions_sent_output(pathname, start_date, end_date):
     return (fig_hashtags, fig_mentions, fig_sentiments)
 
 
+with open(NETWORKING_DATA, 'r') as f:
+    cyto_data = json.load(f)
+
+
+@app.callback(
+    [Output('cytoscape-nodes', 'zoom'),
+     Output('cytoscape-nodes', 'elements')],
+    [Input('bt-reset', 'n_clicks')]
+)
+def reset_layout(n_clicks):
+    return [1, cyto_data['data']]
+
+
 @app.callback(
     [Output('fig-world-influence', 'figure'),
         Output('word-cloud-influential-country', 'figure')],
