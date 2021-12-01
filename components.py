@@ -602,9 +602,7 @@ CLUSTERS_INFO = dbc.Jumbotron(
         [dbc.Col(
             children=[
                 html.Span('Clustered users/Communities',
-                          style={'color': '#0096FF', 'marginRight': '10px'}),
-                html.P('Note: The networking graph might take a few seconds to load. ',
-                       style={'color': '#893843', 'marginRight': '10px', 'fontSize': '0.7em'})
+                          style={'color': '#0096FF', 'marginRight': '10px'})
             ] +
             [html.Div(
                 [COMMUNITIES_INFO_CONTENT.format(len(clusters_users))] +
@@ -702,7 +700,14 @@ NETWORKING = dbc.Container([
             [
                 dbc.Row(dbc.Button("Reset Graph", id='bt-reset',
                         color="primary", className="me-1", size="sm")),
-                dbc.Row(NETWORKING_GRAPH, className='col-md-8')
+                dbc.Row(NETWORKING_GRAPH, className='col-md-8'),
+                dbc.Row(
+                    [
+                        dbc.Row(dbc.Alert(
+                            [html.P('Note: The networking graph might take a few seconds to load.',
+                                    style={'color': '#893843', 'fontSize': '0.7em'}),
+                                "Play around the nodes of this interactive graph once it is stable."],
+                            color="light"))]),
             ]
         ),
         dbc.Col(
