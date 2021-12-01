@@ -601,7 +601,7 @@ CLUSTERS_INFO = dbc.Jumbotron(
     dbc.Row(
         [dbc.Col(
             children=[
-                html.Span('Clustered users/Communities',
+                html.Span('Clustered users/communities',
                           style={'color': '#0096FF', 'marginRight': '10px'})
             ] +
             [html.Div(
@@ -700,7 +700,7 @@ NETWORKING = dbc.Container([
             [
                 dbc.Row(dbc.Button("Reset Graph", id='bt-reset',
                         color="primary", className="me-1", size="sm")),
-                dbc.Row(NETWORKING_GRAPH, className='col-md-8'),
+                dbc.Row(NETWORKING_GRAPH),
                 dbc.Row(
                     [
                         dbc.Row(dbc.Alert(
@@ -708,7 +708,7 @@ NETWORKING = dbc.Container([
                                     style={'color': '#893843', 'fontSize': '0.7em'}),
                                 "Play around the nodes of this interactive graph once it is stable."],
                             color="light"))]),
-            ]
+            ], className='col-md-8'
         ),
         dbc.Col(
             CLUSTERS_TWEETS_WORD_FREQ, className='col-md-4')
