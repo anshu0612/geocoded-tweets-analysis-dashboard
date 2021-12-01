@@ -1,4 +1,3 @@
-
 import plotly.express as px
 from constants import DATA_PATH, DATA_DASH_PATH
 
