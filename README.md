@@ -1,4 +1,4 @@
-# Singapore-based Geocoded Tweets Analysis
+# Geocoded Tweets Analysis Dashboard
 
 This is an **interactive**, **configurable** and **generic** dashboard for visualizing key insights from Singapore-based users' tweets. The key insights include:
 - Top influential users and their country
