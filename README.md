@@ -103,7 +103,7 @@ python3 get_sg_tweets.py --db_name "COVID_VACCINE" --collection_no_list 1,2,3,4,
 ```
 python3 generate_dash_data.py 
 ```
-You can setup the dashboard related constants in the `data\dash_constants.py`
+You can setup the dashboard related constants in the `data/dash_constants.py`
 
 
 
