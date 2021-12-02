@@ -1,7 +1,7 @@
 import re
 import spacy
 from geopy.geocoders import Nominatim
-from utils.constants import ALPHA2_TO_COUNTRY
+from constants.common import ALPHA2_TO_COUNTRY
 
 from constants import COUNTRY
 

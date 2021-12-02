@@ -7,8 +7,8 @@ import dash_bootstrap_components as dbc
 import dash_html_components as html
 from dash_html_components.Img import Img
 
-from utils.constants import *
-from utils.dash_constants import *
+from constants.common import *
+from constants.dash_constants import *
 from utils.common import human_format
 from dash_components.basics import MAX_DATE, MIN_DATE
 

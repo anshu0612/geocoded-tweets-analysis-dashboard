@@ -1,7 +1,7 @@
 import collections as col
 import pandas as pd
 import matplotlib.pyplot as plt
-from utils.dash_constants import *
+from constants.dash_constants import *
 
 
 def plot_top_influential_countries(c_quoted_rts_geo, x_top=10):

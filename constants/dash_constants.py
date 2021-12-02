@@ -1,9 +1,10 @@
 import plotly.express as px
-from utils.constants import DATA_PATH, DATA_DASH_PATH, COUNTRY
+from constants.common import DATA_PATH, DATA_DASH_PATH
+from constants.country_config import COUNTRY, COUNTRY_CODE
 
 GRAPHS_TEMPLATE = 'plotly_white'
 
-TWEETS_PATH = DATA_PATH + 'sg.csv'
+TWEETS_PATH = DATA_PATH + '{}.csv'.format(COUNTRY_CODE.lower())
 DASH_TEMPLATE = 'plotly_white'
 
 HOME_PATH = '/'
@@ -30,7 +31,6 @@ DAILY_TWEETS_HEADING = 'Daily tweets count'
 DAILY_TWEETS_PATH = DATA_DASH_PATH + 'basics/daily_tweets.csv'
 
 # -------------------
-HASHTAGS_COUNTRY_FILTERS = ['Singapore', 'singapore', 'sg']
 MENTIONS_HASHTAGS_SENTIMENT_HEADING = 'Trending hashtags, mentions and public sentiments'
 MENTIONS_HASHTAGS_SENTIMENT_INFO_CONTENT = '1. Top hashtags and mentions by frequency. \n 2.' \
     + 'Sentiments distribution of public'

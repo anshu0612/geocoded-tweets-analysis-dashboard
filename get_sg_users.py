@@ -7,8 +7,8 @@ from dotenv import load_dotenv
 from twython import Twython
 from collections import Counter
 
-from utils.constants import DEFAULT_MIN_FOLLOWING_REQUIRED, \
-    MIN_SG_ACCOUNTS_FOLLWERS_PATH, SCREEN_NAMES, SG_ACCOUNTS_FOLLOWERS_PATH
+from constants.country_config import DEFAULT_MIN_FOLLOWING_REQUIRED, \
+    MIN_SG_ACCOUNTS_FOLLWERS_PATH, SG_SCREEN_NAMES, SG_ACCOUNTS_FOLLOWERS_PATH
 
 from pathlib import Path
 
@@ -71,7 +71,7 @@ def _get_min_following_followers_id(sg_accounts_followers, min_following_require
 
 
 def get_sg_users(min_following_required=DEFAULT_MIN_FOLLOWING_REQUIRED):
-    for screen_name in SCREEN_NAMES:
+    for screen_name in SG_SCREEN_NAMES:
         file = open(os.path.join(SG_ACCOUNTS_FOLLOWERS_PATH,
                     '{}.txt'.format(screen_name)), 'a+')
         follower_ids = _get_all_followers(screen_name)

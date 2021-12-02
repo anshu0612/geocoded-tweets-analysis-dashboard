@@ -8,7 +8,7 @@ import matplotlib.cm as cm
 # graph analysis
 import networkx as nx
 import community as community_louvain
-from utils.dash_constants import *
+from constants.dash_constants import *
 
 
 def get_all_interacting_users(tweets):

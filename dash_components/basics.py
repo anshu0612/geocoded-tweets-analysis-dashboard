@@ -6,11 +6,12 @@ from datetime import datetime as dt
 import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 import dash_html_components as html
-from utils.constants import COUNTRY
+
+from constants.country_config import COUNTRY
 
 import plotly.express as px
 
-from utils.dash_constants import BASICS_PATH, DASH_TEMPLATE, \
+from constants.dash_constants import BASICS_PATH, DASH_TEMPLATE, \
     TWEETS_STATS_HEADING, DAILY_TWEETS_PATH, DAILY_TWEETS_HEADING, \
     DATE_FORMAT, \
     DASH_NO_YEAR_FORMAT, DASH_FORMAT,\

@@ -5,12 +5,12 @@ import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 import dash_html_components as html
 
-from utils.dash_constants import INTERACTIONS_GRAPH_INFO_CONTENT, \
+from constants.dash_constants import INTERACTIONS_GRAPH_INFO_CONTENT, \
     INFLUENTIAL_USERS_INFO_CONTENT, INFLUENTIAL_USERS_PATH, \
     TOP_COUNTRY_INFLUENCER_PATH, \
     INFLUENTIAL_COUNTRIES_INFO_CONTENT 
     
-from utils.constants import COUNTRY
+from constants.country_config import COUNTRY
 
 # Load influential users
 influential_users = pd.read_csv(INFLUENTIAL_USERS_PATH)

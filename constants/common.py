@@ -1,6 +1,3 @@
-COUNTRY = 'Singapore'
-COUNTRY_CODE = 'SG'
-
 FLAG_FIX_USA = 'united-states-of-america'
 FLAG_URL = 'https://cdn.countryflags.com/thumbs/{}/flag-400.png'
 
@@ -14,30 +11,11 @@ DATA_DASH_PATH = DATA_PATH + "dash_output/"
 
 DEFAULT_DB_NAME = "COVID_VACCINE"
 
-COUNTRY_SLANGS = ['sg', 'spore', 'singapore', 'singapura']
-SG_LONG = 103.8
-SG_LAT = 1.3667
-
 US_LAT = 39.8283
 US_LNG = 98.5795
 
 DISPLAY_NONE = {'display': 'none'}
 DISPLAY_INLINE = {'display': 'inline'}
-
-DEFAULT_MIN_FOLLOWING_REQUIRED = 2
-SCREEN_NAMES = ['mindefsg', 'MOEsg', 'sporeMOH', 'LTAsg', 'SMRT_Singapore', 'SBSTransit_Ltd',
-                'SingaporeHDB', 'MNDSingapore', 'mhasingapore', 'SingaporePolice', 'URAsg',
-                'MAS_sg', 'MOFsg', 'ICASingapore', 'SingaporeMCI', 'nlbsingapore', 'IMDAsg',
-                'NEAsg', 'nparksbuzz', 'SGSportsHub', 'govsingapore', 'SingaporeCAAS', 'MFAsg',
-                'iremembersg', 'youthsg', 'NUSingapore', 'NTUsg', 'sgSMU', 'sutdsg', 'SGRedCross',
-                'STcom', 'ChannelNewsAsia', 'TODAYonline', 'asiaonecom', 'thenewpaper', 'MothershipSG',
-                'Singtel', 'StarHub', 'MyRepublicSG', 'M1Singapore', 'temasekpoly', 'singaporetech',
-                'SingaporePoly', 'PUBsingapore', 'NgeeAnnNP', 'ITESpore', 'mediacorp', 'YahooSG',
-                'TimeOutSG', 'VisitSingapore', 'stb_sg', 'GovTechSG', 'SGmagazine', 'mySingapore',
-                'sgelection', 'SGAG_SG', 'TEDxSingapore', 'STATravelSG', 'STPix']
-
-SG_ACCOUNTS_FOLLOWERS_PATH = 'data/sg_accounts_followers/'
-MIN_SG_ACCOUNTS_FOLLWERS_PATH = "data/general/min_following_users.txt"
 
 FRAGMENTED_TWEETS_PATH = "data/fragmented_tweets/tweets/"
 FRAGMENTED_TWEETS_ENGAGEMENTS_PATH = "data/fragmented_tweets/tweets_engagements/"

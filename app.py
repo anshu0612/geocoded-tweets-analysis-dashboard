@@ -18,8 +18,8 @@ import plotly.graph_objects as go
 # from utils.constants import DATA_PATH
 # from components import *
 # from dash_components.basics import PSTS
-from utils.constants import COUNTRY
-from utils.dash_constants import *
+from constants.country_config import COUNTRY, COUNTRY_LAT, COUNTRY_LONG
+from constants.dash_constants import *
 from utils.common import human_format
 from dash_modules_generators.basics import generate_dash_hashtags, \
     generate_dash_mentions, \
@@ -267,8 +267,8 @@ def gen_influential_countries_wordfreq(pathname, country):
 
     fig_world_influence = go.Figure(go.Scattermapbox(
         mode='markers+lines',
-        lon=[SG_LONG],
-        lat=[SG_LAT],
+        lon=[COUNTRY_LONG],
+        lat=[COUNTRY_LAT],
         name=COUNTRY,
         text=[COUNTRY],
         marker={'size': 2}))
@@ -278,8 +278,8 @@ def gen_influential_countries_wordfreq(pathname, country):
     for _, row in country_data.iterrows():
         fig_world_influence.add_trace(go.Scattermapbox(
             mode='markers+lines',
-            lon=[row['long'], SG_LONG],
-            lat=[row['lat'], SG_LAT],
+            lon=[row['long'], COUNTRY_LONG],
+            lat=[row['lat'], COUNTRY_LAT],
             name=row['country'],
             text=[row['country'], COUNTRY],
             marker={'size': [row['size'], 2]}))

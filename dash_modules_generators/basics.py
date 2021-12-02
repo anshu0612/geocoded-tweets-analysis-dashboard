@@ -1,7 +1,11 @@
 import json
 import pandas as pd
 import collections as col
-from utils.dash_constants import *
+from constants.dash_constants import BASICS_PATH, DAILY_TWEETS_PATH, HASHTAGS_PATH, MENTIONS_PATH, \
+    POTENTIALLY_SENSITIVE_TWEETS_COUNT_PATH, POTENTIALLY_SENSITIVE_TWEETS_PATH, \
+    POTENTIALLY_SENSITIVE_TWEETS_DEFAULT_PERCENTILE, \
+    SENTIMENTS_PATH
+from constants.country_config import HASHTAGS_COUNTRY_FILTERS
 
 
 def get_date_range(tweets):

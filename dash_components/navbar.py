@@ -3,7 +3,7 @@ import dash_bootstrap_components as dbc
 import dash_html_components as html
 from dash_html_components.Img import Img
 
-from utils.dash_constants import NAVBAR_TITLE, TWITTER_LOGO_PATH, APP_LOGO
+from constants.dash_constants import NAVBAR_TITLE, TWITTER_LOGO_PATH, APP_LOGO
 
 NAVBAR = dbc.Row(
     children=[

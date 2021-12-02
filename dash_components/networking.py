@@ -6,9 +6,8 @@ import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 import dash_html_components as html
 
-from utils.constants import *
-from utils.dash_constants import *
-
+from constants.common import *
+from constants.dash_constants import *
 
 with open(COMMUNITIES_USERS_PATH, 'r') as f:
     clusters_users = json.load(f)
