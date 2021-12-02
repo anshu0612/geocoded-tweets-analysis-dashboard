@@ -15,6 +15,7 @@ This is an **interactive**, **configurable** and **generic** dashboard for visua
   
 ![Alt text](assets/dash_glimpse.png)
 
+
 Checkout the [demo](http://sg-tweets-monitoring.herokuapp.com/) here. 
 
 The repository contains code for: 
@@ -28,6 +29,7 @@ The repository contains code for:
 --------------------------------------------------------------------------------
 
 ## Running the Application  
+
 
 ###  Step 1: Git clone the repository in local
 
@@ -104,3 +106,4 @@ python3 get_sg_tweets.py --db_name "COVID_VACCINE" --collection_no_list 1,2,3,4,
 python3 generate_dash_data.py 
 ```
 You can setup the dashboard related constants in the `data/dash_constants.py`
+
