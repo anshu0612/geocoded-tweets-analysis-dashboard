@@ -1,7 +1,7 @@
 import re
 import spacy
 from geopy.geocoders import Nominatim
-from constants import ALPHA2_TO_COUNTRY
+from utils.constants import ALPHA2_TO_COUNTRY
 
 
 locator = Nominatim(user_agent="anshu")

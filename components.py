@@ -12,8 +12,8 @@ from dash_html_components.Img import Img
 import plotly.express as px
 import plotly.graph_objects as go
 
-from constants import *
-from dash_constants import *
+from utils.constants import *
+from utils.dash_constants import *
 from utils.common import human_format
 
 # Load basic stats data

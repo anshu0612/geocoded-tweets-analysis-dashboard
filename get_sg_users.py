@@ -1,12 +1,13 @@
-from io import DEFAULT_BUFFER_SIZE
+# from io import DEFAULT_BUFFER_SIZE
 import os
 import time
+import argparse
 
 from dotenv import load_dotenv
 from twython import Twython
 from collections import Counter
 
-from constants import DEFAULT_MIN_FOLLOWING_REQUIRED, MIN_SG_ACCOUNTS_FOLLWERS_PATH, SCREEN_NAMES, SG_ACCOUNTS_FOLLOWERS_PATH, USER_TXT_PATH
+from utils.constants import DEFAULT_MIN_FOLLOWING_REQUIRED, MIN_SG_ACCOUNTS_FOLLWERS_PATH, SCREEN_NAMES, SG_ACCOUNTS_FOLLOWERS_PATH, USER_TXT_PATH
 
 load_dotenv()
 
@@ -67,10 +68,9 @@ def _get_min_following_followers_id(sg_accounts_followers, min_following_require
 
 def get_sg_users(min_following_required=DEFAULT_MIN_FOLLOWING_REQUIRED):
     for screen_name in SCREEN_NAMES:
-
         file = open(os.path.join(SG_ACCOUNTS_FOLLOWERS_PATH,
                     '{}.txt'.format(screen_name)), 'a+')
-        follower_ids = _get_all_followers(screen_name)
+        fosllower_ids = _get_all_followers(screen_name)
         if follower_ids is not None:
             for follower_id in follower_ids:
                 file.write('{}'.format(follower_id))
@@ -85,4 +85,9 @@ def get_sg_users(min_following_required=DEFAULT_MIN_FOLLOWING_REQUIRED):
 
 
 if __name__ == "__main__":
-    get_sg_users()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--min_following_required', type=int, default=2,
+                        help="Filter users following at least these"
+                        "number of Singapore-based official accounts")
+    args = parser.parse_args()
+    get_sg_users(args.min_following_required)

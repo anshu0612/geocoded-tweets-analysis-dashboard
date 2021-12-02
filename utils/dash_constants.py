@@ -1,8 +1,15 @@
 import plotly.express as px
-from constants import DATA_PATH, DATA_DASH_PATH
+from utils.constants import DATA_PATH, DATA_DASH_PATH
+
+GRAPHS_TEMPLATE = 'plotly_white'
 
 SG_TWEETS_PATH = DATA_PATH + 'sg.csv'
 DASH_TEMPLATE = 'plotly_white'
+
+HOME_PATH = '/'
+NETWORKING_PATH = '/networking'
+ENGAGEMENTS_PATH = '/engagements'
+INFLUENCERS_PATH = '/influencers'
 
 ERROR_INSUFFICIENT_TWEETS = 'Oops! Not enough tweets. Try other filter value.'
 
@@ -10,8 +17,11 @@ NAVBAR_TITLE = "Singapore's Pulse Monitoring through Twitter's Lens"
 TWITTER_LOGO_PATH = 'assets/twitter-logo.png'
 APP_LOGO = 'assets/pulse.png'
 
-FLAG_FIX_USA = 'united-states-of-america'
-FLAG_URL = 'https://cdn.countryflags.com/thumbs/{}/flag-400.png'
+# Dates
+DASH_NO_YEAR_FORMAT = "%d %b"
+DASH_FORMAT = "%d %b, %Y"
+DATE_FORMAT = '%Y-%m-%d'
+
 # -------- Basics ----------
 TWEETS_STATS_HEADING = 'Tweets Stats'
 BASICS_PATH = DATA_DASH_PATH + 'basics/basic.json'

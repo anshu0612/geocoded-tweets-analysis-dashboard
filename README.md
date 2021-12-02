@@ -49,7 +49,7 @@ pip3 install requirements.txt
 python3 app.py
 ```
 
-**If** you face environment depencies you can use Docker Image. 
+**If** you face environment issues you can use Docker Image. 
 **Using Docker**
 
 - Install Docker on your system 
