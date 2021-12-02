@@ -87,7 +87,8 @@ class DashGenerator():
             quoted_tws, self.min_date, self.max_date)
         bursty_quoted_tws = get_bursty_quoted_tweets(quoted_tws)
 
-        quoted_tws_by_sentiment_spreadrate = get_high_spreadrate_quoted_by_sentiment(bursty_quoted_tws)
+        quoted_tws_by_sentiment_spreadrate = get_high_spreadrate_quoted_by_sentiment(
+            bursty_quoted_tws)
         generate_dash_bursty_quotes_by_sentiment(
             bursty_quoted_tws, quoted_tws_by_sentiment_spreadrate, True)
 
@@ -135,14 +136,35 @@ class DashGenerator():
 if __name__ == '__main__':
     dg = DashGenerator()
 
+    # Generates basics stats about the tweets
     dg.generate_basic()
-    
+    print("{} 1/8 Basics data generated {}".format('-'*10, '-'*10))
+
+    # Generates global viral tweets
     dg.generate_global_retweets()
+    print("{} 2/8 Global viral retweets data generated {}".format('-'*10, '-'*10))
+
+    # Generates local viral tweets
     dg.generate_local_retweets()
+    print("{} 3/8 Local viral retweets data generated {}".format('-'*10, '-'*10))
+
+    # Generates reactive quoted tweets
     dg.generate_bursty_quoted()
+    print("{} 4/8 Reactive tweets data generated {}".format('-'*10, '-'*10))
 
+    # Generates list of top influential countries
     dg.generate_influential_countries()
-    dg.generate_influential_users()
+    print("{} 5/8 Influential countries data generated {}".format('-'*10, '-'*10))
 
+    # Generates list of top influential users
+    dg.generate_influential_users()
+    print("{} 6/8 Influential users data generated {}".format('-'*10, '-'*10))
+
+    # Generates communities/clusters of users
     dg.generate_communities()
+    print("{} 7/8 Communities data generated {}".format('-'*10, '-'*10))
+
+    # Generates data for creating networking graphs
+    # Tweets by the clusters of users
     dg.generate_networking_data()
+    print("{} 8/8 Networking data generated {}".format('-'*10, '-'*10))

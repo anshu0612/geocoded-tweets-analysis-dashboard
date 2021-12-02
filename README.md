@@ -13,7 +13,7 @@ This is an **interactive**, **configurable** and **generic** dashboard for visua
 - Daily tweets counts 
 - Basic stats - total tweets, avg no. of tweets per day, no. of unique users, and so on
   
-![Alt text](dash_glimpse.png)
+![Alt text](assets/dash_glimpse.png)
 
 Checkout the [demo](http://sg-tweets-monitoring.herokuapp.com/) here. 
 
@@ -104,6 +104,3 @@ python3 get_sg_tweets.py --db_name "COVID_VACCINE" --collection_no_list 1,2,3,4,
 python3 generate_dash_data.py 
 ```
 You can setup the dashboard related constants in the `data/dash_constants.py`
-
-
-
