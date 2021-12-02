@@ -1,11 +1,11 @@
 import pandas as pd
 
-from dash_constants import *
+from utils.dash_constants import *
 from dash_modules.engagements import *
 from dash_modules.basics import *
 from dash_modules.influential_countries import *
 from dash_modules.graph_analysis import *
-from constants import COUNTRY
+from utils.constants import COUNTRY
 
 from pathlib import Path
 
@@ -135,13 +135,14 @@ class DashGenerator():
 if __name__ == '__main__':
     dg = DashGenerator()
 
-    # dg.generate_basic()
+    dg.generate_basic()
+    
     dg.generate_global_retweets()
     dg.generate_local_retweets()
     dg.generate_bursty_quoted()
 
-    # dg.generate_influential_countries()
+    dg.generate_influential_countries()
+    dg.generate_influential_users()
 
-    # dg.generate_influential_users()
-    # dg.generate_communities()
-    # dg.generate_networking_data()
+    dg.generate_communities()
+    dg.generate_networking_data()

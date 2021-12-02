@@ -1,12 +1,8 @@
 COUNTRY = 'Singapore'
 COUNTRY_CODE = 'SG'
 
-HOME_PATH = '/'
-NETWORKING_PATH = '/networking'
-ENGAGEMENTS_PATH = '/engagements'
-INFLUENCERS_PATH = '/influencers'
-
-GRAPHS_TEMPLATE = 'plotly_white'
+FLAG_FIX_USA = 'united-states-of-america'
+FLAG_URL = 'https://cdn.countryflags.com/thumbs/{}/flag-400.png'
 
 TWITTER_BASE_URL = "https://twitter.com/"
 TWITTER_STATUS_PATH = TWITTER_BASE_URL + "{}/status/{}"
@@ -16,14 +12,14 @@ DATA_PATH = "data/"
 DATA_DASH_PATH = DATA_PATH + "output/"
 # BASE_PROD_URL = "https://sg-pulse-monitoring.s3.ap-southeast-1.amazonaws.com/"
 
+DEFAULT_DB_NAME = "COVID_VACCINE"
+
 # Dates
-TW_CREATED_AT_FORMAT = "%a %b %d %H:%M:%S +0000 %Y"
-TIME_FORMAT = '%H:%M:%S'
-DATE_FORMAT = '%Y-%m-%d'
-DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
-NEW_FORMAT = "%a %b %Y, %I:%m %p"
-DASH_FORMAT = "%d %b, %Y"
-DASH_NO_YEAR_FORMAT = "%d %b"
+# TW_CREATED_AT_FORMAT = "%a %b %d %H:%M:%S +0000 %Y"
+# TIME_FORMAT = '%H:%M:%S'
+# DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
+# NEW_FORMAT = "%a %b %Y, %I:%m %p"
+
 
 SG_SLANGS = ['sg', 'spore', 'singapore', 'singapura']
 SG_LONG = 103.8

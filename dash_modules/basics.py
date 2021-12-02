@@ -1,7 +1,7 @@
 import json
 import pandas as pd
 import collections as col
-from dash_constants import *
+from utils.dash_constants import *
 
 
 def get_date_range(sg_tweets):
