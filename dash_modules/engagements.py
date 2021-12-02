@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 import collections as col
 import matplotlib.pyplot as plt
-from dash_constants import *
+from utils.dash_constants import *
 
 
 def get_tweet_id_by_count(tweets_df, engagement_type, tweets_count=TOP_RTS_POS_NEG):

@@ -12,9 +12,9 @@ import plotly.express as px
 from dash.exceptions import PreventUpdate
 
 
-from constants import DATA_PATH
+from utils.constants import DATA_PATH
 from components import *
-from dash_constants import *
+from utils.dash_constants import *
 from utils.common import human_format
 from dash_modules.basics import generate_dash_hashtags, \
     generate_dash_mentions, \

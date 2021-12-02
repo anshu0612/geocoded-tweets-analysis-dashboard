@@ -1,7 +1,9 @@
+from io import DEFAULT_BUFFER_SIZE
 import os
 import time
 import logging
 import datetime
+import argparse
 
 import pandas as pd
 from dotenv import load_dotenv
@@ -9,10 +11,11 @@ from sshtunnel import SSHTunnelForwarder
 from pymongo import MongoClient
 
 from utils.detect_place import geo_coding
-from constants import FRAGMENTED_TWEETS_ENGAGEMENTS_PATH, \
+from utils.constants import FRAGMENTED_TWEETS_ENGAGEMENTS_PATH, \
     FRAGMENTED_TWEETS_PATH, \
     SG_SLANGS, COUNTRY_CODE, \
-    MIN_SG_ACCOUNTS_FOLLWERS_PATH
+    MIN_SG_ACCOUNTS_FOLLWERS_PATH, \
+    DEFAULT_DB_NAME
 
 load_dotenv()
 logging.basicConfig(filename='tweets.log', filemode="a+",
@@ -435,7 +438,7 @@ def create_tweets_csv(sg_users, data, collection_no,
             print("RENEWING WITH CSV NO - {}".format(start_csv_no).center(100, '-'))
 
     # final save
-    # This is duplicate code - improvise it!
+    # TODO: This is duplicate code - improvise it!
     tweet_csv_data['tweet_text'] = tweet_text
     tweet_csv_data['tweet_time'] = tweet_time
     tweet_csv_data['tweet_id'] = tweet_id
@@ -515,7 +518,7 @@ def _set_connetion():
         remote_bind_address=('127.0.0.1', 27017))
 
 
-def get_tweets_from_db(db_name, collections, running_tw_save_count, max_csv_tw_count):
+def get_tweets_from_db(db_name, collection_no_list, running_tw_save_count, max_csv_tw_count):
     server = _set_connetion()
     server.start()
 
@@ -530,7 +533,7 @@ def get_tweets_from_db(db_name, collections, running_tw_save_count, max_csv_tw_c
 
     print("Total twitter users: ", len(sg_users))
 
-    for collection_no in collections:
+    for collection_no in collection_no_list:
         collection_name = "tweets_" + str(collection_no)
         collection_data = db[collection_name]
         print('Starting to collect tweets for collection no. {}'.format(
@@ -543,10 +546,30 @@ def get_tweets_from_db(db_name, collections, running_tw_save_count, max_csv_tw_c
 
 
 if __name__ == "__main__":
-    db_name = "COVID_VACCINE"
-    curr_max_collection_no = 102
-    running_tw_save_count = 1000
-    max_csv_tw_count = 10000
+    parser = argparse.ArgumentParser()
 
-    get_tweets_from_db(db_name, range(
-        84, curr_max_collection_no + 1), running_tw_save_count, max_csv_tw_count)
+    parser.add_argument('--db_name', type=int, default=DEFAULT_DB_NAME,
+                        help="Database name to fetch tweets from")
+
+    #range(84, curr_max_collection_no + 1),
+    parser.add_argument('--collection_no_list', type=int, nargs="*",
+                        help="List of Mongo collections")
+
+    parser.add_argument('--running_tw_save_count', type=int, default=1000,
+                        help="Number of tweets to save during tweets processing")
+
+    parser.add_argument('--max_csv_tw_count', type=int, default=10000,
+                        help="Maximum no. of tweets to save in a csv")
+
+    args = parser.parse_args()
+
+    assert isinstance(args.db_name, str)
+    assert isinstance(args.collection_no_list, list)
+    assert isinstance(args.running_tw_save_count, int)
+    assert isinstance(args.max_csv_tw_count, int)
+
+    get_tweets_from_db(
+        db_name=args.db_name,
+        collection_no_list=args.collection_no_list,
+        running_tw_save_count=args.running_tw_save_count,
+        max_csv_tw_count=args.max_csv_tw_count)
