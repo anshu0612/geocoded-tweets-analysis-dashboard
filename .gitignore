@@ -6,7 +6,7 @@ __pycache__
 tweets.log
 
 data/fragmented_data
-data/img/
-data/sg.csv
-data/output/
-data
+
+# data
+# data/sg.csv
+# data/output/
