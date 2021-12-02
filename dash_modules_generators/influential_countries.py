@@ -17,18 +17,18 @@ def plot_top_influential_countries(c_quoted_rts_geo, x_top=10):
     plt.show()
 
 
-def get_top_influential_countries(sg_tweets, top_countries_count=10):
-    # Selecting tweets created by non-Singapore based users and known geocoding.
-    quoted_sg_tweets = sg_tweets[(sg_tweets['tweet_enagagement_type'] == 'Quote') &
-                                 (sg_tweets['quoted_user_geo_coding'] != 'Unknown') &
-                                 (sg_tweets['quoted_user_geo_coding'] != 'Singapore')]
+def get_top_influential_countries(tweets, top_countries_count=10):
+    # Selecting tweets created by users from other countries and known geocoding.
+    quoted_tweets = tweets[(tweets['tweet_enagagement_type'] == 'Quote') &
+                                 (tweets['quoted_user_geo_coding'] != 'Unknown') &
+                                 (tweets['quoted_user_geo_coding'] != COUNTRY)]
 
-    rts_sg_tweets = sg_tweets[(sg_tweets['tweet_enagagement_type'] == 'Retweet') &
-                              (sg_tweets['retweeted_user_geo_coding'] != 'Unknown') &
-                              (sg_tweets['retweeted_user_geo_coding'] != 'Singapore')]
+    rts_tweets = tweets[(tweets['tweet_enagagement_type'] == 'Retweet') &
+                              (tweets['retweeted_user_geo_coding'] != 'Unknown') &
+                              (tweets['retweeted_user_geo_coding'] != COUNTRY)]
 
-    quoted_rts_geo = list(quoted_sg_tweets['quoted_user_geo_coding']) + \
-        list(rts_sg_tweets['retweeted_user_geo_coding'])
+    quoted_rts_geo = list(quoted_tweets['quoted_user_geo_coding']) + \
+        list(rts_tweets['retweeted_user_geo_coding'])
     c_quoted_rts_geo = col.Counter(quoted_rts_geo).most_common()
     # plot_top_influential_countries(c_quoted_rts_geo)
     return c_quoted_rts_geo[:top_countries_count]
@@ -69,11 +69,11 @@ def generate_dash_influential_countries(top_country_influencer, save=False,
     return top_influential_countries_df
 
 
-def generate_dash_influential_countries_tweets(sg_tweets, top_influential_countries_df, save=False,
+def generate_dash_influential_countries_tweets(tweets, top_influential_countries_df, save=False,
                                                top_country_influencer_tweets_save_path=TOP_COUNTRY_INFLUENCER_TWEETS_PATH):
     top_influential_countries = top_influential_countries_df['country']
-    top_countries_tweets_df = sg_tweets[(sg_tweets['retweeted_user_geo_coding'].isin(top_influential_countries))
-                                        & (sg_tweets['processed_tweet_text'].notna())][['retweeted_user_geo_coding', 'processed_tweet_text']]
+    top_countries_tweets_df = tweets[(tweets['retweeted_user_geo_coding'].isin(top_influential_countries))
+                                        & (tweets['processed_tweet_text'].notna())][['retweeted_user_geo_coding', 'processed_tweet_text']]
 
     if save:
         pd.DataFrame.to_csv(top_countries_tweets_df,

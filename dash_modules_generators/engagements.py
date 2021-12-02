@@ -77,8 +77,8 @@ def get_bursty_tweets_info(tweets_df, engagement_type):
     return details_tweets_df
 
 
-def get_retweets(sg_tweets):
-    retweets = sg_tweets[sg_tweets['tweet_enagagement_type'] == 'Retweet']
+def get_retweets(tweets):
+    retweets = tweets[tweets['tweet_enagagement_type'] == 'Retweet']
 
     # `retweeted_tweet_time` processing
     retweets['retweeted_tweet_time'] = pd.to_datetime(
@@ -140,8 +140,8 @@ def plot_countries_with_most_rts_creators(tweet_enagagement_retweet, top_x):
     plt.show()
 
 
-def get_quoted_tweets(sg_tweets):
-    tweet_enagagement_quotes = sg_tweets[sg_tweets['tweet_enagagement_type'] == 'Quote']
+def get_quoted_tweets(tweets):
+    tweet_enagagement_quotes = tweets[tweets['tweet_enagagement_type'] == 'Quote']
 
     tweet_enagagement_quotes['quoted_tweet_time'] = pd.to_datetime(
         tweet_enagagement_quotes['quoted_tweet_time'], errors='coerce')

@@ -18,6 +18,7 @@ import plotly.graph_objects as go
 # from utils.constants import DATA_PATH
 # from components import *
 # from dash_components.basics import PSTS
+from utils.constants import COUNTRY
 from utils.dash_constants import *
 from utils.common import human_format
 from dash_modules_generators.basics import generate_dash_hashtags, \
@@ -72,9 +73,9 @@ def display_page(pathname):
 
 
 # load the tweets
-sg_tweets = pd.read_csv(SG_TWEETS_PATH)
+tweets = pd.read_csv(TWEETS_PATH)
 
-min_date, max_date = get_date_range(sg_tweets)
+min_date, max_date = get_date_range(tweets)
 
 # influencial countries
 top_countries_data = pd.read_csv(TOP_COUNTRIES_CLEANED_DATA)
@@ -199,7 +200,7 @@ def update_hash_mentions_sent_output(pathname, start_date, end_date):
     if not pathname == HOME_PATH:
         raise PreventUpdate
 
-    df_hashtags = generate_dash_hashtags(sg_tweets, start_date, end_date)
+    df_hashtags = generate_dash_hashtags(tweets, start_date, end_date)
     fig_hashtags = px.bar(df_hashtags, x='counts', y='hashtag',
                           color_discrete_sequence=['#E49B0F'],
                           orientation='h', template=DASH_TEMPLATE)
@@ -210,7 +211,7 @@ def update_hash_mentions_sent_output(pathname, start_date, end_date):
         yaxis_title=None
     )
 
-    df_mentions = generate_dash_mentions(sg_tweets, start_date, end_date)
+    df_mentions = generate_dash_mentions(tweets, start_date, end_date)
     fig_mentions = px.bar(df_mentions, x='counts', y='mention',
                           color_discrete_sequence=['#009ACD'],
                           orientation='h', template=DASH_TEMPLATE)
@@ -221,7 +222,7 @@ def update_hash_mentions_sent_output(pathname, start_date, end_date):
         yaxis_title=None
     )
 
-    df_sentiments = generate_dash_sentiments(sg_tweets, start_date, end_date)
+    df_sentiments = generate_dash_sentiments(tweets, start_date, end_date)
     fig_sentiments = px.bar(df_sentiments, x='count', y='tweet_sentiment',
                             color_discrete_sequence=[
                                 '#1ca9c9', '#A6D785', '#cd5c5c'],
@@ -268,8 +269,8 @@ def gen_influential_countries_wordfreq(pathname, country):
         mode='markers+lines',
         lon=[SG_LONG],
         lat=[SG_LAT],
-        name='Singapore',
-        text=['Singapore'],
+        name=COUNTRY,
+        text=[COUNTRY],
         marker={'size': 2}))
 
     selected_country_data = country_data[country_data['country'] == country].to_dict('records')[
@@ -280,7 +281,7 @@ def gen_influential_countries_wordfreq(pathname, country):
             lon=[row['long'], SG_LONG],
             lat=[row['lat'], SG_LAT],
             name=row['country'],
-            text=[row['country'], 'Singapore'],
+            text=[row['country'], COUNTRY],
             marker={'size': [row['size'], 2]}))
 
     fig_world_influence.update_traces(
@@ -311,8 +312,6 @@ def gen_influential_countries_wordfreq(pathname, country):
 
 
 pst_tweets = pd.read_csv(POTENTIALLY_SENSITIVE_TWEETS_PATH)
-# pst_tweets = generate_dash_potentially_sensitive_tweets(sg_tweets)
-
 
 @app.callback(
     Output('freq-count-psts-tweets', 'figure'),

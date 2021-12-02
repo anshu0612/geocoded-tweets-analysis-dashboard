@@ -88,7 +88,7 @@ The list of followers will be saved in `/data/sg_accounts_followers` folder.
 ### 2. Creating Singapore-based users geocoded tweets data 
 <!-- Tweets from the streaming twitter API are first ingested into MongoDB.  -->
 ```
-python3 get_sg_tweets.py --db_name "COVID_VACCINE" --collection_no_list 1,2,3,4,5
+python3 get_tweets.py --db_name "COVID_VACCINE" --collection_no_list 1,2,3,4,5
 ```
 
 **Arguments**

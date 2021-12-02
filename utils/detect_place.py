@@ -3,6 +3,7 @@ import spacy
 from geopy.geocoders import Nominatim
 from utils.constants import ALPHA2_TO_COUNTRY
 
+from constants import COUNTRY
 
 locator = Nominatim(user_agent="anshu")
 nlp = spacy.load('en_core_web_sm')
@@ -89,9 +90,9 @@ def geo_coding(tweet):
                 ALPHA2_TO_COUNTRY[p['country_code']], p['country_code'])
             coding_type = 'Place'
         elif u['location']:
-            if 'singapore' in u['location'].lower():
+            if COUNTRY.lower() in u['location'].lower():
                 # prevent unncessary API call
-                country_info = ('Singapore', 'SG')
+                country_info = (COUNTRY, 'SG')
             else:
                 country_info = get_geo_user_location(u['location'])
 

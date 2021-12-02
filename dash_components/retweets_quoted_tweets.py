@@ -12,12 +12,10 @@ from utils.dash_constants import *
 from utils.common import human_format
 from dash_components.basics import MAX_DATE, MIN_DATE
 
-
 # Static data
 quoted_spread_data = pd.read_csv(QUOTED_SENTIMENT_SPEAD_PATH)
 quoted_spread_data_pos = quoted_spread_data[quoted_spread_data['spread_type'] == 'positive']
 quoted_spread_data_neg = quoted_spread_data[quoted_spread_data['spread_type'] == 'negative']
-
 
 def create_quoted_card(tw):
     return (
@@ -25,10 +23,6 @@ def create_quoted_card(tw):
             dbc.Row([
                 dbc.Col(
                     [
-                        # html.A(html.P(style={'fontSize': '1em',
-                        #               'color': '#000'}, children=tw['quoted_tweet_text']),
-                        #        target='blank_',
-                        #        href=TWITTER_STATUS_PATH.format(tw['quoted_user_screenname'], tw['quoted_tweet_id'])),
                         html.P(style={'fontSize': '1em',
                                       'color': '#000'}, children=tw['quoted_tweet_text']),
                         html.P(
@@ -155,7 +149,7 @@ VIRAL_LOCAL_RETWEETS = [
                                             MIN_DATE, DATE_FORMAT), DASH_NO_YEAR_FORMAT),
                                 dt.strftime(dt.strptime(
                                             MAX_DATE, DATE_FORMAT), DASH_FORMAT)), className='rts-jumbotron'),
-                        html.Span('Singapore-based accounts ',
+                        html.Span('{}-based accounts '.format(COUNTRY),
                                   className='country-rts-jumbotron'),
                         html.Span(VIRAL_RETWEETS_INFO_CONTENT,
                                   className='rts-jumbotron'),
@@ -223,7 +217,7 @@ VIRAL_GLOBAL_RETWEETS = [
                                             MIN_DATE, DATE_FORMAT), DASH_NO_YEAR_FORMAT),
                                 dt.strftime(dt.strptime(
                                             MAX_DATE, DATE_FORMAT), DASH_FORMAT)), className='rts-jumbotron'),
-                        html.Span('non-Singapore-based accounts ',
+                        html.Span('non-{}-based accounts '.format(COUNTRY),
                                   className='country-rts-jumbotron'),
                         html.Span(
                             VIRAL_RETWEETS_INFO_CONTENT, className='rts-jumbotron'),

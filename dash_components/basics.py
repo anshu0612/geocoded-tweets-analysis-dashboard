@@ -6,14 +6,14 @@ from datetime import datetime as dt
 import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 import dash_html_components as html
+from utils.constants import COUNTRY
 
 import plotly.express as px
 
 from utils.dash_constants import BASICS_PATH, DASH_TEMPLATE, \
     TWEETS_STATS_HEADING, DAILY_TWEETS_PATH, DAILY_TWEETS_HEADING, \
     DATE_FORMAT, \
-    DASH_NO_YEAR_FORMAT, \
-    DASH_FORMAT, \
+    DASH_NO_YEAR_FORMAT, DASH_FORMAT,\
     PSTS_HEADING, PSTS_INFO_CONTENT, \
     MENTIONS_HASHTAGS_SENTIMENT_HEADING, MENTIONS_HASHTAGS_SENTIMENT_INFO_CONTENT, \
     POTENTIALLY_SENSITIVE_TWEETS_COUNT_PATH, POTENTIALLY_SENSITIVE_TWEETS_DEFAULT_PERCENTILE
@@ -51,7 +51,7 @@ BASIC_STATS = dbc.Card(
                             html.Span(basic_data['users_count'], style={
                                 'fontWeight': 'bold'}),
                             html.Span(
-                                ' unique Singapore-based twitter users')
+                                ' unique {}-based twitter users'.format(COUNTRY))
                         ]),
                         html.P([
                             html.Span(basic_data['avg_tweets'], style={
@@ -151,12 +151,12 @@ MENTIONS_HASHTAGS_SENTIMENT_INFO = dbc.Jumbotron(
 
 
 # Load potentially sensitive tweets data
-c_sg_tweets_pst = pd.read_csv(POTENTIALLY_SENSITIVE_TWEETS_COUNT_PATH)
-spike_value = c_sg_tweets_pst['count'].quantile(
+c_tweets_pst = pd.read_csv(POTENTIALLY_SENSITIVE_TWEETS_COUNT_PATH)
+spike_value = c_tweets_pst['count'].quantile(
     POTENTIALLY_SENSITIVE_TWEETS_DEFAULT_PERCENTILE)
 colors = ['R' if cc > spike_value else
-          'G' for cc in c_sg_tweets_pst['count']]
-fig_psts = px.bar(c_sg_tweets_pst, x='tweet_date', y='count',
+          'G' for cc in c_tweets_pst['count']]
+fig_psts = px.bar(c_tweets_pst, x='tweet_date', y='count',
                   color_discrete_sequence=['#CD5C5C', '#8B0000'],
                   template=DASH_TEMPLATE, color=colors,
                   width=700, height=420)

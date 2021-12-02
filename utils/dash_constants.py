@@ -1,9 +1,9 @@
 import plotly.express as px
-from utils.constants import DATA_PATH, DATA_DASH_PATH
+from utils.constants import DATA_PATH, DATA_DASH_PATH, COUNTRY
 
 GRAPHS_TEMPLATE = 'plotly_white'
 
-SG_TWEETS_PATH = DATA_PATH + 'sg.csv'
+TWEETS_PATH = DATA_PATH + 'sg.csv'
 DASH_TEMPLATE = 'plotly_white'
 
 HOME_PATH = '/'
@@ -13,7 +13,7 @@ INFLUENCERS_PATH = '/influencers'
 
 ERROR_INSUFFICIENT_TWEETS = 'Oops! Not enough tweets. Try other filter value.'
 
-NAVBAR_TITLE = "Singapore's Pulse Monitoring through Twitter's Lens"
+NAVBAR_TITLE = "{}'s Pulse Monitoring through Twitter's Lens".format(COUNTRY)
 TWITTER_LOGO_PATH = 'assets/twitter-logo.png'
 APP_LOGO = 'assets/pulse.png'
 
@@ -30,6 +30,7 @@ DAILY_TWEETS_HEADING = 'Daily tweets count'
 DAILY_TWEETS_PATH = DATA_DASH_PATH + 'basics/daily_tweets.csv'
 
 # -------------------
+HASHTAGS_COUNTRY_FILTERS = ['Singapore', 'singapore', 'sg']
 MENTIONS_HASHTAGS_SENTIMENT_HEADING = 'Trending hashtags, mentions and public sentiments'
 MENTIONS_HASHTAGS_SENTIMENT_INFO_CONTENT = '1. Top hashtags and mentions by frequency. \n 2.' \
     + 'Sentiments distribution of public'
@@ -46,11 +47,11 @@ POTENTIALLY_SENSITIVE_TWEETS_PATH = DATA_DASH_PATH + 'basics/pst_tweets.csv'
 POTENTIALLY_SENSITIVE_TWEETS_DEFAULT_PERCENTILE = 0.95
 
 # ---------- Influential countries ----------
-INFLUENTIAL_COUNTRIES_INFO_CONTENT = 'Tweets by non-Singapore-based users with a high number of engagements' \
-    '- retweets and quoted tweets, by Singapore-based users.' \
-    ' Bubble sizes reflect the relative total engagements, received by country-specific tweets.'
+INFLUENTIAL_COUNTRIES_INFO_CONTENT = 'Tweets by non-{}-based users with a high number of engagements' \
+    '- retweets and quoted tweets, by {}-based users.' \
+    ' Bubble sizes reflect the relative total engagements, received by country-specific tweets.'.format(COUNTRY, COUNTRY)
 
-COUNTRIES_DATA_PATH = DATA_PATH + 'general\countries_geolocation.csv'
+COUNTRIES_DATA_PATH = DATA_PATH + 'general/countries_geolocation.csv'
 
 TOP_COUNTRY_INFLUENCER_PATH = DATA_DASH_PATH + 'influencers/top_countries.csv'
 TOP_COUNTRY_INFLUENCER_TWEETS_PATH = DATA_DASH_PATH + \

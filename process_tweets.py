@@ -71,7 +71,7 @@ tweets_data.loc[tweets_data['user_screenname_x'].isin(users_geocode_country_coun
 
 
 ### 3.3. Filtering out non-Singapore accounts - reducing false positives and false negatives <a id="cell33"></a>
-sg_tweets = tweets_data[
+tweets = tweets_data[
                     # 1. geo coded as Singapore
 #                     (tweets_data['user_geo_coding'] == 'Unknown') | 
                     (tweets_data['user_geo_coding'] == 'Singapore') | 
@@ -85,19 +85,19 @@ sg_tweets = tweets_data[
             ]
 
 ### 3.4. Processing the tweets and quoted tweets <a id="cell34"></a>
-sg_tweets['tweet_text'] = [txt.replace('&amp;', '&') if isinstance(txt, str) else '' for txt in sg_tweets['tweet_text']]
-sg_tweets['quoted_tweet_text'] = [ txt.replace('&amp;', '&') if isinstance(txt, str) else '' for txt in sg_tweets['quoted_tweet_text']]
+tweets['tweet_text'] = [txt.replace('&amp;', '&') if isinstance(txt, str) else '' for txt in tweets['tweet_text']]
+tweets['quoted_tweet_text'] = [ txt.replace('&amp;', '&') if isinstance(txt, str) else '' for txt in tweets['quoted_tweet_text']]
 
 
 from utils.process_text import TwitterDataProcessing
 pre = TwitterDataProcessing()
 
 
-processed_tweets = [pre.clean_text(text) for text in sg_tweets['tweet_text']]
-sg_tweets['processed_tweet_text'] = processed_tweets
+processed_tweets = [pre.clean_text(text) for text in tweets['tweet_text']]
+tweets['processed_tweet_text'] = processed_tweets
 
-processed_quoted_tweets = [pre.clean_text(text) if isinstance(text, str) == True else '' for text in sg_tweets['quoted_tweet_text']]
-sg_tweets['processed_quoted_tweet_text'] = processed_quoted_tweets
+processed_quoted_tweets = [pre.clean_text(text) if isinstance(text, str) == True else '' for text in tweets['quoted_tweet_text']]
+tweets['processed_quoted_tweet_text'] = processed_quoted_tweets
 
 
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
@@ -116,14 +116,14 @@ def get_sentiment(doc):
     return sentiment
 
 
-tw_sentiment = [get_sentiment(text) for text in sg_tweets['processed_tweet_text']]
-sg_tweets['tweet_sentiment'] = tw_sentiment
+tw_sentiment = [get_sentiment(text) for text in tweets['processed_tweet_text']]
+tweets['tweet_sentiment'] = tw_sentiment
 
-quoted_tw_sentiment = [get_sentiment(text) if text != '' else None for text in sg_tweets['processed_quoted_tweet_text']]
-sg_tweets['quoted_tweet_sentiment'] = quoted_tw_sentiment
+quoted_tw_sentiment = [get_sentiment(text) if text != '' else None for text in tweets['processed_quoted_tweet_text']]
+tweets['quoted_tweet_sentiment'] = quoted_tw_sentiment
 
 
-sg_tweets = sg_tweets.loc[:, ~sg_tweets.columns.str.contains('^Unnamed')]
-pd.DataFrame.to_csv(sg_tweets, DATA_PATH + "sg.csv")
+tweets = tweets.loc[:, ~tweets.columns.str.contains('^Unnamed')]
+pd.DataFrame.to_csv(tweets, DATA_PATH + "sg.csv")
 
 

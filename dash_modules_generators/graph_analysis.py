@@ -11,28 +11,28 @@ import community as community_louvain
 from utils.dash_constants import *
 
 
-def get_all_interacting_users(sg_tweets):
+def get_all_interacting_users(tweets):
     sg_users = set()
     retweeted_users = set()
     quoted_users = set()
     replied_users = set()
 
     # merged csvs created user_screenname_x and user_screenname_y
-    for u in sg_tweets['user_screenname_x']:
+    for u in tweets['user_screenname_x']:
         sg_users.add(u)
     print('Count unique SG users: ', len(sg_users))
 
-    for u in sg_tweets[sg_tweets['replied_to_user_screenname'].notna()]['replied_to_user_screenname']:
+    for u in tweets[tweets['replied_to_user_screenname'].notna()]['replied_to_user_screenname']:
         if u == u:
             replied_users.add(u)
     print('Count unique replied users: ', len(replied_users))
 
-    for u in sg_tweets[sg_tweets['retweeted_user_screenname'].notna()]['retweeted_user_screenname']:
+    for u in tweets[tweets['retweeted_user_screenname'].notna()]['retweeted_user_screenname']:
         if u == u:
             retweeted_users.add(u)
     print('Count unique retweeted users: ', len(retweeted_users))
 
-    for u in sg_tweets[sg_tweets['quoted_user_screenname'].notna()]['quoted_user_screenname']:
+    for u in tweets[tweets['quoted_user_screenname'].notna()]['quoted_user_screenname']:
         if u == u:
             quoted_users.add(u)
     print('Count unique quoted users: ', len(quoted_users))
@@ -45,11 +45,11 @@ def get_all_interacting_users(sg_tweets):
     return set.union(sg_users, replied_users, retweeted_users, quoted_users)
 
 
-def get_weighted_interacting_edges(sg_tweets):
+def get_weighted_interacting_edges(tweets):
     interacting_edges = dict()  # try set as well
 
     # replies interaction
-    replies_sg = sg_tweets[sg_tweets['tweet_enagagement_type'] == 'Reply'][[
+    replies_sg = tweets[tweets['tweet_enagagement_type'] == 'Reply'][[
         'user_screenname_x', 'replied_to_user_screenname']]
     for user, iuser in zip(replies_sg['user_screenname_x'], replies_sg['replied_to_user_screenname']):
         if user and iuser and (user != iuser):
@@ -59,7 +59,7 @@ def get_weighted_interacting_edges(sg_tweets):
                 interacting_edges[(user, iuser,)] = 1
 
     # retweets interaction
-    retweets_sg = sg_tweets[sg_tweets['tweet_enagagement_type'] == 'Retweet'][[
+    retweets_sg = tweets[tweets['tweet_enagagement_type'] == 'Retweet'][[
         'user_screenname_x', 'retweeted_user_screenname']]
     for user, iuser in zip(retweets_sg['user_screenname_x'], retweets_sg['retweeted_user_screenname']):
         if user and iuser and (user != iuser):
@@ -69,7 +69,7 @@ def get_weighted_interacting_edges(sg_tweets):
                 interacting_edges[(user, iuser,)] = 1
 
     # quotes interaction
-    quotes_sg = sg_tweets[sg_tweets['tweet_enagagement_type'] == 'Quote'][[
+    quotes_sg = tweets[tweets['tweet_enagagement_type'] == 'Quote'][[
         'user_screenname_x', 'quoted_user_screenname']]
     for user, iuser in zip(quotes_sg['user_screenname_x'], quotes_sg['quoted_user_screenname']):
         if user and iuser and (user != iuser):
@@ -109,30 +109,30 @@ def get_top_ranked_users(G, top_users_count=50):
     return list(ranked_users)[:top_users_count]
 
 
-def generate_dash_influential_users(sg_tweets, top_ranking,
+def generate_dash_influential_users(tweets, top_ranking,
                                     save=False,
                                     influential_users_save_path=INFLUENTIAL_USERS_PATH):
     # TODO: Can add followers counts but missing for retweeted_user_screenname and quoted_user_screenname
-    # sg_tweets = sg_tweets.dropna(axis=0, subset=['user_id_x'])
-    # sg_tweets = sg_tweets.dropna(axis=0, subset=['retweeted_user_id'])
-    # sg_tweets = sg_tweets.dropna(axis=0, subset=['quoted_user_id'])
+    # tweets = tweets.dropna(axis=0, subset=['user_id_x'])
+    # tweets = tweets.dropna(axis=0, subset=['retweeted_user_id'])
+    # tweets = tweets.dropna(axis=0, subset=['quoted_user_id'])
 
-    # sg_tweets[['user_id_x', 'retweeted_user_id', 'quoted_user_id']] = sg_tweets[[
+    # tweets[['user_id_x', 'retweeted_user_id', 'quoted_user_id']] = tweets[[
     #     'user_id_x', 'retweeted_user_id', 'quoted_user_id']].fillna(0).astype(int)
 
-    normal_users = sg_tweets[sg_tweets['user_screenname_x'].isin(
+    normal_users = tweets[tweets['user_screenname_x'].isin(
         top_ranking)][['user_id_x', 'user_screenname_x', 'user_geo_coding', 'user_verified']]
     normal_users.rename(
         columns={'user_id_x': 'user_id', 'user_screenname_x': 'user_screenname'}, inplace=True)
 
-    rts_users = sg_tweets[sg_tweets['retweeted_user_screenname'].isin(top_ranking)][[
+    rts_users = tweets[tweets['retweeted_user_screenname'].isin(top_ranking)][[
         'retweeted_user_id', 'retweeted_user_screenname', 'retweeted_user_geo_coding', 'retweeted_user_verified']]
     rts_users.rename(columns={'retweeted_user_id': 'user_id',
                               'retweeted_user_screenname': 'user_screenname',
                               'retweeted_user_geo_coding': 'user_geo_coding',
                               'retweeted_user_verified': 'user_verified'}, inplace=True)
 
-    quoted_users = sg_tweets[sg_tweets['quoted_user_screenname'].isin(top_ranking)][[
+    quoted_users = tweets[tweets['quoted_user_screenname'].isin(top_ranking)][[
         'quoted_user_id', 'quoted_user_screenname', 'quoted_user_geo_coding', 'quoted_user_verified']]
     quoted_users.rename(columns={
         'quoted_user_id': 'user_id',
@@ -150,21 +150,21 @@ def generate_dash_influential_users(sg_tweets, top_ranking,
     return influential_users
 
 
-def generate_dash_influential_users_tweets(sg_tweets, top_ranking,
+def generate_dash_influential_users_tweets(tweets, top_ranking,
                                            save=False,
                                            influential_users_tweets_save_path=INFLUENTIAL_USERS_TWEETS_PATH):
     # TODO: Can add followers counts but missing for retweeted_user_screenname and quoted_user_screenname
-    normal_users = sg_tweets[sg_tweets['user_screenname_x'].isin(
+    normal_users = tweets[tweets['user_screenname_x'].isin(
         top_ranking)][['user_screenname_x', 'tweet_text']]
     normal_users.rename(
         columns={'user_screenname_x': 'user_screenname'}, inplace=True)
 
-    rts_users = sg_tweets[sg_tweets['retweeted_user_screenname'].isin(
+    rts_users = tweets[tweets['retweeted_user_screenname'].isin(
         top_ranking)][['retweeted_user_screenname', 'tweet_text']]
     rts_users.rename(
         columns={'retweeted_user_screenname': 'user_screenname'}, inplace=True)
 
-    quoted_users = sg_tweets[sg_tweets['quoted_user_screenname'].isin(
+    quoted_users = tweets[tweets['quoted_user_screenname'].isin(
         top_ranking)][['quoted_user_screenname', 'quoted_tweet_text']]
     quoted_users.rename(columns={'quoted_user_screenname': 'user_screenname',
                                  'quoted_tweet_text': 'tweet_text'}, inplace=True)
@@ -180,13 +180,13 @@ def generate_dash_influential_users_tweets(sg_tweets, top_ranking,
     return influential_users_tweets
 
 
-def quality_check_pagerank(sg_tweets, top_ranking, top_users_count):
-    sg_verified_users = sg_tweets[sg_tweets['user_verified']
+def quality_check_pagerank(tweets, top_ranking, top_users_count):
+    sg_verified_users = tweets[tweets['user_verified']
                                   == True]['user_screenname_x']
-    rt_verified_users = sg_tweets[(sg_tweets['tweet_enagagement_type'] == 'Retweet') & (
-        sg_tweets['retweeted_user_verified'] == True)]['retweeted_user_screenname']
-    q_verified_users = sg_tweets[(sg_tweets['tweet_enagagement_type'] == 'Quote') & (
-        sg_tweets['quoted_user_verified'] == True)]['quoted_user_screenname']
+    rt_verified_users = tweets[(tweets['tweet_enagagement_type'] == 'Retweet') & (
+        tweets['retweeted_user_verified'] == True)]['retweeted_user_screenname']
+    q_verified_users = tweets[(tweets['tweet_enagagement_type'] == 'Quote') & (
+        tweets['quoted_user_verified'] == True)]['quoted_user_screenname']
 
     all_verified_users = set(list(sg_verified_users) +
                              list(rt_verified_users) + list(q_verified_users))
@@ -196,7 +196,7 @@ def quality_check_pagerank(sg_tweets, top_ranking, top_users_count):
     return len(z)/top_users_count*100
 
 
-def get_communities(G_pruned, sg_tweets, save=False,
+def get_communities(G_pruned, tweets, save=False,
                     communities_user_save_path=COMMUNITIES_USERS_PATH,
                     communities_plot_save_path=COMMUNITIES_PLOT_PATH,
                     communities_tweets_save_path=COMMUNITIES_TWEETS_PATH,
@@ -225,12 +225,12 @@ def get_communities(G_pruned, sg_tweets, save=False,
     communities_tweets = {}
     for c, u in communities_grouped.items():
         # print(u)
-        cluster_tweets = sg_tweets[
-            (sg_tweets['user_screenname_x'].isin(u) |
-             sg_tweets['retweeted_user_screenname'].isin(u) |
-             sg_tweets['quoted_user_screenname'].isin(u) |
-             sg_tweets['replied_to_user_screenname'].isin(u)) &
-            (sg_tweets['processed_tweet_text'].notna())]['processed_tweet_text'].tolist()
+        cluster_tweets = tweets[
+            (tweets['user_screenname_x'].isin(u) |
+             tweets['retweeted_user_screenname'].isin(u) |
+             tweets['quoted_user_screenname'].isin(u) |
+             tweets['replied_to_user_screenname'].isin(u)) &
+            (tweets['processed_tweet_text'].notna())]['processed_tweet_text'].tolist()
         # cluster_tweets = cluster_tweets
 
         communities_tweets[c] = cluster_tweets

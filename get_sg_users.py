@@ -7,7 +7,10 @@ from dotenv import load_dotenv
 from twython import Twython
 from collections import Counter
 
-from utils.constants import DEFAULT_MIN_FOLLOWING_REQUIRED, MIN_SG_ACCOUNTS_FOLLWERS_PATH, SCREEN_NAMES, SG_ACCOUNTS_FOLLOWERS_PATH, USER_TXT_PATH
+from utils.constants import DEFAULT_MIN_FOLLOWING_REQUIRED, \
+    MIN_SG_ACCOUNTS_FOLLWERS_PATH, SCREEN_NAMES, SG_ACCOUNTS_FOLLOWERS_PATH
+
+from pathlib import Path
 
 load_dotenv()
 
@@ -48,8 +51,9 @@ def _merge_all_followers(sg_accounts_followers):
 
     print("total users:", len(sg_accounts_followers))
     print("total unique users:", len(set(sg_accounts_followers)))
-    print("total files (accounts)", len(os.listdir(USER_TXT_PATH)))
+    print("total files (accounts)", len(os.listdir(SG_ACCOUNTS_FOLLOWERS_PATH)))
     return sg_accounts_followers
+
 
 def _get_min_following_followers_id(sg_accounts_followers, min_following_required):
     '''
@@ -85,6 +89,9 @@ def get_sg_users(min_following_required=DEFAULT_MIN_FOLLOWING_REQUIRED):
 
 
 if __name__ == "__main__":
+
+    Path(SG_ACCOUNTS_FOLLOWERS_PATH).mkdir(parents=True, exist_ok=True)
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--min_following_required', type=int, default=2,
                         help="Filter users following at least these"

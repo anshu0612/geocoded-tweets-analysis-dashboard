@@ -14,7 +14,7 @@ DATA_DASH_PATH = DATA_PATH + "dash_output/"
 
 DEFAULT_DB_NAME = "COVID_VACCINE"
 
-SG_SLANGS = ['sg', 'spore', 'singapore', 'singapura']
+COUNTRY_SLANGS = ['sg', 'spore', 'singapore', 'singapura']
 SG_LONG = 103.8
 SG_LAT = 1.3667
 
@@ -39,8 +39,8 @@ SCREEN_NAMES = ['mindefsg', 'MOEsg', 'sporeMOH', 'LTAsg', 'SMRT_Singapore', 'SBS
 SG_ACCOUNTS_FOLLOWERS_PATH = 'data/sg_accounts_followers/'
 MIN_SG_ACCOUNTS_FOLLWERS_PATH = "data/general/min_following_users.txt"
 
-FRAGMENTED_TWEETS_PATH = "data/fragmented_data/tweets_sg/{}_{}.csv"
-FRAGMENTED_TWEETS_ENGAGEMENTS_PATH = "data/fragmented_data/tweets_engagements_sg/{}_{}.csv"
+FRAGMENTED_TWEETS_PATH = "data/fragmented_tweets/tweets/"
+FRAGMENTED_TWEETS_ENGAGEMENTS_PATH = "data/fragmented_tweets/tweets_engagements/"
 
 # from pycountry package
 COUNTRY_TO_ALPHA2 = {'Aruba': 'AW',
