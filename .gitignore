@@ -5,10 +5,8 @@ venv
 __pycache__
 tweets.log
 
-
-
 # Uncomment the below folders for deployment on Heroku
-# data
+data
 # data/sg.csv
 # data/dash_output/
 # data/fragmented_data
