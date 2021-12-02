@@ -1,8 +1,6 @@
-from constants.common import COUNTRY_TO_ALPHA2
-
 COUNTRY = 'Singapore'
 
-COUNTRY_CODE = COUNTRY_TO_ALPHA2[COUNTRY]
+COUNTRY_CODE = 'SG'
 COUNTRY_SLANGS = ['sg', 'spore', 'singapore', 'singapura']
 
 COUNTRY_LONG = 103.8
