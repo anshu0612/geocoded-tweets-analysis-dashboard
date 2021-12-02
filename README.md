@@ -73,21 +73,37 @@ Running the below command fetches the followers of the 59 collected Singapore-ba
 ```
 python3 get_sg_users.py --min_following_required 2
 ```
+**Arguments**
 
-`min_following_required` default is `2`
+| Argument | Description | Default
+| ---- | --- | --- |
+| min_following_required | Filter users following at least these number of Singapore-based official accounts | 2 |
 
-The file `/data/min_2_following_users.txt` contains the user ids of the collected twitter Singapore-based official accounts.
+The file `/data/min_following_users.txt` contains the user ids of the collected twitter Singapore-based official accounts.
+
+The list of followers will be saved in `/data/sg_accounts_followers` folder.
 
 ### 2. Creating Singapore-based users geocoded tweets data 
-Tweets from the streaming twitter API are first ingested into MongoDB. 
+<!-- Tweets from the streaming twitter API are first ingested into MongoDB.  -->
 ```
-python3 get_sg_tweets.py --db_name "COVID_VACCINE" --collections 1,2,3,4,5
+python3 get_sg_tweets.py --db_name "COVID_VACCINE" --collection_no_list 1,2,3,4,5
 ```
+
+**Arguments**
+
+| Argument | Description | Default
+| ---- | --- | --- |
+| db_name | Database name to fetch tweets from | - |
+| collection_no_list | List of Mongo collections | - |
+| running_tw_save_count | Number of tweets to save during tweets processing | 1000 |
+| max_csv_tw_count | Maximum no. of tweets to save in a csv | 10000 |
+
 
 ### 3. Creating dashboard data 
 ```
 python3 generate_dash_data.py 
 ```
+You can setup the dashboard related constants in the `data\dash_constants.py`
 
 
 
