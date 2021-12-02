@@ -1,10 +1,10 @@
 import pandas as pd
 
 from utils.dash_constants import *
-from dash_modules.engagements import *
-from dash_modules.basics import *
-from dash_modules.influential_countries import *
-from dash_modules.graph_analysis import *
+from dash_modules_generators.engagements import *
+from dash_modules_generators.basics import *
+from dash_modules_generators.influential_countries import *
+from dash_modules_generators.graph_analysis import *
 from utils.constants import COUNTRY
 
 from pathlib import Path

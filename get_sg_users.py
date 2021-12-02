@@ -41,14 +41,16 @@ def _merge_all_followers(sg_accounts_followers):
     '''
         Merging the list of followers of Singapore-based accounts
     '''
-    for txt in os.listdir(USER_TXT_PATH):
-        with open(USER_TXT_PATH + txt) as f:
+    for txt in os.listdir(SG_ACCOUNTS_FOLLOWERS_PATH):
+        with open(SG_ACCOUNTS_FOLLOWERS_PATH + txt) as f:
             for line in f:
                 sg_accounts_followers.append(line.strip())
 
     print("total users:", len(sg_accounts_followers))
     print("total unique users:", len(set(sg_accounts_followers)))
     print("total files (accounts)", len(os.listdir(USER_TXT_PATH)))
+
+    return sg_accounts_followers
 
 
 def _get_min_following_followers_id(sg_accounts_followers, min_following_required):
@@ -79,7 +81,7 @@ def get_sg_users(min_following_required=DEFAULT_MIN_FOLLOWING_REQUIRED):
         file.close()
 
     sg_accounts_followers = list()
-    _merge_all_followers(sg_accounts_followers, )
+    sg_accounts_followers = _merge_all_followers(sg_accounts_followers, )
     _get_min_following_followers_id(
         sg_accounts_followers, min_following_required)
 

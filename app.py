@@ -1,8 +1,9 @@
 # from os import path
-from matplotlib.pyplot import title
+# from matplotlib.pyplot import title
 import pandas as pd
 import warnings
 
+import json
 import dash
 from dash.dependencies import Output, Input
 import dash_bootstrap_components as dbc
@@ -10,17 +11,25 @@ import dash_html_components as html
 from wordcloud import WordCloud, STOPWORDS
 import plotly.express as px
 from dash.exceptions import PreventUpdate
+import plotly.graph_objects as go
 
 
-from utils.constants import DATA_PATH
-from components import *
+# from utils.constants import DATA_PATH
+# from components import *
+# from dash_components.basics import PSTS
 from utils.dash_constants import *
 from utils.common import human_format
-from dash_modules.basics import generate_dash_hashtags, \
+from dash_modules_generators.basics import generate_dash_hashtags, \
     generate_dash_mentions, \
     generate_dash_sentiments, \
     get_date_range
 
+
+from dash_components.influencers import INFLUENCERS
+from dash_components.networking import NETWORKING
+from dash_components.navbar import NAVBAR
+from dash_components.basics import TWEETS
+from dash_components.retweets_quoted_tweets import *
 
 # setup
 app = dash.Dash(__name__, suppress_callback_exceptions=True,
@@ -545,6 +554,7 @@ with open(COMMUNITIES_TWEETS_PATH, 'r') as f:
 
 with open(COMMUNITIES_USERS_PATH, 'r') as f:
     clusters_users = json.load(f)
+
 
 def cluster_user_ui(idx, username):
     return html.P(html.A(html.Span(str(

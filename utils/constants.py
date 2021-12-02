@@ -9,17 +9,10 @@ TWITTER_STATUS_PATH = TWITTER_BASE_URL + "{}/status/{}"
 # TWITTER_USER_PHOTO_PATH = "https://pbs.twimg.com/profile_images/{}/Z0mJaRZw_400x400.jpg"
 
 DATA_PATH = "data/"
-DATA_DASH_PATH = DATA_PATH + "output/"
+DATA_DASH_PATH = DATA_PATH + "dash_output/"
 # BASE_PROD_URL = "https://sg-pulse-monitoring.s3.ap-southeast-1.amazonaws.com/"
 
 DEFAULT_DB_NAME = "COVID_VACCINE"
-
-# Dates
-# TW_CREATED_AT_FORMAT = "%a %b %d %H:%M:%S +0000 %Y"
-# TIME_FORMAT = '%H:%M:%S'
-# DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
-# NEW_FORMAT = "%a %b %Y, %I:%m %p"
-
 
 SG_SLANGS = ['sg', 'spore', 'singapore', 'singapura']
 SG_LONG = 103.8
@@ -27,7 +20,6 @@ SG_LAT = 1.3667
 
 US_LAT = 39.8283
 US_LNG = 98.5795
-
 
 DISPLAY_NONE = {'display': 'none'}
 DISPLAY_INLINE = {'display': 'inline'}
@@ -44,9 +36,9 @@ SCREEN_NAMES = ['mindefsg', 'MOEsg', 'sporeMOH', 'LTAsg', 'SMRT_Singapore', 'SBS
                 'TimeOutSG', 'VisitSingapore', 'stb_sg', 'GovTechSG', 'SGmagazine', 'mySingapore',
                 'sgelection', 'SGAG_SG', 'TEDxSingapore', 'STATravelSG', 'STPix']
 
-USER_TXT_PATH = "sg_accounts/"
-SG_ACCOUNTS_FOLLOWERS_PATH = 'data/sg_accounts_followers'
-MIN_SG_ACCOUNTS_FOLLWERS_PATH = "data/min_following_users.txt"
+# USER_TXT_PATH = "sg_accounts/"
+SG_ACCOUNTS_FOLLOWERS_PATH = 'data/sg_accounts_followers/'
+MIN_SG_ACCOUNTS_FOLLWERS_PATH = "data/general/min_following_users.txt"
 
 FRAGMENTED_TWEETS_PATH = "data/fragmented_data/tweets_sg/{}_{}.csv"
 FRAGMENTED_TWEETS_ENGAGEMENTS_PATH = "data/fragmented_data/tweets_engagements_sg/{}_{}.csv"
