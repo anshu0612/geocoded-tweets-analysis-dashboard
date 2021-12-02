@@ -49,9 +49,7 @@ def _merge_all_followers(sg_accounts_followers):
     print("total users:", len(sg_accounts_followers))
     print("total unique users:", len(set(sg_accounts_followers)))
     print("total files (accounts)", len(os.listdir(USER_TXT_PATH)))
-
     return sg_accounts_followers
-
 
 def _get_min_following_followers_id(sg_accounts_followers, min_following_required):
     '''
@@ -72,7 +70,7 @@ def get_sg_users(min_following_required=DEFAULT_MIN_FOLLOWING_REQUIRED):
     for screen_name in SCREEN_NAMES:
         file = open(os.path.join(SG_ACCOUNTS_FOLLOWERS_PATH,
                     '{}.txt'.format(screen_name)), 'a+')
-        fosllower_ids = _get_all_followers(screen_name)
+        follower_ids = _get_all_followers(screen_name)
         if follower_ids is not None:
             for follower_id in follower_ids:
                 file.write('{}'.format(follower_id))

@@ -4,6 +4,7 @@ import pandas as pd
 import warnings
 
 import json
+
 import dash
 from dash.dependencies import Output, Input
 import dash_bootstrap_components as dbc
@@ -554,7 +555,6 @@ with open(COMMUNITIES_TWEETS_PATH, 'r') as f:
 
 with open(COMMUNITIES_USERS_PATH, 'r') as f:
     clusters_users = json.load(f)
-
 
 def cluster_user_ui(idx, username):
     return html.P(html.A(html.Span(str(

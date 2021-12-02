@@ -49,6 +49,7 @@ POTENTIALLY_SENSITIVE_TWEETS_DEFAULT_PERCENTILE = 0.95
 INFLUENTIAL_COUNTRIES_INFO_CONTENT = 'Tweets by non-Singapore-based users with a high number of engagements' \
     '- retweets and quoted tweets, by Singapore-based users.' \
     ' Bubble sizes reflect the relative total engagements, received by country-specific tweets.'
+
 COUNTRIES_DATA_PATH = DATA_PATH + 'general\countries_geolocation.csv'
 
 TOP_COUNTRY_INFLUENCER_PATH = DATA_DASH_PATH + 'influencers/top_countries.csv'

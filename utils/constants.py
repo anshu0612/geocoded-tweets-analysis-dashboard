@@ -36,7 +36,6 @@ SCREEN_NAMES = ['mindefsg', 'MOEsg', 'sporeMOH', 'LTAsg', 'SMRT_Singapore', 'SBS
                 'TimeOutSG', 'VisitSingapore', 'stb_sg', 'GovTechSG', 'SGmagazine', 'mySingapore',
                 'sgelection', 'SGAG_SG', 'TEDxSingapore', 'STATravelSG', 'STPix']
 
-# USER_TXT_PATH = "sg_accounts/"
 SG_ACCOUNTS_FOLLOWERS_PATH = 'data/sg_accounts_followers/'
 MIN_SG_ACCOUNTS_FOLLWERS_PATH = "data/general/min_following_users.txt"
 
