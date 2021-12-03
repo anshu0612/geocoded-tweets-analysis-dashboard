@@ -3,7 +3,7 @@ import spacy
 from geopy.geocoders import Nominatim
 from constants.common import ALPHA2_TO_COUNTRY, COUNTRY_TO_ALPHA2
 
-from constants.country_config import COUNTRY
+from constants.country_config import COUNTRY, KNOWN_USERNAMES_COUNTRIES
 
 locator = Nominatim(user_agent="anshu")
 nlp = spacy.load('en_core_web_sm')
@@ -54,25 +54,25 @@ def get_geo_latlng(lng, lat):
         return None
 
 
-def get_geo_raw_address(lng, lat):
-    '''
-    Input: (longitude, latitude) - float
-    Output: (country, country_code) - Tuple 
+# def get_geo_raw_address(lng, lat):
+#     '''
+#     Input: (longitude, latitude) - float
+#     Output: (country, country_code) - Tuple 
 
-    Alternative:
-    # from geopy.geocoders import GoogleV3
-    # geolocator = GoogleV3(api_key='Your_API_Key')
-    # location = geolocator.reverse("52.509669, 13.376294")
-    # print(location.address)
-    '''
-    try:
-        coordinates = str(lat) + "," + str(lng)
-        location = locator.reverse(coordinates)
-        # cc = location.raw['address']['country_code'].upper()
-        return location.raw['address']
-    except Exception as e:
-        print(e)
-        return None
+#     Alternative:
+#     # from geopy.geocoders import GoogleV3
+#     # geolocator = GoogleV3(api_key='Your_API_Key')
+#     # location = geolocator.reverse("52.509669, 13.376294")
+#     # print(location.address)
+#     '''
+#     try:
+#         coordinates = str(lat) + "," + str(lng)
+#         location = locator.reverse(coordinates)
+#         # cc = location.raw['address']['country_code'].upper()
+#         return location.raw['address']
+#     except Exception as e:
+#         print(e)
+#         return None
 
 
 def geo_coding(tweet):
@@ -80,7 +80,10 @@ def geo_coding(tweet):
     coding_type = None
     try:
         u = tweet['user']
-        if tweet['coordinates']:  # exact location
+        if u['screen_name'] in KNOWN_USERNAMES_COUNTRIES: 
+            country_info = (ALPHA2_TO_COUNTRY[u['screen_name']], u['screen_name'])
+            coding_type = 'Knowns'
+        elif tweet['coordinates']:  # exact location
             country_info = get_geo_latlng(
                 tweet['coordinates']['coordinates'][0], tweet['coordinates']['coordinates'][1])
             coding_type = 'Coordinates'

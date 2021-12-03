@@ -19,7 +19,6 @@ APP_LOGO = 'assets/pulse.png'
 # Dates
 DASH_NO_YEAR_FORMAT = "%d %b"
 DASH_FORMAT = "%d %b, %Y"
-DATE_FORMAT = '%Y-%m-%d'
 
 # -------- Basics ----------
 TWEETS_STATS_HEADING = 'Tweets Stats'

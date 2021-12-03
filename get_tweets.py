@@ -14,7 +14,8 @@ from sshtunnel import SSHTunnelForwarder
 from utils.detect_place import geo_coding
 from constants.common import FRAGMENTED_TWEETS_ENGAGEMENTS_PATH, \
     FRAGMENTED_TWEETS_PATH, \
-    DEFAULT_DB_NAME
+    DEFAULT_DB_NAME, \
+    ALT_GEO_NOT_FOUND
 
 load_dotenv()
 
@@ -106,7 +107,6 @@ def create_tweets_csv(db_name, is_country_set, data, collection_no,
 
     # geocoded users - memoization
     geocoded_users = dict()
-    ALT_GEO_NOT_FOUND = "Unknown"
     # UGANDA_FIX = "Uganda"
 
     # tracking counters
@@ -164,7 +164,6 @@ def create_tweets_csv(db_name, is_country_set, data, collection_no,
         user_location.append(u['location'])
         user_desc.append(u['description'])
 
-        # TODO VERIFY
         if u['id'] in geocoded_users:
             ori_geo_coding = geocoded_users[u['id']]
         else:

@@ -3,11 +3,12 @@ from constants.country_config import COUNTRY
 FLAG_FIX_USA = 'united-states-of-america'
 FLAG_URL = 'https://cdn.countryflags.com/thumbs/{}/flag-400.png'
 
-
 TWITTER_BASE_URL = "https://twitter.com/"
 TWITTER_STATUS_PATH = TWITTER_BASE_URL + "{}/status/{}"
 # TWITTER_USER_PHOTO_PATH = "https://pbs.twimg.com/profile_images/{}/Z0mJaRZw_400x400.jpg"
 
+# Dates
+DATE_FORMAT = '%Y-%m-%d'
 
 DATA_PATH = "data/{}/".format(COUNTRY.lower())
 DATA_DASH_PATH = DATA_PATH + "dash_output/"
@@ -20,6 +21,7 @@ DEFAULT_DB_NAME = "COVID_VACCINE"
 US_LAT = 39.8283
 US_LNG = 98.5795
 
+ALT_GEO_NOT_FOUND = "Unknown"
 DISPLAY_NONE = {'display': 'none'}
 DISPLAY_INLINE = {'display': 'inline'}
 
