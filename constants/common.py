@@ -22,10 +22,10 @@ DATE_FORMAT = '%Y-%m-%d'
 
 if COUNTRY:
     DATA_PATH = 'data/{}/'.format(COUNTRY.lower())
-    TWEETS_PATH = DATA_PATH + '{}.csv'.format(COUNTRY.lower())
+    TWEETS_PATH = DATA_PATH + '{}_tweets.csv'.format(COUNTRY.lower())
 else:
     DATA_PATH = 'data/{}/'.format(GLOBAL_LABEL.lower())
-    TWEETS_PATH = DATA_PATH + '{}.csv'.format(GLOBAL_LABEL.lower())
+    TWEETS_PATH = DATA_PATH + '{}_tweets.csv'.format(GLOBAL_LABEL.lower())
 
 DATA_DASH_PATH = DATA_PATH + 'dash_output/'
 

@@ -1,13 +1,13 @@
 import pandas as pd
 
-from constants.dash_constants import *
 from dash_modules_generators.engagements import *
 from dash_modules_generators.basics import *
 from dash_modules_generators.influential_countries import *
 from dash_modules_generators.graph_analysis import *
 
-from constants.country_config import COUNTRY
+from constants.dash_constants import *
 from constants.common import TWEETS_PATH
+from constants.country_config import COUNTRY
 
 from pathlib import Path
 
@@ -78,7 +78,7 @@ class DashGenerator():
 
     def generate_communities(self):
         Path(DATA_DASH_PATH + "networking").mkdir(parents=True, exist_ok=True)
-        self.G_pruned = get_min_degree_graph(self.G, 0)#5)
+        self.G_pruned = get_min_degree_graph(self.G, 0)  # 5)
         get_communities(self.G_pruned, self.tweets, True)
 
     def generate_bursty_quoted(self):
@@ -95,16 +95,21 @@ class DashGenerator():
 
     def generate_global_retweets(self):
         Path(DATA_DASH_PATH + "rts/global").mkdir(parents=True, exist_ok=True)
+
         neg_global_retweet = self.retweets[(self.retweets['tweet_sentiment'] == 'negative') &
-                                           (self.retweets['retweeted_user_geo_coding'] != COUNTRY) &
                                            (self.retweets['retweeted_tweet_date'].between(self.min_date, self.max_date, inclusive='both'))]
 
         pos_global_retweet = self.retweets[(self.retweets['tweet_sentiment'] == 'positive') &
-                                           (self.retweets['retweeted_user_geo_coding'] != COUNTRY) &
                                            (self.retweets['retweeted_tweet_date'].between(self.min_date, self.max_date, inclusive='both'))]
 
-        all_global_retweet = self.retweets[(self.retweets['retweeted_user_geo_coding'] != COUNTRY) &
-                                           (self.retweets['retweeted_tweet_date'].between(self.min_date, self.max_date, inclusive='both'))]
+        all_global_retweet = self.retweets[(self.retweets['retweeted_tweet_date'].between(
+            self.min_date, self.max_date, inclusive='both'))]
+
+        if COUNTRY:
+            # If country specific then global tweets should exclude the country's tweets
+            neg_global_retweet = neg_global_retweet[neg_global_retweet['retweeted_user_geo_coding'] != COUNTRY]
+            pos_global_retweet = pos_global_retweet[pos_global_retweet['retweeted_user_geo_coding'] != COUNTRY]
+            all_global_retweet = all_global_retweet[all_global_retweet['retweeted_user_geo_coding'] != COUNTRY]
 
         generate_dash_bursty_retweets(
             pos_global_retweet, True, POS_GLOBAL_RTS_TREND_PATH, POS_GLOBAL_RTS_INFO_PATH)
@@ -146,8 +151,9 @@ if __name__ == '__main__':
     print("{} 2/8 Global viral retweets data generated {}".format('-'*10, '-'*10))
 
     # Generates local viral tweets
-    dg.generate_local_retweets()
-    print("{} 3/8 Local viral retweets data generated {}".format('-'*10, '-'*10))
+    if COUNTRY:
+        dg.generate_local_retweets()
+        print("{} 3/8 Local viral retweets data generated {}".format('-'*10, '-'*10))
 
     # Generates reactive quoted tweets
     dg.generate_bursty_quoted()

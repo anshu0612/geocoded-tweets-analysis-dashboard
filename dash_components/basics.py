@@ -2,19 +2,15 @@ import json
 import pandas as pd
 from datetime import datetime as dt
 
-# import dash_table
+import plotly.express as px
 import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 import dash_html_components as html
 
-from constants.country_config import COUNTRY
-
-import plotly.express as px
-
+from constants.common import DATE_FORMAT
 from constants.dash_constants import BASICS_PATH, DASH_TEMPLATE, \
     TWEETS_STATS_HEADING, DAILY_TWEETS_PATH, DAILY_TWEETS_HEADING, \
-    DATE_FORMAT, \
-    DASH_NO_YEAR_FORMAT, DASH_FORMAT,\
+    DASH_NO_YEAR_FORMAT,\
     PSTS_HEADING, PSTS_INFO_CONTENT, \
     MENTIONS_HASHTAGS_SENTIMENT_HEADING, MENTIONS_HASHTAGS_SENTIMENT_INFO_CONTENT, \
     POTENTIALLY_SENSITIVE_TWEETS_COUNT_PATH, POTENTIALLY_SENSITIVE_TWEETS_DEFAULT_PERCENTILE
@@ -44,7 +40,7 @@ BASIC_STATS = dbc.Card(
                                 dt.strftime(dt.strptime(
                                     basic_data['min_date'], DATE_FORMAT), DASH_NO_YEAR_FORMAT),
                                 dt.strftime(dt.strptime(
-                                    basic_data['max_date'], DATE_FORMAT), DASH_FORMAT)),
+                                    basic_data['max_date'], DATE_FORMAT), DASH_NO_YEAR_FORMAT)),
                                 style={'fontWeight': 'bold'}),
                             html.Span(' duration')
                         ]),
@@ -52,7 +48,7 @@ BASIC_STATS = dbc.Card(
                             html.Span(basic_data['users_count'], style={
                                 'fontWeight': 'bold'}),
                             html.Span(
-                                ' unique {}-based twitter users'.format(COUNTRY))
+                                ' unique twitter users')
                         ]),
                         html.P([
                             html.Span(basic_data['avg_tweets'], style={
@@ -182,7 +178,7 @@ DATEPICK_PSTS = dcc.DatePickerSingle(
     style={'width': '3em'}
 )
 
-
+# PSTS: Potentially Sensitive Tweets
 PSTS_INFO = dbc.Jumbotron(
     dbc.Row(
         [dbc.Col(

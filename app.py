@@ -1,9 +1,6 @@
-# from os import path
-# from matplotlib.pyplot import title
+import json
 import pandas as pd
 import warnings
-
-import json
 
 import dash
 from dash.dependencies import Output, Input
@@ -15,9 +12,6 @@ from dash.exceptions import PreventUpdate
 import plotly.graph_objects as go
 
 
-# from utils.constants import DATA_PATH
-# from components import *
-# from dash_components.basics import PSTS
 from constants.country_config import COUNTRY, COUNTRY_LAT, COUNTRY_LONG
 from constants.dash_constants import *
 from utils.common import human_format
@@ -25,7 +19,6 @@ from dash_modules_generators.basics import generate_dash_hashtags, \
     generate_dash_mentions, \
     generate_dash_sentiments, \
     get_date_range
-
 
 from dash_components.influencers import INFLUENCERS
 from dash_components.networking import NETWORKING
@@ -39,7 +32,6 @@ app = dash.Dash(__name__, suppress_callback_exceptions=True,
 # app.layout = html.Div(children=[NAVBAR, MAIN_CONTAINER])
 server = app.server
 
-ROUTE_TITLE_STYLE = {'margin': '1em 1em', 'color': 'rgb(0, 150, 255)'}
 app.layout = html.Div([
     # represents the URL bar, doesn't render anything
     dcc.Location(id='url', refresh=False),
@@ -58,6 +50,8 @@ app.layout = html.Div([
     html.Div(id='page-content')
 ])
 
+# routing
+
 
 @app.callback(Output('page-content', 'children'),
               [Input('url', 'pathname')])
@@ -75,14 +69,13 @@ def display_page(pathname):
 # load the tweets
 tweets = pd.read_csv(TWEETS_PATH)
 
+# get tweets dtae range
 min_date, max_date = get_date_range(tweets)
 
-# influencial countries
-top_countries_data = pd.read_csv(TOP_COUNTRIES_CLEANED_DATA)
+# influential users
 influential_users = pd.read_csv(INFLUENTIAL_USERS_PATH)
-country_data = pd.read_csv(TOP_COUNTRY_INFLUENCER_PATH)
 
-
+# dummy figure
 dummy_fig = px.treemap(
     names=[ERROR_INSUFFICIENT_TWEETS],
     parents=['']
@@ -94,12 +87,6 @@ def generate_rts_info(tw):
     return (
         dbc.CardBody(
             [
-                # html.A(html.P(style={'fontSize': '1em',
-                #               'color': '#000'}, children=tw['tweet_text_']),
-                #        target='blank_',
-                #        href=TWITTER_STATUS_PATH.format(
-                #            tw['retweeted_user_screenname'], tw['retweeted_tweet_id']),
-                #        ),
                 html.P(style={'fontSize': '1em',
                                           'color': '#000'}, children=tw['tweet_text_']),
                 html.P(
@@ -118,7 +105,7 @@ def generate_rts_info(tw):
                         ),
                         html.Span(' | Created on: ' +
                                   dt.strftime(dt.strptime(
-                                      tw['retweeted_tweet_date'], DATE_FORMAT), DASH_FORMAT)),
+                                      tw['retweeted_tweet_date'], DATE_FORMAT), DASH_DATE_FORMAT)),
                         html.Span(
                             ' | 🔁 ', className='quoted-endorsements'),
                         html.Span(
@@ -249,6 +236,9 @@ with open(NETWORKING_DATA, 'r') as f:
 def reset_layout(n_clicks):
     return [1, cyto_data['data']]
 
+# influencial countries data
+influential_countries = pd.read_csv(TOP_COUNTRY_INFLUENCER_PATH)
+influential_countries_tweets = pd.read_csv(TOP_COUNTRY_INFLUENCER_TWEETS_PATH)
 
 @app.callback(
     [Output('fig-world-influence', 'figure'),
@@ -260,29 +250,40 @@ def gen_influential_countries_wordfreq(pathname, country):
     if not pathname == INFLUENCERS_PATH:
         raise PreventUpdate
 
-    x = top_countries_data[top_countries_data['retweeted_user_geo_coding']
+    x = influential_countries_tweets[influential_countries_tweets['retweeted_user_geo_coding']
                            == country]['processed_tweet_text']
-    # most_influential_country = str(
-    #     country_data.iloc[country_data['count'].idxmax()]['country'])
 
-    fig_world_influence = go.Figure(go.Scattermapbox(
-        mode='markers+lines',
-        lon=[COUNTRY_LONG],
-        lat=[COUNTRY_LAT],
-        name=COUNTRY,
-        text=[COUNTRY],
-        marker={'size': 2}))
-
-    selected_country_data = country_data[country_data['country'] == country].to_dict('records')[
+    selected_country_data = influential_countries[influential_countries['country'] == country].to_dict('records')[
         0]
-    for _, row in country_data.iterrows():
-        fig_world_influence.add_trace(go.Scattermapbox(
+
+    if COUNTRY:
+        fig_world_influence = go.Figure(go.Scattermapbox(
             mode='markers+lines',
-            lon=[row['long'], COUNTRY_LONG],
-            lat=[row['lat'], COUNTRY_LAT],
-            name=row['country'],
-            text=[row['country'], COUNTRY],
-            marker={'size': [row['size'], 2]}))
+            lon=[COUNTRY_LONG],
+            lat=[COUNTRY_LAT],
+            name=COUNTRY,
+            text=[COUNTRY],
+            marker={'size': 2}))
+
+        for _, row in influential_countries.iterrows():
+            fig_world_influence.add_trace(go.Scattermapbox(
+                mode='markers+lines',
+                lon=[row['long'], COUNTRY_LONG],
+                lat=[row['lat'], COUNTRY_LAT],
+                name=row['country'],
+                text=[row['country'], COUNTRY],
+                marker={'size': [row['size'], 2]}))
+
+    else:
+        fig_world_influence = go.Figure(go.Scattermapbox())
+        for _, row in influential_countries.iterrows():
+            fig_world_influence.add_trace(go.Scattermapbox(
+                mode='markers',
+                lon=[row['long']],
+                lat=[row['lat']],
+                name=row['country'],
+                text=[row['country']],
+                marker={'size': [row['size'], 2]}))
 
     fig_world_influence.update_traces(
         textposition='bottom right', hoverinfo='text',)
@@ -313,6 +314,7 @@ def gen_influential_countries_wordfreq(pathname, country):
 
 pst_tweets = pd.read_csv(POTENTIALLY_SENSITIVE_TWEETS_PATH)
 
+
 @app.callback(
     Output('freq-count-psts-tweets', 'figure'),
     Input('url', 'pathname'),
@@ -334,19 +336,16 @@ def psts_output(pathname, date=min_date):
     return words_freq
 
 
-# df_hashtags = pd.read_csv(HASHTAGS_PATH)
-# df_mentions = pd.read_csv(MENTIONS_PATH)
-# df_sentiments = pd.read_csv(SENTIMENTS_PATH)
-
 # local --------
-all_local_rts_trend = pd.read_csv(ALL_LOCAL_RTS_TREND_PATH)
-all_local_rts_info = pd.read_csv(ALL_LOCAL_RTS_INFO_PATH)
+if COUNTRY:
+    all_local_rts_trend = pd.read_csv(ALL_LOCAL_RTS_TREND_PATH)
+    all_local_rts_info = pd.read_csv(ALL_LOCAL_RTS_INFO_PATH)
 
-pos_local_rts_trend = pd.read_csv(POS_LOCAL_RTS_TREND_PATH)
-pos_local_rts_info = pd.read_csv(POS_LOCAL_RTS_INFO_PATH)
+    pos_local_rts_trend = pd.read_csv(POS_LOCAL_RTS_TREND_PATH)
+    pos_local_rts_info = pd.read_csv(POS_LOCAL_RTS_INFO_PATH)
 
-neg_local_rts_trend = pd.read_csv(NEG_LOCAL_RTS_TREND_PATH)
-neg_local_rts_info = pd.read_csv(NEG_LOCAL_RTS_INFO_PATH)
+    neg_local_rts_trend = pd.read_csv(NEG_LOCAL_RTS_TREND_PATH)
+    neg_local_rts_info = pd.read_csv(NEG_LOCAL_RTS_INFO_PATH)
 
 
 # global --------
@@ -376,6 +375,10 @@ def get_local_rts_trend(pathname, selected_sentiment):
     if not pathname == ENGAGEMENTS_PATH:
         raise PreventUpdate
 
+    if not COUNTRY:
+        # do not show this graph if not country specific
+        raise PreventUpdate
+
     trend_data = all_local_rts_trend
     info_data = all_local_rts_info
     if selected_sentiment == 'Negative':
@@ -395,7 +398,7 @@ def get_local_rts_trend(pathname, selected_sentiment):
                                         'retweeted_tweet_id': False},
                             color='retweeted_tweet_id',
                             text='total_engagement',
-                            template=GRAPHS_TEMPLATE)
+                            template=DASH_TEMPLATE)
     fig_trend_cum.update_traces(textposition='bottom right')
     fig_trend_cum.update_layout(
         height=400,
@@ -414,7 +417,7 @@ def get_local_rts_trend(pathname, selected_sentiment):
                                   'retweeted_user_screenname': False, 'retweeted_tweet_id': False},
                               color='retweeted_tweet_id',
                               text='delta_engagement',
-                              template=GRAPHS_TEMPLATE)
+                              template=DASH_TEMPLATE)
 
     fig_trend_delta.update_traces(textposition='bottom right')
     fig_trend_delta.update_layout(
@@ -470,7 +473,7 @@ def get_global_rts_trend(pathname, selected_sentiment):
                                         'retweeted_tweet_id': False},
                             color='retweeted_tweet_id',
                             text='total_engagement',
-                            template=GRAPHS_TEMPLATE)
+                            template=DASH_TEMPLATE)
     fig_trend_cum.update_traces(textposition='bottom right')
     fig_trend_cum.update_layout(
         showlegend=False,
@@ -488,7 +491,7 @@ def get_global_rts_trend(pathname, selected_sentiment):
                                   'retweeted_user_screenname': False, 'retweeted_tweet_id': False},
                               color='retweeted_tweet_id',
                               text='delta_engagement',
-                              template=GRAPHS_TEMPLATE)
+                              template=DASH_TEMPLATE)
 
     fig_trend_delta.update_traces(textposition='bottom right')
     fig_trend_delta.update_layout(
@@ -555,6 +558,7 @@ with open(COMMUNITIES_TWEETS_PATH, 'r') as f:
 with open(COMMUNITIES_USERS_PATH, 'r') as f:
     clusters_users = json.load(f)
 
+
 def cluster_user_ui(idx, username):
     return html.P(html.A(html.Span(str(
         idx + 1) + '. ' + username),
@@ -590,7 +594,6 @@ def gen_clusters_word_freq(pathname, cluster):
 
 warnings.filterwarnings('ignore')
 if __name__ == '__main__':
-    # app.run_server(debug=True, port=8051)
     app.run_server(debug=True,
-                   host='0.0.0.0',
+                   host='localhost',
                    port=5000)

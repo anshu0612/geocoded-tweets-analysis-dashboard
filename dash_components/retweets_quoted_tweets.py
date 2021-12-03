@@ -17,6 +17,7 @@ quoted_spread_data = pd.read_csv(QUOTED_SENTIMENT_SPEAD_PATH)
 quoted_spread_data_pos = quoted_spread_data[quoted_spread_data['spread_type'] == 'positive']
 quoted_spread_data_neg = quoted_spread_data[quoted_spread_data['spread_type'] == 'negative']
 
+
 def create_quoted_card(tw):
     return (
         dbc.CardBody(
@@ -44,7 +45,7 @@ def create_quoted_card(tw):
 
                                 html.Span(' | Created on: ' +
                                           dt.strftime(dt.strptime(
-                                              tw['quoted_tweet_date'], DATE_FORMAT), DASH_FORMAT)),
+                                              tw['quoted_tweet_date'], DATE_FORMAT), DASH_NO_YEAR_FORMAT)),
 
                                 html.Span(
                                     ' | 🔁 ', className='quoted-endorsements'),
@@ -91,7 +92,7 @@ BURSTY_QUOTED_TWEETS = [
                                 dt.strftime(dt.strptime(
                                             MIN_DATE, DATE_FORMAT), DASH_NO_YEAR_FORMAT),
                                 dt.strftime(dt.strptime(
-                                            MAX_DATE, DATE_FORMAT), DASH_FORMAT))
+                                            MAX_DATE, DATE_FORMAT), DASH_NO_YEAR_FORMAT))
                         ),
                         html.Span('Reactive tweets: ',
                                   style={'color': '#0096FF', 'marginRight': '10px'}),
@@ -148,7 +149,7 @@ VIRAL_LOCAL_RETWEETS = [
                                 dt.strftime(dt.strptime(
                                             MIN_DATE, DATE_FORMAT), DASH_NO_YEAR_FORMAT),
                                 dt.strftime(dt.strptime(
-                                            MAX_DATE, DATE_FORMAT), DASH_FORMAT)), className='rts-jumbotron'),
+                                            MAX_DATE, DATE_FORMAT), DASH_NO_YEAR_FORMAT)), className='rts-jumbotron'),
                         html.Span('{}-based accounts '.format(COUNTRY),
                                   className='country-rts-jumbotron'),
                         html.Span(VIRAL_RETWEETS_INFO_CONTENT,
@@ -216,7 +217,7 @@ VIRAL_GLOBAL_RETWEETS = [
                                 dt.strftime(dt.strptime(
                                             MIN_DATE, DATE_FORMAT), DASH_NO_YEAR_FORMAT),
                                 dt.strftime(dt.strptime(
-                                            MAX_DATE, DATE_FORMAT), DASH_FORMAT)), className='rts-jumbotron'),
+                                            MAX_DATE, DATE_FORMAT), DASH_NO_YEAR_FORMAT)), className='rts-jumbotron'),
                         html.Span('non-{}-based accounts '.format(COUNTRY),
                                   className='country-rts-jumbotron'),
                         html.Span(
@@ -266,7 +267,7 @@ VIRAL_GLOBAL_RETWEETS = [
 ]
 
 # engagements
-VIRAL_ENGAGEMENTS = dbc.Container([
+viral_engagements_content = [
     dbc.Row(
         BURSTY_QUOTED_TWEETS,
         style={'margin': '3em 0'},
@@ -274,12 +275,18 @@ VIRAL_ENGAGEMENTS = dbc.Container([
     ),
     html.Hr(),
     dbc.Row(
-        VIRAL_LOCAL_RETWEETS,
-        style={'margin': '3em 0'},
-        className='col-md-12'),
-    html.Hr(),
-    dbc.Row(
         VIRAL_GLOBAL_RETWEETS,
         style={'margin': '3em 0'},
         className='col-md-12'),
-    html.Hr()])
+    html.Hr()]
+
+if COUNTRY:
+    viral_engagements_content.extend(
+        [dbc.Row(
+            VIRAL_LOCAL_RETWEETS,
+            style={'margin': '3em 0'},
+            className='col-md-12'),
+         html.Hr()]
+    )
+
+VIRAL_ENGAGEMENTS = dbc.Container(viral_engagements_content)

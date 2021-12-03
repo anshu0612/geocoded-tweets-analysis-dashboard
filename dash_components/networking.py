@@ -1,6 +1,5 @@
 import json
 
-# import dash_table
 import dash_cytoscape as cyto
 import dash_core_components as dcc
 import dash_bootstrap_components as dbc
@@ -97,9 +96,9 @@ NETWORKING = dbc.Container([
                 dbc.Row(
                     [
                         dbc.Row(dbc.Alert(
-                            [html.P('Note: The networking graph might take a few seconds to get stable.',
+                            [html.P(NETWORKING_NOTE_CONTENT,
                                     style={'color': '#893843', 'fontSize': '0.7em'}),
-                                "Play around the nodes of this interactive graph once it is stable."],
+                                NETWORKING_HELPER_CONTENT],
                             color="light"))]),
             ], className='col-md-8'
         ),

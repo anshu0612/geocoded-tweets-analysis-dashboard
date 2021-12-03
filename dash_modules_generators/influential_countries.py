@@ -20,12 +20,15 @@ def plot_top_influential_countries(c_quoted_rts_geo, x_top=10):
 def get_top_influential_countries(tweets, top_countries_count=10):
     # Selecting tweets created by users from other countries and known geocoding.
     quoted_tweets = tweets[(tweets['tweet_enagagement_type'] == 'Quote') &
-                                 (tweets['quoted_user_geo_coding'] != 'Unknown') &
-                                 (tweets['quoted_user_geo_coding'] != COUNTRY)]
+                           (tweets['quoted_user_geo_coding'] != 'Unknown')]
 
     rts_tweets = tweets[(tweets['tweet_enagagement_type'] == 'Retweet') &
-                              (tweets['retweeted_user_geo_coding'] != 'Unknown') &
-                              (tweets['retweeted_user_geo_coding'] != COUNTRY)]
+                        (tweets['retweeted_user_geo_coding'] != 'Unknown')]
+
+    if COUNTRY:
+        # if country specific then exclude that COUNTRY from top influencers
+        quoted_tweets = tweets[tweets['quoted_user_geo_coding'] != COUNTRY]
+        rts_tweets = tweets[tweets['retweeted_user_geo_coding'] != COUNTRY]
 
     quoted_rts_geo = list(quoted_tweets['quoted_user_geo_coding']) + \
         list(rts_tweets['retweeted_user_geo_coding'])
@@ -73,7 +76,7 @@ def generate_dash_influential_countries_tweets(tweets, top_influential_countries
                                                top_country_influencer_tweets_save_path=TOP_COUNTRY_INFLUENCER_TWEETS_PATH):
     top_influential_countries = top_influential_countries_df['country']
     top_countries_tweets_df = tweets[(tweets['retweeted_user_geo_coding'].isin(top_influential_countries))
-                                        & (tweets['processed_tweet_text'].notna())][['retweeted_user_geo_coding', 'processed_tweet_text']]
+                                     & (tweets['processed_tweet_text'].notna())][['retweeted_user_geo_coding', 'processed_tweet_text']]
 
     if save:
         pd.DataFrame.to_csv(top_countries_tweets_df,

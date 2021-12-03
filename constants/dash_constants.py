@@ -9,6 +9,7 @@ HOME_PATH = '/'
 NETWORKING_PATH = '/networking'
 ENGAGEMENTS_PATH = '/engagements'
 INFLUENCERS_PATH = '/influencers'
+ROUTE_TITLE_STYLE = {'margin': '1em 1em', 'color': 'rgb(0, 150, 255)'}
 
 ERROR_INSUFFICIENT_TWEETS = 'Oops! Not enough tweets. Try other filter value.'
 
@@ -20,7 +21,7 @@ APP_LOGO_PATH = 'assets/pulse.png'
 
 # Dates
 DASH_NO_YEAR_FORMAT = "%d %b"
-DASH_FORMAT = "%d %b, %Y"
+DASH_DATE_FORMAT = "%d %b, %Y"
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------ Basics ----------------------------------------------------------------
@@ -61,11 +62,9 @@ else:
         " Bubble sizes reflect the relative total engagements, received by country-specific tweets."
 
 COUNTRIES_DATA_PATH = 'data/general/countries_geolocation.csv'
-
 TOP_COUNTRY_INFLUENCER_PATH = DATA_DASH_PATH + 'influencers/top_countries.csv'
 TOP_COUNTRY_INFLUENCER_TWEETS_PATH = DATA_DASH_PATH + \
     'influencers/top_countries_tweets.csv'
-TOP_COUNTRIES_CLEANED_DATA = 'data/general/top_countries_data.csv'
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------ Engagements -----------------------------------------------------------
@@ -159,6 +158,8 @@ COMMUNITIES_USERS_PATH = DATA_DASH_PATH + 'networking/clusters_users.json'
 COMMUNITIES_TWEETS_PATH = DATA_DASH_PATH + 'networking/clusters_tweets.json'
 USER_TO_COMMUNITY_PATH = DATA_DASH_PATH + 'networking/user_to_cluster.json'
 
+NETWORKING_NOTE_CONTENT = 'Note: The networking graph might take a few seconds to get stable.'
+NETWORKING_HELPER_CONTENT = 'Play around the nodes of this interactive graph once it is stable.'
 NETWORKING_DATA = DATA_DASH_PATH + 'networking/networking.json'
 NETWORKING_GRAPH_DATA = DATA_DASH_PATH + 'networking/networking.json'
 # ------------------------------------------------------------------------------------------------------------
