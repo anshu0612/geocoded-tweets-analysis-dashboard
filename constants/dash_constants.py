@@ -1,8 +1,8 @@
+from typing import Counter
 import plotly.express as px
-from constants.common import DATA_PATH, DATA_DASH_PATH
-from constants.country_config import COUNTRY, COUNTRY_CODE
+from constants.common import DATA_DASH_PATH, GLOBAL_LABEL
+from constants.country_config import COUNTRY
 
-GRAPHS_TEMPLATE = 'plotly_white'
 DASH_TEMPLATE = 'plotly_white'
 
 HOME_PATH = '/'
@@ -12,15 +12,18 @@ INFLUENCERS_PATH = '/influencers'
 
 ERROR_INSUFFICIENT_TWEETS = 'Oops! Not enough tweets. Try other filter value.'
 
-NAVBAR_TITLE = "{}'s Pulse Monitoring through Twitter's Lens".format(COUNTRY)
+NAVBAR_TITLE = "{} ".format(COUNTRY + "'s") if COUNTRY else GLOBAL_LABEL
+NAVBAR_TITLE += "Pulse Monitoring through Twitter's Lens"
+
 TWITTER_LOGO_PATH = 'assets/twitter-logo.png'
-APP_LOGO = 'assets/pulse.png'
+APP_LOGO_PATH = 'assets/pulse.png'
 
 # Dates
 DASH_NO_YEAR_FORMAT = "%d %b"
 DASH_FORMAT = "%d %b, %Y"
 
-# -------- Basics ----------
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------ Basics ----------------------------------------------------------------
 TWEETS_STATS_HEADING = 'Tweets Stats'
 BASICS_PATH = DATA_DASH_PATH + 'basics/basic.json'
 
@@ -43,19 +46,29 @@ POTENTIALLY_SENSITIVE_TWEETS_COUNT_PATH = DATA_DASH_PATH + 'basics/pst_counts.cs
 POTENTIALLY_SENSITIVE_TWEETS_PATH = DATA_DASH_PATH + 'basics/pst_tweets.csv'
 POTENTIALLY_SENSITIVE_TWEETS_DEFAULT_PERCENTILE = 0.95
 
-# ---------- Influential countries ----------
-INFLUENTIAL_COUNTRIES_INFO_CONTENT = 'Tweets by non-{}-based users with a high number of engagements' \
-    '- retweets and quoted tweets, by {}-based users.' \
-    ' Bubble sizes reflect the relative total engagements, received by country-specific tweets.'.format(COUNTRY, COUNTRY)
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------ Influential countries -------------------------------------------------
+if COUNTRY:
+    INFLUENTIAL_COUNTRIES_INFO_CONTENT = "Countries whose users' tweets received/ing a high number of engagements by {}-based users" \
+        " Bubble sizes reflect the relative total engagements, received by country-specific tweets.".format(
+            COUNTRY)
+    # INFLUENTIAL_COUNTRIES_INFO_CONTENT = 'Tweets by non-{}-based users with a high number of engagements' \
+    #     '- retweets and quoted tweets, by {}-based users.' \
+    #     ' Bubble sizes reflect the relative total engagements, received by country-specific tweets.'.format(
+    #         COUNTRY, COUNTRY)
+else:
+    INFLUENTIAL_COUNTRIES_INFO_CONTENT = "Countries whose users' tweets received/ing a high number of engagements." \
+        " Bubble sizes reflect the relative total engagements, received by country-specific tweets."
 
-COUNTRIES_DATA_PATH =  'data/general/countries_geolocation.csv'
+COUNTRIES_DATA_PATH = 'data/general/countries_geolocation.csv'
 
 TOP_COUNTRY_INFLUENCER_PATH = DATA_DASH_PATH + 'influencers/top_countries.csv'
 TOP_COUNTRY_INFLUENCER_TWEETS_PATH = DATA_DASH_PATH + \
     'influencers/top_countries_tweets.csv'
-TOP_COUNTRIES_CLEANED_DATA =  'data/general/top_countries_data.csv'
+TOP_COUNTRIES_CLEANED_DATA = 'data/general/top_countries_data.csv'
 
-# ---------- Engagements ----------
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------ Engagements -----------------------------------------------------------
 PERCENTILE = .90
 TOP_RTS_POS_NEG = 10
 
@@ -78,7 +91,8 @@ SENTIMENT_SPREAD_THRESHOLD = 80
 RETWEET = 'retweet'
 QUOTED = 'quoted'
 
-# ----------------- Retweets -----------------
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------ Retweets --------------------------------------------------------------
 VIRAL_RETWEETS_INFO_CONTENT = '(2) highly retweeted by count or (3) received an unusual number of endorsements - retweets and favorites'
 VIRAL_RETWEETS_DATE_INFO_CONTENT = 'Tweets created between {} and {} that are (1) by '
 
@@ -106,7 +120,8 @@ ALL_GLOBAL_RTS_TREND_PATH = DATA_DASH_PATH + \
 ALL_GLOBAL_RTS_INFO_PATH = DATA_DASH_PATH + 'rts/global/all_global_rts_info.csv'
 
 
-# ----------------- Quoted -----------------
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------ Quoted ----------------------------------------------------------------
 QUOTED_SENTIMENT_COUNT_THRESHOLD = 10
 VIRAL_QUOTED_INFO_CONTENT = 'Tweets created between {} and {} that are (1) highly quoted by count or (2)' \
     ' received an unusual number of endorsements - retweets and favorites'
@@ -115,7 +130,8 @@ REACTIVE_TWEETS_INFO_CONTENT = 'Viral quoted tweets with high intensity of extre
 
 QUOTED_SENTIMENT_SPEAD_PATH = DATA_DASH_PATH + 'quoted/sentiment_spread.csv'
 
-# ---------- Graph analysis ----------
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------ Networking  ----------------------------------------------------------------
 # Graph styling
 CLUSTER_START_COLOR = 3
 CLUSTER_COLORS_DICT = {str(idx): color for idx, color in enumerate(
@@ -145,4 +161,4 @@ USER_TO_COMMUNITY_PATH = DATA_DASH_PATH + 'networking/user_to_cluster.json'
 
 NETWORKING_DATA = DATA_DASH_PATH + 'networking/networking.json'
 NETWORKING_GRAPH_DATA = DATA_DASH_PATH + 'networking/networking.json'
-# ----------  ----------
+# ------------------------------------------------------------------------------------------------------------

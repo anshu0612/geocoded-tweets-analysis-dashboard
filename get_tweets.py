@@ -3,7 +3,6 @@ import time
 import logging
 import datetime
 import argparse
-
 import pandas as pd
 from pathlib import Path
 
@@ -11,11 +10,14 @@ from dotenv import load_dotenv
 from pymongo import MongoClient
 from sshtunnel import SSHTunnelForwarder
 
+
 from utils.detect_place import geo_coding
 from constants.common import FRAGMENTED_TWEETS_ENGAGEMENTS_PATH, \
     FRAGMENTED_TWEETS_PATH, \
     DEFAULT_DB_NAME, \
-    ALT_GEO_NOT_FOUND
+    ALT_GEO_NOT_FOUND, SINGAPORE_LABEL
+from constants.country_config import COUNTRY
+from constants.common import GLOBAL_LABEL
 
 load_dotenv()
 
@@ -34,32 +36,32 @@ def _get_sg_users():
     return sg_users
 
 
-def create_tweets_csv(db_name, is_country_set, data, collection_no,
+def create_tweets_csv(db_name, data, collection_no,
                       start_csv_no=1,
                       running_tweets_save_count=1000,
                       max_csv_tweets_count=8000):
 
-    if COUNTRY == 'Singapore':
+    if COUNTRY == SINGAPORE_LABEL:
         sg_users = _get_sg_users()
 
-    st = time.time()
+    start_time = time.time()
     tweet_csv_data = {}
     tweet_eng_csv_data = {}
 
-    # ------------- basic tweet's details --5
+    # ------------- basic tweet's details
     tweet_id = []  # string
     tweet_text = []  # string
     tweet_time = []  # string
     tweet_lang = []
     tweet_possibly_sensitive = []
 
-    # ------------- entities in a tweet -- 4
+    # ------------- entities in a tweet
     entity_image_url = []
     entity_mentions = []
     entity_hashtags = []
     entity_link_url = []
 
-    # -------------  user information -- 11
+    # -------------  user information
     user_id = []
     user_name = []
     user_screenname = []
@@ -72,17 +74,17 @@ def create_tweets_csv(db_name, is_country_set, data, collection_no,
     user_geo_coding = []
     user_geo_coding_type = []
 
-    # ------------- engagements -- 1
+    # ------------- engagements
     tweet_enagagement_type = []  # {reply, retweet, quote}
 
-    # reply -- 3
+    # replies
     replied_to_tweet_id = []
     replied_to_user_id = []
     replied_to_user_screenname = []
 
-    # retweet -- 10
+    # retweets
     retweeted_tweet_id = []
-    retweeted_tweet_time = []  # extra over retweet
+    retweeted_tweet_time = []
     retweeted_user_id = []
     retweeted_user_name = []
     retweeted_user_verified = []
@@ -92,7 +94,7 @@ def create_tweets_csv(db_name, is_country_set, data, collection_no,
     retweeted_retweet_count = []
     retweeted_favorite_count = []
 
-    # quote -- 11
+    # quotes tweets
     quoted_tweet_text = []  # extra over retweet
     quoted_tweet_id = []
     quoted_tweet_time = []
@@ -107,7 +109,6 @@ def create_tweets_csv(db_name, is_country_set, data, collection_no,
 
     # geocoded users - memoization
     geocoded_users = dict()
-    # UGANDA_FIX = "Uganda"
 
     # tracking counters
     total_tweets = 0
@@ -125,9 +126,10 @@ def create_tweets_csv(db_name, is_country_set, data, collection_no,
         u = tweet['user']
 
         # if country specific filtering required
-        if is_country_set:
+        if COUNTRY:
+            print("coming hererereer")
             # filtering country specific users user
-            if not ((COUNTRY == 'Singapore') and str(u['id']) in sg_users) and  \
+            if not ((COUNTRY == SINGAPORE_LABEL) and str(u['id']) in sg_users) and  \
                 not (tweet['place'] and tweet['place']['country_code'] == COUNTRY_CODE) and \
                     not (u['location'] and any(country_ref in u['location'].lower().split(' ')
                                                for country_ref in COUNTRY_SLANGS)) and \
@@ -374,6 +376,7 @@ def create_tweets_csv(db_name, is_country_set, data, collection_no,
             tweet_eng_csv_data['quoted_retweet_count'] = quoted_retweet_count
             tweet_eng_csv_data['quoted_favorite_count'] = quoted_favorite_count
 
+            print(db_name*10)
             # batch storing 1000 tweets
             df = pd.DataFrame(data=tweet_csv_data)
             tw_file_name = FRAGMENTED_TWEETS_PATH + "{}_{}.csv".format("tw_" + db_name.lower(),
@@ -523,7 +526,7 @@ def create_tweets_csv(db_name, is_country_set, data, collection_no,
     print("Final saving Saved tweets --->", tw_file_name, tw_eng_file_name)
 
     print("Time taken for this CSV: ", datetime.datetime.fromtimestamp(
-        time.time() - st).strftime("%H: %M: %S"))
+        time.time() - start_time).strftime("%H: %M: %S"))
 
 
 def _set_connetion():
@@ -534,7 +537,7 @@ def _set_connetion():
         remote_bind_address=('127.0.0.1', 27017))
 
 
-def get_tweets_from_db(db_name, is_country_set, collection_no_list, running_tweets_save_count, max_csv_tweets_count):
+def get_tweets_from_db(db_name, collection_no_list, running_tweets_save_count, max_csv_tweets_count):
 
     Path(FRAGMENTED_TWEETS_PATH).mkdir(parents=True, exist_ok=True)
     Path(FRAGMENTED_TWEETS_ENGAGEMENTS_PATH).mkdir(parents=True, exist_ok=True)
@@ -552,7 +555,7 @@ def get_tweets_from_db(db_name, is_country_set, collection_no_list, running_twee
         print('Starting to collect tweets for collection no. {}'.format(
             collection_no).center(100, '-'))
 
-        create_tweets_csv(db_name, is_country_set, collection_data, collection_no, 4,
+        create_tweets_csv(db_name, collection_data, collection_no, 4,
                           running_tweets_save_count, max_csv_tweets_count)
 
     server.stop()
@@ -561,15 +564,15 @@ def get_tweets_from_db(db_name, is_country_set, collection_no_list, running_twee
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--is_country_set', type=str, default="y",
-                        help="Are tweets collected country specific?")
+    # parser.add_argument('--is_country_set', type=str, default="y",
+    #                     help="Are tweets collected country specific?")
 
     parser.add_argument('--db_name', type=str, default=DEFAULT_DB_NAME,
                         help="Database name to fetch tweets from")
 
     #range(84, curr_max_collection_no + 1),
     parser.add_argument('--collection_no_list', type=int, nargs="*",
-                        help="List of Mongo collections")
+                        help="List of MongoDB collections")
 
     parser.add_argument('--running_tweets_save_count', type=int, default=1000,
                         help="Number of tweets to save during tweets processing")
@@ -583,18 +586,18 @@ if __name__ == "__main__":
     assert isinstance(args.collection_no_list, list)
     assert isinstance(args.running_tweets_save_count, int)
     assert isinstance(args.max_csv_tweets_count, int)
-    assert args.is_country_set in ['y', 'n']
+    # assert args.is_country_set in ['y', 'n']
 
-    if args.is_country_set == 'y':
-        from constants.country_config import COUNTRY_SLANGS, COUNTRY_CODE, COUNTRY
+    if COUNTRY:
+        from constants.country_config import COUNTRY_SLANGS, COUNTRY_CODE
 
-        if COUNTRY == 'Singapore':
+        if COUNTRY == SINGAPORE_LABEL:
             from constants.country_config import MIN_SG_ACCOUNTS_FOLLWERS_PATH
         print("The country is  ", COUNTRY)
-    
+
     get_tweets_from_db(
         db_name=args.db_name,
-        is_country_set = True if args.is_country_set == 'y' else False,
+        # is_country_set = True if args.is_country_set == 'y' else False,
         collection_no_list=args.collection_no_list,
         running_tweets_save_count=args.running_tweets_save_count,
         max_csv_tweets_count=args.max_csv_tweets_count)

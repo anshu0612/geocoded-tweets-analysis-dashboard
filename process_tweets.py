@@ -10,7 +10,7 @@ from constants.common import FRAGMENTED_TWEETS_PATH, \
     FRAGMENTED_TWEETS_ENGAGEMENTS_PATH, DATE_FORMAT
 from constants.country_config import COUNTRY_LOCATION_SLANGS, \
     COUNTRY_USER_DESCRIPTION_SLANGS, COUNTRY
-from constants.common import TWEETS_PATH
+from constants.common import TWEETS_PATH, SINGAPORE_LABEL
 
 
 class ProcessData():
@@ -207,7 +207,7 @@ if __name__ == "__main__":
     process.fill_nan_geocodings()
     print("fill_nan_geocodings done")
 
-    if COUNTRY == 'Singapore':
+    if COUNTRY == SINGAPORE_LABEL:
         process.correct_uganda_geocoding_for_singapore()
         print("correct_uganda_geocoding_for_singapore done")
 

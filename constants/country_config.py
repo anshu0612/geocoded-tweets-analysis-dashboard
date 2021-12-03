@@ -1,5 +1,5 @@
 COUNTRY_CODE = 'SG' # alpha 2
-COUNTRY = 'Singapore'
+COUNTRY = None #'Singapore'
 
 COUNTRY_LAT = 1.3667
 COUNTRY_LONG = 103.8

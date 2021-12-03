@@ -1,33 +1,40 @@
 from constants.country_config import COUNTRY
 
+SINGAPORE_LABEL = 'Singapore'
+GLOBAL_LABEL = 'Global'
+
+ALT_GEO_NOT_FOUND = "Unknown"
+
+DEFAULT_DB_NAME = 'COVID_VACCINE'
+
+GEOCODER_AGENT_NAME = 'pulse-monitoring'
+
+US_LAT = 39.8283
+US_LNG = 98.5795
 FLAG_FIX_USA = 'united-states-of-america'
 FLAG_URL = 'https://cdn.countryflags.com/thumbs/{}/flag-400.png'
 
-TWITTER_BASE_URL = "https://twitter.com/"
-TWITTER_STATUS_PATH = TWITTER_BASE_URL + "{}/status/{}"
-# TWITTER_USER_PHOTO_PATH = "https://pbs.twimg.com/profile_images/{}/Z0mJaRZw_400x400.jpg"
+TWITTER_BASE_URL = 'https://twitter.com/'
+TWITTER_STATUS_PATH = TWITTER_BASE_URL + '{}/status/{}'
 
 # Dates
 DATE_FORMAT = '%Y-%m-%d'
 
-DATA_PATH = "data/{}/".format(COUNTRY.lower())
-DATA_DASH_PATH = DATA_PATH + "dash_output/"
+if COUNTRY:
+    DATA_PATH = 'data/{}/'.format(COUNTRY.lower())
+    TWEETS_PATH = DATA_PATH + '{}.csv'.format(COUNTRY.lower())
+else:
+    DATA_PATH = 'data/{}/'.format(GLOBAL_LABEL.lower())
+    TWEETS_PATH = DATA_PATH + '{}.csv'.format(GLOBAL_LABEL.lower())
 
-TWEETS_PATH = DATA_PATH + '{}.csv'.format(COUNTRY.lower())
-# BASE_PROD_URL = "https://sg-pulse-monitoring.s3.ap-southeast-1.amazonaws.com/"
+DATA_DASH_PATH = DATA_PATH + 'dash_output/'
 
-DEFAULT_DB_NAME = "COVID_VACCINE"
-
-US_LAT = 39.8283
-US_LNG = 98.5795
-
-ALT_GEO_NOT_FOUND = "Unknown"
 DISPLAY_NONE = {'display': 'none'}
 DISPLAY_INLINE = {'display': 'inline'}
 
-FRAGMENTED_TWEETS_PATH = DATA_PATH + "fragmented_tweets/tweets/"
+FRAGMENTED_TWEETS_PATH = DATA_PATH + 'fragmented_tweets/tweets/'
 FRAGMENTED_TWEETS_ENGAGEMENTS_PATH = DATA_PATH + \
-    "fragmented_tweets/tweets_engagements/"
+    'fragmented_tweets/tweets_engagements/'
 
 # from pycountry package
 COUNTRY_TO_ALPHA2 = {'Aruba': 'AW',
