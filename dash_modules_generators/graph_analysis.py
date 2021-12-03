@@ -215,7 +215,8 @@ def get_communities(G_pruned, tweets, save=False,
         communities_grouped[v].append(k)
 
     communities_grouped_ = {}
-    for k, v in communities_grouped.items():
+    for i, (k, v) in enumerate(communities_grouped.items()):
+        if i > 7: break 
         communities_grouped_[k] = {
             "users": v,
             "color": CLUSTER_COLORS_DICT[str(k)]

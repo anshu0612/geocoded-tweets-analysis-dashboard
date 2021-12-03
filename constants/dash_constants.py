@@ -3,8 +3,6 @@ from constants.common import DATA_PATH, DATA_DASH_PATH
 from constants.country_config import COUNTRY, COUNTRY_CODE
 
 GRAPHS_TEMPLATE = 'plotly_white'
-
-TWEETS_PATH = DATA_PATH + '{}.csv'.format(COUNTRY_CODE.lower())
 DASH_TEMPLATE = 'plotly_white'
 
 HOME_PATH = '/'
@@ -51,12 +49,12 @@ INFLUENTIAL_COUNTRIES_INFO_CONTENT = 'Tweets by non-{}-based users with a high n
     '- retweets and quoted tweets, by {}-based users.' \
     ' Bubble sizes reflect the relative total engagements, received by country-specific tweets.'.format(COUNTRY, COUNTRY)
 
-COUNTRIES_DATA_PATH = DATA_PATH + 'general/countries_geolocation.csv'
+COUNTRIES_DATA_PATH =  'data/general/countries_geolocation.csv'
 
 TOP_COUNTRY_INFLUENCER_PATH = DATA_DASH_PATH + 'influencers/top_countries.csv'
 TOP_COUNTRY_INFLUENCER_TWEETS_PATH = DATA_DASH_PATH + \
     'influencers/top_countries_tweets.csv'
-TOP_COUNTRIES_CLEANED_DATA = DATA_PATH + 'general/top_countries_data.csv'
+TOP_COUNTRIES_CLEANED_DATA =  'data/general/top_countries_data.csv'
 
 # ---------- Engagements ----------
 PERCENTILE = .90

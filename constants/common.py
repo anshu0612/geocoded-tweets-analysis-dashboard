@@ -3,12 +3,16 @@ from constants.country_config import COUNTRY
 FLAG_FIX_USA = 'united-states-of-america'
 FLAG_URL = 'https://cdn.countryflags.com/thumbs/{}/flag-400.png'
 
+
 TWITTER_BASE_URL = "https://twitter.com/"
 TWITTER_STATUS_PATH = TWITTER_BASE_URL + "{}/status/{}"
 # TWITTER_USER_PHOTO_PATH = "https://pbs.twimg.com/profile_images/{}/Z0mJaRZw_400x400.jpg"
 
+
 DATA_PATH = "data/{}/".format(COUNTRY.lower())
 DATA_DASH_PATH = DATA_PATH + "dash_output/"
+
+TWEETS_PATH = DATA_PATH + '{}.csv'.format(COUNTRY.lower())
 # BASE_PROD_URL = "https://sg-pulse-monitoring.s3.ap-southeast-1.amazonaws.com/"
 
 DEFAULT_DB_NAME = "COVID_VACCINE"
@@ -19,8 +23,9 @@ US_LNG = 98.5795
 DISPLAY_NONE = {'display': 'none'}
 DISPLAY_INLINE = {'display': 'inline'}
 
-FRAGMENTED_TWEETS_PATH = "data/{}/fragmented_tweets/tweets/".format(COUNTRY.lower())
-FRAGMENTED_TWEETS_ENGAGEMENTS_PATH = "data/{}/fragmented_tweets/tweets_engagements/".format(COUNTRY.lower())
+FRAGMENTED_TWEETS_PATH = DATA_PATH + "fragmented_tweets/tweets/"
+FRAGMENTED_TWEETS_ENGAGEMENTS_PATH = DATA_PATH + \
+    "fragmented_tweets/tweets_engagements/"
 
 # from pycountry package
 COUNTRY_TO_ALPHA2 = {'Aruba': 'AW',

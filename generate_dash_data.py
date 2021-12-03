@@ -7,6 +7,7 @@ from dash_modules_generators.influential_countries import *
 from dash_modules_generators.graph_analysis import *
 
 from constants.country_config import COUNTRY
+from constants.common import TWEETS_PATH
 
 from pathlib import Path
 
@@ -21,7 +22,6 @@ class DashGenerator():
 
         # load the file containing selected country tweets
         self.tweets = pd.read_csv(TWEETS_PATH)
-
         # storing min and max date of the data
         self.min_date = self.tweets['tweet_date'].min()
         self.max_date = self.tweets['tweet_date'].max()
@@ -78,7 +78,7 @@ class DashGenerator():
 
     def generate_communities(self):
         Path(DATA_DASH_PATH + "networking").mkdir(parents=True, exist_ok=True)
-        self.G_pruned = get_min_degree_graph(self.G, 5)
+        self.G_pruned = get_min_degree_graph(self.G, 0)#5)
         get_communities(self.G_pruned, self.tweets, True)
 
     def generate_bursty_quoted(self):
@@ -141,31 +141,31 @@ if __name__ == '__main__':
     dg.generate_basic()
     print("{} 1/8 Basics data generated {}".format('-'*10, '-'*10))
 
-    # # Generates global viral tweets
-    # dg.generate_global_retweets()
-    # print("{} 2/8 Global viral retweets data generated {}".format('-'*10, '-'*10))
+    # Generates global viral tweets
+    dg.generate_global_retweets()
+    print("{} 2/8 Global viral retweets data generated {}".format('-'*10, '-'*10))
 
-    # # Generates local viral tweets
-    # dg.generate_local_retweets()
-    # print("{} 3/8 Local viral retweets data generated {}".format('-'*10, '-'*10))
+    # Generates local viral tweets
+    dg.generate_local_retweets()
+    print("{} 3/8 Local viral retweets data generated {}".format('-'*10, '-'*10))
 
-    # # Generates reactive quoted tweets
-    # dg.generate_bursty_quoted()
-    # print("{} 4/8 Reactive tweets data generated {}".format('-'*10, '-'*10))
+    # Generates reactive quoted tweets
+    dg.generate_bursty_quoted()
+    print("{} 4/8 Reactive tweets data generated {}".format('-'*10, '-'*10))
 
-    # # Generates list of top influential countries
-    # dg.generate_influential_countries()
-    # print("{} 5/8 Influential countries data generated {}".format('-'*10, '-'*10))
+    # Generates list of top influential countries
+    dg.generate_influential_countries()
+    print("{} 5/8 Influential countries data generated {}".format('-'*10, '-'*10))
 
-    # # Generates list of top influential users
-    # dg.generate_influential_users()
-    # print("{} 6/8 Influential users data generated {}".format('-'*10, '-'*10))
+    # Generates list of top influential users
+    dg.generate_influential_users()
+    print("{} 6/8 Influential users data generated {}".format('-'*10, '-'*10))
 
-    # # Generates communities/clusters of users
-    # dg.generate_communities()
-    # print("{} 7/8 Communities data generated {}".format('-'*10, '-'*10))
+    # Generates communities/clusters of users
+    dg.generate_communities()
+    print("{} 7/8 Communities data generated {}".format('-'*10, '-'*10))
 
-    # # Generates data for creating networking graphs
-    # # Tweets by the clusters of users
-    # dg.generate_networking_data()
-    # print("{} 8/8 Networking data generated {}".format('-'*10, '-'*10))
+    # Generates data for creating networking graphs
+    # Tweets by the clusters of users
+    dg.generate_networking_data()
+    print("{} 8/8 Networking data generated {}".format('-'*10, '-'*10))

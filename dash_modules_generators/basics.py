@@ -27,8 +27,8 @@ def generate_dash_basic_stats(tweets, save=False, basics_save_path=BASICS_PATH):
 
     daily_tweets = tweets.groupby(
         'tweet_date')['tweet_id'].count().reset_index(name='count')
-    avg_tweets = sum(daily_tweets['count'][:-1]) / \
-        len(daily_tweets['count'][:-1])
+    avg_tweets = sum(daily_tweets['count']) / \
+        len(daily_tweets['count'])
 
     users = tweets['user_id_x'].nunique()
 

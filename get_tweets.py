@@ -591,7 +591,8 @@ if __name__ == "__main__":
 
         if COUNTRY == 'Singapore':
             from constants.country_config import MIN_SG_ACCOUNTS_FOLLWERS_PATH
-
+        print("The country is  ", COUNTRY)
+    
     get_tweets_from_db(
         db_name=args.db_name,
         is_country_set = True if args.is_country_set == 'y' else False,
