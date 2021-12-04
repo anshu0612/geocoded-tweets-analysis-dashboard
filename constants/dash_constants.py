@@ -1,4 +1,4 @@
-from typing import Counter
+# from typing import Counter
 import plotly.express as px
 from constants.common import DATA_DASH_PATH, GLOBAL_LABEL
 from constants.country_config import COUNTRY
@@ -152,7 +152,7 @@ INFLUENTIAL_USERS_PATH = DATA_DASH_PATH + 'influencers/top_users.csv'
 INFLUENTIAL_USERS_TWEETS_PATH = DATA_DASH_PATH + \
     'influencers/top_users_tweets.csv'
 
-COMMUNITIES_INFO_CONTENT = 'Detected {} communties: '
+COMMUNITIES_INFO_CONTENT = '{} communties: '
 COMMUNITIES_PLOT_PATH = DATA_DASH_PATH + 'networking/clusters'
 COMMUNITIES_USERS_PATH = DATA_DASH_PATH + 'networking/clusters_users.json'
 COMMUNITIES_TWEETS_PATH = DATA_DASH_PATH + 'networking/clusters_tweets.json'

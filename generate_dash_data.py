@@ -14,6 +14,7 @@ from pathlib import Path
 import warnings
 warnings.filterwarnings('ignore')
 
+
 class DashGenerator():
     def __init__(self):
 
@@ -58,7 +59,7 @@ class DashGenerator():
         generate_dash_influential_countries_tweets(
             self.tweets, top_influential_countries_df, True)
 
-    def generate_influential_users(self):
+    def generate_interactions_graph(self):
         # create `influencers` directory if not existing
         Path(DATA_DASH_PATH + "influencers").mkdir(parents=True, exist_ok=True)
 
@@ -67,6 +68,11 @@ class DashGenerator():
             self.tweets)
         self.G = create_weighted_directed_graph(
             all_interacting_users, weighted_interacting_edges)
+
+    def get_prominenet_groups(self):
+        generate_prominenet_groups(self.G)
+
+    def generate_influential_users(self):
         top_ranking = get_top_ranked_users(self.G)
         generate_dash_influential_users(self.tweets, top_ranking, True)
 
@@ -77,7 +83,7 @@ class DashGenerator():
 
     def generate_communities(self):
         Path(DATA_DASH_PATH + "networking").mkdir(parents=True, exist_ok=True)
-        self.G_pruned = get_min_degree_graph(self.G, 1)  # 5)
+        self.G_pruned = create_min_degree_graph(self.G, 2)  # 5)
         get_communities(self.G_pruned, self.tweets, True)
 
     def generate_bursty_quoted(self):
@@ -140,37 +146,48 @@ class DashGenerator():
 
 if __name__ == '__main__':
     dg = DashGenerator()
+    formatter = '-'*10
 
-    # Generates basics stats about the tweets
-    dg.generate_basics()
-    print("{} 1/8 Basics data generated {}".format('-'*10, '-'*10))
+    # # Generates basics stats about the tweets
+    # print("{} 1/8 Generating basics data 🚧".format(formatter))
+    # dg.generate_basics()
+    # print("{} Basics data generated ✅ ".format(formatter))
 
-    # Generates global viral tweets
-    dg.generate_global_retweets()
-    print("{} 2/8 Global viral retweets data generated {}".format('-'*10, '-'*10))
+    # # Generates global viral tweets
+    # print("{} 2/8 Generating global viral retweets data 🚧".format(formatter))
+    # dg.generate_global_retweets()
+    # print("{} Global global retweets data generated ✅ ".format(formatter))
 
-    # Generates local viral tweets
-    if COUNTRY:
-        dg.generate_local_retweets()
-        print("{} 3/8 Local viral retweets data generated {}".format('-'*10, '-'*10))
+    # # Generates local viral tweets
+    # if COUNTRY:
+    #     print("{} 3/8 Generating local viral retweets data 🚧".format(formatter))
+    #     dg.generate_local_retweets()
+    #     print("{} Local viral retweets data generated ✅ ".format(formatter))
 
-    # Generates reactive quoted tweets
-    dg.generate_bursty_quoted()
-    print("{} 4/8 Reactive tweets data generated {}".format('-'*10, '-'*10))
+    # # Generates reactive quoted tweets
+    # print("{} 4/8 Generating reactive tweets data 🚧".format(formatter))
+    # dg.generate_bursty_quoted()
+    # print("{} Reactive tweets data generated ✅ ".format(formatter))
 
-    # Generates list of top influential countries
-    dg.generate_influential_countries()
-    print("{} 5/8 Influential countries data generated {}".format('-'*10, '-'*10))
+    # #Generates list of top influential countries
+    # print("{} 5/8 Generating influential countries data 🚧".format(formatter))
+    # dg.generate_influential_countries()
+    # print("{} Influential countries data generated ✅ ".format(formatter))
 
     # Generates list of top influential users
+    print("{} 6/8 Generating influential countries data 🚧".format(formatter))
+    dg.generate_interactions_graph()
+    # dg.get_prominenet_groups()
     dg.generate_influential_users()
-    print("{} 6/8 Influential users data generated {}".format('-'*10, '-'*10))
+    print("{} Influential countries data generated ✅ ".format(formatter))
 
     # Generates communities/clusters of users
+    print("{} 7/8 Generating communities data 🚧".format(formatter))
     dg.generate_communities()
-    print("{} 7/8 Communities data generated {}".format('-'*10, '-'*10))
+    print("{} Communities data generated ✅ ".format(formatter))
 
     # Generates data for creating networking graphs
     # Tweets by the clusters of users
+    print("{} 8/8 Generating networking data 🚧 ".format(formatter))
     dg.generate_networking_data()
-    print("{} 8/8 Networking data generated {}".format('-'*10, '-'*10))
+    print("{} Networking data generated ✅ ".format(formatter))

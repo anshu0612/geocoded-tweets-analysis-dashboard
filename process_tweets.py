@@ -197,41 +197,51 @@ class ProcessData():
 
 if __name__ == "__main__":
     process = ProcessData()
-
     formatter = '-'*10
 
+    print("concat_and_join_data 🚧 {}".format(formatter))
     process.concat_and_join_data()
-    print("{} concat_and_join_data done {}".format(formatter, formatter))
+    print("concat_and_join_data ✅ {}".format(formatter))
 
+    print("add_tweet_date 🚧 {}".format(formatter))
     process.add_tweet_date()
-    print("{} add_tweet_date done {}".format(formatter, formatter))
+    print("add_tweet_date ✅ {}".format(formatter))
 
+    print("fill_nan_geocodings 🚧 {}".format(formatter))
     process.fill_nan_geocodings()
-    print("{} fill_nan_geocodings done {}".format(formatter, formatter))
+    print("fill_nan_geocodings ✅ {}".format(formatter))
 
     if COUNTRY == SINGAPORE_LABEL:
+        print("correct_uganda_geocoding_for_singapore 🚧 {}".format(formatter))
         process.correct_uganda_geocoding_for_singapore()
-        print("{} correct_uganda_geocoding_for_singapore done {}".format(formatter, formatter))
+        print("correct_uganda_geocoding_for_singapore ✅ {}".format(formatter))
 
+    print("remove_country_code 🚧 {}".format(formatter))
     process.remove_country_code()
-    print("{} remove_country_code done {}".format(formatter, formatter))
+    print("remove_country_code ✅ {}".format(formatter))
 
+    print("set_unknown_for_multiple_geocodings 🚧 {}".format(formatter))
     process.set_unknown_for_multiple_geocodings()
-    print("{} set_unknown_for_multiple_geocodings done {}".format(formatter, formatter))
+    print("set_unknown_for_multiple_geocodings ✅ {}".format(formatter))
 
     # filtering only if country-specific required
     if COUNTRY:
+        print("filter_country_tweets 🚧 {}".format(formatter))
         process.filter_country_tweets()
-        print("{} filter_country_tweets done {}".format(formatter, formatter))
+        print("filter_country_tweets ✅ {}".format(formatter))
 
+    print("remove_amp_from_tweets_text 🚧 {}".format(formatter))
     process.remove_amp_from_tweets_text()
-    print("{} remove_amp_from_tweets_text done {}".format(formatter, formatter))
+    print("remove_amp_from_tweets_text ✅ {}".format(formatter))
 
+    print("processed_tweets_text 🚧 {}".format(formatter))
     process.processed_tweets_text()
-    print("{} processed_tweets_text done {}".format(formatter, formatter))
+    print("processed_tweets_text ✅ {}".format(formatter))
 
+    print("add_sentiments 🚧 {}".format(formatter))
     process.add_sentiments()
-    print("{} add_sentiments done {}".format(formatter, formatter))
+    print("add_sentiments ✅ {}".format(formatter))
 
+    print("save_final_csv 🚧 {}".format(formatter))
     process.save_final_csv()
-    print("{} save_final_csv done {}".format(formatter, formatter))
+    print("save_final_csv ✅ {}".format(formatter))

@@ -1,3 +1,20 @@
+# COUNTRY = None
+
+# COUNTRY_CODE = None
+# COUNTRY_SLANGS = None
+
+# COUNTRY_LONG = None
+# COUNTRY_LAT = None
+
+# COUNTRY_LOCATION_SLANGS = None
+# COUNTRY_USER_DESCRIPTION_SLANGS = None
+
+# HASHTAGS_COUNTRY_FILTERS = None
+
+# KNOWN_COUNTRY_TWITTER_USERNAMES = []
+
+# KNOWN_USERNAMES_COUNTRIES = {}
+
 COUNTRY = 'India'
 
 COUNTRY_CODE = 'IN'
@@ -13,17 +30,4 @@ HASHTAGS_COUNTRY_FILTERS = ['India']
 
 KNOWN_COUNTRY_TWITTER_USERNAMES = []
 
-# SG_SCREEN_NAMES = ['mindefsg', 'MOEsg', 'sporeMOH', 'LTAsg', 'SMRT_Singapore', 'SBSTransit_Ltd',
-#                 'SingaporeHDB', 'MNDSingapore', 'mhasingapore', 'SingaporePolice', 'URAsg',
-#                 'MAS_sg', 'MOFsg', 'ICASingapore', 'SingaporeMCI', 'nlbsingapore', 'IMDAsg',
-#                 'NEAsg', 'nparksbuzz', 'SGSportsHub', 'govsingapore', 'SingaporeCAAS', 'MFAsg',
-#                 'iremembersg', 'youthsg', 'NUSingapore', 'NTUsg', 'sgSMU', 'sutdsg', 'SGRedCross',
-#                 'STcom', 'ChannelNewsAsia', 'TODAYonline', 'asiaonecom', 'thenewpaper', 'MothershipSG',
-#                 'Singtel', 'StarHub', 'MyRepublicSG', 'M1Singapore', 'temasekpoly', 'singaporetech',
-#                 'SingaporePoly', 'PUBsingapore', 'NgeeAnnNP', 'ITESpore', 'mediacorp', 'YahooSG',
-#                 'TimeOutSG', 'VisitSingapore', 'stb_sg', 'GovTechSG', 'SGmagazine', 'mySingapore',
-#                 'sgelection', 'SGAG_SG', 'TEDxSingapore', 'STATravelSG', 'STPix']
-
-# SG_ACCOUNTS_FOLLOWERS_PATH = 'data/sg_accounts_followers/'
-# MIN_SG_ACCOUNTS_FOLLWERS_PATH = "data/general/min_following_users.txt"
-# DEFAULT_MIN_FOLLOWING_REQUIRED = 2
+KNOWN_USERNAMES_COUNTRIES = {}

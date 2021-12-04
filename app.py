@@ -6,7 +6,6 @@ import dash
 from dash.dependencies import Output, Input
 import dash_bootstrap_components as dbc
 import dash_html_components as html
-from wordcloud import WordCloud, STOPWORDS
 import plotly.express as px
 from dash.exceptions import PreventUpdate
 import plotly.graph_objects as go
@@ -14,7 +13,8 @@ import plotly.graph_objects as go
 
 from constants.country_config import COUNTRY, COUNTRY_LAT, COUNTRY_LONG
 from constants.dash_constants import *
-from utils.common import human_format
+
+from utils.wordcloud import plotly_wordcloud
 from dash_modules_generators.basics import generate_dash_hashtags, \
     generate_dash_mentions, \
     generate_dash_sentiments, \
@@ -25,6 +25,7 @@ from dash_components.networking import NETWORKING
 from dash_components.navbar import NAVBAR
 from dash_components.basics import TWEETS
 from dash_components.retweets_quoted_tweets import *
+from dash_components.reusables import *
 
 # setup
 app = dash.Dash(__name__, suppress_callback_exceptions=True,
@@ -74,106 +75,6 @@ min_date, max_date = get_date_range(tweets)
 
 # influential users
 influential_users = pd.read_csv(INFLUENTIAL_USERS_PATH)
-
-# dummy figure
-dummy_fig = px.treemap(
-    names=[ERROR_INSUFFICIENT_TWEETS],
-    parents=['']
-)
-dummy_fig.update_layout(margin=dict(t=20, l=0, r=0, b=0))
-
-
-def generate_rts_info(tw):
-    return (
-        dbc.CardBody(
-            [
-                html.P(style={'fontSize': '1em',
-                                          'color': '#000'}, children=tw['tweet_text_']),
-                html.P(
-                    className='quoted-info',
-                    children=[
-                        html.Span('Posted by: '),
-                        html.Span(tw['retweeted_user_screenname']),
-                        html.Span(
-                            Img(
-                                className='quoted-flag',
-                                src=FLAG_URL.format(
-                                    tw['retweeted_user_geo_coding'].lower().replace(
-                                        ' ', '-')
-                                    if tw['retweeted_user_geo_coding'].lower() != 'united states' else FLAG_FIX_USA)
-                            )
-                        ),
-                        html.Span(' | Created on: ' +
-                                  dt.strftime(dt.strptime(
-                                      tw['retweeted_tweet_date'], DATE_FORMAT), DASH_DATE_FORMAT)),
-                        html.Span(
-                            ' | 🔁 ', className='quoted-endorsements'),
-                        html.Span(
-                            '+', className='quoted-endorsements'),
-                        html.Span(
-                            '🤍 : ', className='quoted-endorsements'),
-                        html.Span(human_format(tw['total_engagement']),
-                                  className='quoted-endorsements'),
-                        html.Span(
-                            '| Sentiment : ', className='quoted-endorsements'),
-                        html.Span(tw['tweet_sentiment'],
-                                  style={
-                            'color': 'green' if tw['tweet_sentiment'] == 'positive' else '#C70039'}
-                        )
-                    ]
-                )
-            ],
-            className='tw-card-body',
-            style={'borderRight':  '10px solid {}'.format(tw['color']),
-                   'borderBottom':  '2px solid {}'.format(tw['color'])
-                   }
-        ))
-
-
-def plotly_wordcloud(tweets_text, filtered_for):
-
-    if len(tweets_text) < 10:
-        return None
-
-    text = ' '.join(tweets_text)
-
-    STOPWORDS.update([COUNTRY])
-
-    word_cloud = WordCloud(
-        stopwords=set(STOPWORDS)
-    )
-
-    word_cloud.generate(text)
-    word_list = []
-    freq_list = []
-
-    for (word, freq), _, _, _, _ in word_cloud.layout_:
-        word_list.append(word)
-        freq_list.append(freq)
-
-    word_list_top = word_list[:25]
-    freq_list_top = freq_list[:25]
-
-    frequency_fig_data = px.bar(
-        template=DASH_TEMPLATE,
-        x=freq_list_top[::-1],
-        y=word_list_top[::-1],
-        orientation='h'
-    )
-
-    frequency_fig_data.update_traces(marker_color='#1ca9c9')
-    frequency_fig_data.update_layout(
-        title='Frequent words on {} tweets for {}'.format(
-            len(tweets_text), filtered_for),
-        font=dict(
-            family='Verdana, monospace',
-            size=10
-        ),
-        margin=dict(l=10, r=10, t=40, b=60),
-        xaxis_title=None,
-        yaxis_title=None
-    )
-    return frequency_fig_data
 
 
 @app.callback(
@@ -236,9 +137,11 @@ with open(NETWORKING_DATA, 'r') as f:
 def reset_layout(n_clicks):
     return [1, cyto_data['data']]
 
+
 # influencial countries data
 influential_countries = pd.read_csv(TOP_COUNTRY_INFLUENCER_PATH)
 influential_countries_tweets = pd.read_csv(TOP_COUNTRY_INFLUENCER_TWEETS_PATH)
+
 
 @app.callback(
     [Output('fig-world-influence', 'figure'),
@@ -251,7 +154,7 @@ def gen_influential_countries_wordfreq(pathname, country):
         raise PreventUpdate
 
     x = influential_countries_tweets[influential_countries_tweets['retweeted_user_geo_coding']
-                           == country]['processed_tweet_text']
+                                     == country]['processed_tweet_text']
 
     selected_country_data = influential_countries[influential_countries['country'] == country].to_dict('records')[
         0]
@@ -507,35 +410,6 @@ def get_global_rts_trend(pathname, selected_sentiment):
     return (fig_trend_cum, fig_trend_delta, rts_info)
 
 
-def generate_influential_users(idx, tw):
-    return (
-
-        dbc.Row(
-            html.P(
-                className='influencer-chip',
-                children=[
-                    html.A(html.Span(str(
-                        idx + 1) + '. ' + tw['user_screenname']),
-                        style={'cursor': 'pointer'},
-                        target='blank_',
-                        href=TWITTER_BASE_URL + tw['user_screenname'],),
-                    html.Span(children=' ☑' if tw['user_verified'] else '', style={
-                        'color': '#0096FF'}),
-                    html.Span(
-                        Img(
-                            className='influencer-flag',
-                            style={'width': '2em'},
-                            src=FLAG_URL.format(
-                                tw['user_geo_coding'].lower().replace(' ', '-') if tw['user_geo_coding'].lower() != 'united states' else FLAG_FIX_USA)
-                            if tw['user_geo_coding'] != 'Unknown' else ''
-                        )
-                    )
-                ]),
-            className='influencer-badge'
-        )
-    )
-
-
 @ app.callback(
     Output('influencers-chips-row', 'children'),
     Input('url', 'pathname'),
@@ -559,14 +433,6 @@ with open(COMMUNITIES_USERS_PATH, 'r') as f:
     clusters_users = json.load(f)
 
 
-def cluster_user_ui(idx, username):
-    return html.P(html.A(html.Span(str(
-        idx + 1) + '. ' + username),
-        style={'cursor': 'pointer'},
-        target='blank_',
-        href=TWITTER_BASE_URL + username), className='influencer-badge')
-
-
 @ app.callback(
     [Output('word-freq-clusters', 'figure'),
      Output('clusters-users', 'children')],
@@ -578,7 +444,7 @@ def gen_clusters_word_freq(pathname, cluster):
         raise PreventUpdate
 
     words_freq = plotly_wordcloud(
-        clusters_tweets[cluster], 'Cluster ' + cluster)
+        clusters_tweets[cluster], 'Cluster ' + cluster, CLUSTER_COLORS_DICT[cluster])
     if not words_freq:
         words_freq = dummy_fig
 
@@ -586,7 +452,6 @@ def gen_clusters_word_freq(pathname, cluster):
     for idx, u in enumerate(clusters_users[cluster]['users']):
         cluster_users_ui.append(
             cluster_user_ui(idx, u)
-            # html.Div([html.A(u, href=TWITTER_BASE_URL + u)])
         )
 
     return (words_freq, cluster_users_ui)

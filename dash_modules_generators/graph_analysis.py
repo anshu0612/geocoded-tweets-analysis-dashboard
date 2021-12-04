@@ -3,7 +3,7 @@ import collections as col
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import matplotlib.cm as cm
+# import matplotlib.cm as cm
 
 # graph analysis
 import networkx as nx
@@ -12,15 +12,15 @@ from constants.dash_constants import *
 
 
 def get_all_interacting_users(tweets):
-    sg_users = set()
+    users = set()
     retweeted_users = set()
     quoted_users = set()
     replied_users = set()
 
     # merged csvs created user_screenname_x and user_screenname_y
     for u in tweets['user_screenname_x']:
-        sg_users.add(u)
-    print('Count unique SG users: ', len(sg_users))
+        users.add(u)
+    print('Count unique users: ', len(users))
 
     for u in tweets[tweets['replied_to_user_screenname'].notna()]['replied_to_user_screenname']:
         if u == u:
@@ -38,50 +38,49 @@ def get_all_interacting_users(tweets):
     print('Count unique quoted users: ', len(quoted_users))
 
     common_interacting_users = set.intersection(
-        sg_users, replied_users, retweeted_users, quoted_users)
-    print('{} total unique common interacting users'.format(
+        users, replied_users, retweeted_users, quoted_users)
+    print('{} total unique interacting users'.format(
         len(common_interacting_users)))
 
-    return set.union(sg_users, replied_users, retweeted_users, quoted_users)
+    return set.union(users, replied_users, retweeted_users, quoted_users)
 
 
 def get_weighted_interacting_edges(tweets):
     interacting_edges = dict()  # try set as well
 
     # replies interaction
-    replies_sg = tweets[tweets['tweet_enagagement_type'] == 'Reply'][[
+    replies = tweets[tweets['tweet_enagagement_type'] == 'Reply'][[
         'user_screenname_x', 'replied_to_user_screenname']]
-    for user, iuser in zip(replies_sg['user_screenname_x'], replies_sg['replied_to_user_screenname']):
+    for user, iuser in zip(replies['user_screenname_x'], replies['replied_to_user_screenname']):
         if user and iuser and (user != iuser):
-            if (user, iuser,) in interacting_edges:
-                interacting_edges[(user, iuser,)] += 1
+            if (user, iuser) in interacting_edges:
+                interacting_edges[(user, iuser)] += 1
             else:
-                interacting_edges[(user, iuser,)] = 1
+                interacting_edges[(user, iuser)] = 1
 
     # retweets interaction
-    retweets_sg = tweets[tweets['tweet_enagagement_type'] == 'Retweet'][[
+    retweets = tweets[tweets['tweet_enagagement_type'] == 'Retweet'][[
         'user_screenname_x', 'retweeted_user_screenname']]
-    for user, iuser in zip(retweets_sg['user_screenname_x'], retweets_sg['retweeted_user_screenname']):
+    for user, iuser in zip(retweets['user_screenname_x'], retweets['retweeted_user_screenname']):
         if user and iuser and (user != iuser):
-            if (user, iuser,) in interacting_edges:
-                interacting_edges[(user, iuser,)] += 1
+            if (user, iuser) in interacting_edges:
+                interacting_edges[(user, iuser)] += 1
             else:
-                interacting_edges[(user, iuser,)] = 1
+                interacting_edges[(user, iuser)] = 1
 
     # quotes interaction
-    quotes_sg = tweets[tweets['tweet_enagagement_type'] == 'Quote'][[
+    quotes = tweets[tweets['tweet_enagagement_type'] == 'Quote'][[
         'user_screenname_x', 'quoted_user_screenname']]
-    for user, iuser in zip(quotes_sg['user_screenname_x'], quotes_sg['quoted_user_screenname']):
+    for user, iuser in zip(quotes['user_screenname_x'], quotes['quoted_user_screenname']):
         if user and iuser and (user != iuser):
-            if (user, iuser,) in interacting_edges:
-                interacting_edges[(user, iuser,)] += 1
+            if (user, iuser) in interacting_edges:
+                interacting_edges[(user, iuser)] += 1
             else:
-                interacting_edges[(user, iuser,)] = 1
+                interacting_edges[(user, iuser)] = 1
 
     weighted_interacting_edges_ = set()
     for k, v in interacting_edges.items():
         weighted_interacting_edges_.add(k + (v,))
-
     return weighted_interacting_edges_
 
 
@@ -109,17 +108,14 @@ def get_top_ranked_users(G, top_users_count=50):
     return list(ranked_users)[:top_users_count]
 
 
+def generate_prominenet_groups(G, k=2):
+    groups = nx.algorithms.centrality.prominent_group(G, 2)
+    print(groups)
+
+
 def generate_dash_influential_users(tweets, top_ranking,
                                     save=False,
                                     influential_users_save_path=INFLUENTIAL_USERS_PATH):
-    # TODO: Can add followers counts but missing for retweeted_user_screenname and quoted_user_screenname
-    # tweets = tweets.dropna(axis=0, subset=['user_id_x'])
-    # tweets = tweets.dropna(axis=0, subset=['retweeted_user_id'])
-    # tweets = tweets.dropna(axis=0, subset=['quoted_user_id'])
-
-    # tweets[['user_id_x', 'retweeted_user_id', 'quoted_user_id']] = tweets[[
-    #     'user_id_x', 'retweeted_user_id', 'quoted_user_id']].fillna(0).astype(int)
-
     normal_users = tweets[tweets['user_screenname_x'].isin(
         top_ranking)][['user_id_x', 'user_screenname_x', 'user_geo_coding', 'user_verified']]
     normal_users.rename(
@@ -153,7 +149,6 @@ def generate_dash_influential_users(tweets, top_ranking,
 def generate_dash_influential_users_tweets(tweets, top_ranking,
                                            save=False,
                                            influential_users_tweets_save_path=INFLUENTIAL_USERS_TWEETS_PATH):
-    # TODO: Can add followers counts but missing for retweeted_user_screenname and quoted_user_screenname
     normal_users = tweets[tweets['user_screenname_x'].isin(
         top_ranking)][['user_screenname_x', 'tweet_text']]
     normal_users.rename(
@@ -181,14 +176,14 @@ def generate_dash_influential_users_tweets(tweets, top_ranking,
 
 
 def quality_check_pagerank(tweets, top_ranking, top_users_count):
-    sg_verified_users = tweets[tweets['user_verified']
-                                  == True]['user_screenname_x']
+    verified_users = tweets[tweets['user_verified']
+                            == True]['user_screenname_x']
     rt_verified_users = tweets[(tweets['tweet_enagagement_type'] == 'Retweet') & (
         tweets['retweeted_user_verified'] == True)]['retweeted_user_screenname']
     q_verified_users = tweets[(tweets['tweet_enagagement_type'] == 'Quote') & (
         tweets['quoted_user_verified'] == True)]['quoted_user_screenname']
 
-    all_verified_users = set(list(sg_verified_users) +
+    all_verified_users = set(list(verified_users) +
                              list(rt_verified_users) + list(q_verified_users))
     z = set(top_ranking).intersection(all_verified_users)
     print('The number of verified users in the top {} rankings - {}%'.format(
@@ -201,52 +196,66 @@ def get_communities(G_pruned, tweets, save=False,
                     communities_plot_save_path=COMMUNITIES_PLOT_PATH,
                     communities_tweets_save_path=COMMUNITIES_TWEETS_PATH,
                     user_to_community_save_path=USER_TO_COMMUNITY_PATH):
-    G2 = G_pruned.to_undirected()
-    communities = community_louvain.best_partition(G2)
-    communities_plot = nx.spring_layout(G2)
 
-    cmap = cm.get_cmap('viridis', max(communities.values()) + 1)
-    nx.draw_networkx_nodes(G2, communities_plot, communities.keys(), node_size=40,
-                           cmap=cmap, node_color=list(communities.values()))
-    nx.draw_networkx_edges(G2, communities_plot, alpha=0.5)
+    G2 = G_pruned.to_undirected()
+
+    # Running the Louvain's algorithm for communities detection
+    communities = community_louvain.best_partition(G2)
 
     communities_grouped = col.defaultdict(list)
-
-    for k, v in communities.items():    
+    for k, v in communities.items():
         communities_grouped[v].append(k)
 
-    
-    for k, v in communities_grouped:
-        print("&"*10, k, len(v))
+    # taking top 8 large clusters
+    larger_clusters = sorted(communities_grouped, key = lambda c: len(communities_grouped[c]), reverse=True)[:8]
 
+    reamapped_communities = {}
+    for k, v in communities.items():
+        # if cluster not among the largest clusters then slip it
+        if v not in larger_clusters:
+            continue
+        
+        # remapping the clusters in the range of 0-8
+        reamapped_communities[k] = larger_clusters.index(v)
 
-    communities_grouped_ = {}
-    for i, (k, v) in enumerate(communities_grouped.items()):
-        if i > 7: break 
-        communities_grouped_[k] = {
-            "users": v,
-            "color": CLUSTER_COLORS_DICT[str(k)]
+    communities_grouped_with_colors = {}
+    for idx, cluster_no in enumerate(larger_clusters):
+        communities_grouped_with_colors[idx] = {
+            "users": communities_grouped[cluster_no],
+            "color": CLUSTER_COLORS_DICT[str(idx)]
         }
 
-    # communities_tweets = {'cluster': [], 'tweets': []}
     communities_tweets = {}
-    for c, u in communities_grouped.items():
+    for idx, cluster_no in enumerate(larger_clusters):
         cluster_tweets = tweets[
-            (tweets['user_screenname_x'].isin(u) |
-             tweets['retweeted_user_screenname'].isin(u) |
-             tweets['quoted_user_screenname'].isin(u) |
-             tweets['replied_to_user_screenname'].isin(u)) &
+            (tweets['user_screenname_x'].isin(communities_grouped[cluster_no]) |
+            tweets['retweeted_user_screenname'].isin(communities_grouped[cluster_no]) |
+            tweets['quoted_user_screenname'].isin(communities_grouped[cluster_no]) |
+            tweets['replied_to_user_screenname'].isin(communities_grouped[cluster_no])) &
             (tweets['processed_tweet_text'].notna())]['processed_tweet_text'].tolist()
-        communities_tweets[c] = cluster_tweets
+        communities_tweets[idx] = cluster_tweets
+
+
+    # communities_tweets = {'cluster': [], 'tweets': []}
+    # communities_tweets = {}
+    # for c, u in communities_grouped.items():
+    #     if c in larger_clusters: 
+    #         cluster_tweets = tweets[
+    #             (tweets['user_screenname_x'].isin(u) |
+    #             tweets['retweeted_user_screenname'].isin(u) |
+    #             tweets['quoted_user_screenname'].isin(u) |
+    #             tweets['replied_to_user_screenname'].isin(u)) &
+    #             (tweets['processed_tweet_text'].notna())]['processed_tweet_text'].tolist()
+    #         communities_tweets[c] = cluster_tweets
 
     if save:
         plt.savefig(communities_plot_save_path, bbox_inches='tight')
 
         with open(user_to_community_save_path, 'w') as f:
-            json.dump(communities, f)
+            json.dump(reamapped_communities, f)
 
         with open(communities_user_save_path, 'w') as f:
-            json.dump(communities_grouped_, f)
+            json.dump(communities_grouped_with_colors, f)
 
         with open(communities_tweets_save_path, 'w') as f:
             json.dump(communities_tweets, f)
@@ -254,32 +263,42 @@ def get_communities(G_pruned, tweets, save=False,
         print('Saved:', communities_user_save_path,
               user_to_community_save_path, communities_tweets_save_path)
 
-    print('number of clusters created:', len(communities_grouped))
-    return communities_grouped, communities_plot
+    print('number of clusters created:', len(communities_grouped_with_colors))
+    return communities_grouped
 
 
-def get_min_graph_degree(Graph):
+def get_graph_min_degree(Graph):
     degrees = [val for (_, val) in Graph.degree()]
     print('The minimum degree of the graph is ' + str(np.min(degrees)))
     return np.min(degrees)
 
 
-def remove_low_degree_edges(G):
-    G_pruned = G.copy()
-    low_degree_nodes = [node for node, degree in dict(
-        G_pruned.degree()).items() if degree < 10]
-    # print('Number of users to be removed with degree less than {}: {}'.format(en(low_degree_nodes)))
-    G_pruned.remove_nodes_from(low_degree_nodes)
-    return G_pruned
+# def remove_low_degree_edges(G):
+#     G_pruned = G.copy()
+#     low_degree_nodes = [node for node, degree in dict(
+#         G_pruned.degree()).items() if degree < 10]
+#     # print('Number of users to be removed with degree less than {}: {}'.format(en(low_degree_nodes)))
+#     G_pruned.remove_nodes_from(low_degree_nodes)
+#     return G_pruned
 
+def create_min_degree_graph(G_old, min_degree=2):
+    # while get_graph_min_degree(G) < min_degree:
+    #     G = remove_low_degree_edges(G)
 
-def get_min_degree_graph(G, min_degree):
-    while min_degree > 1 and get_min_graph_degree(G) < min_degree :
-        G = remove_low_degree_edges(G)
+    G = nx.Graph()
+    for u, v, data in G_old.edges(data=True):
+        w = data['weight'] if 'weight' in data else 1.0
+        if G.has_edge(u, v):
+            G[u][v]['weight'] += w
+        else:
+            G.add_edge(u, v, weight=w)
+
+    G = nx.k_core(G, k=min_degree)
     return G
 
 
 def generate_cytograph_data(G):
+    # Generating position of the nodes using the `spring_layout`
     G_pos = nx.spring_layout(G)
     cyto_data = {'data': []}
 
@@ -289,16 +308,25 @@ def generate_cytograph_data(G):
         user_community = json.load(f)
 
     for node in G.nodes:
-        node_data = {'data': {'id': node, 'label': node},
-                     'classes': str(user_community[node]),
-                     'position': {'x': G_pos[node][0], 'y': G_pos[node][1]}}
-        cyto_data['data'].append(node_data)
+        if node in user_community:
+            node_data = {'data': {'id': node, 'label': node},
+                        'classes': str(user_community[node]),
+                        'position': {'x': G_pos[node][0], 'y': G_pos[node][1]}}
+            cyto_data['data'].append(node_data)
 
     for edge in G.edges:
-        edge_data = {'data': {'source': edge[0], 'target': edge[1]}}
-        cyto_data['data'].append(edge_data)
-        # file.write(node_data)
+        if edge[0] in user_community and edge[1] in user_community:
+            edge_data = {'data': {'source': edge[0], 'target': edge[1]}}
+            cyto_data['data'].append(edge_data)
+            # file.write(node_data)
 
     json.dump(cyto_data, file)
     file.close()
     return cyto_data
+
+
+# communities_plot = nx.spring_layout(G2)
+# cmap = cm.get_cmap('viridis', max(communities.values()) + 1)
+# nx.draw_networkx_nodes(G2, communities_plot, communities.keys(), node_size=40,
+#                        cmap=cmap, node_color=list(communities.values()))
+# nx.draw_networkx_edges(G2, communities_plot, alpha=0.5)

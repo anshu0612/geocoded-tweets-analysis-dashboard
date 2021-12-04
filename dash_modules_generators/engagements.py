@@ -30,8 +30,8 @@ def get_tweet_id_by_spike(tweets_df, engagement_type, percentile=PERCENTILE):
     spike_value = spike_df['delta_engagement'].quantile(percentile)
     spike_ids = list(spike_df[spike_df['delta_engagement']
                      > spike_value].reset_index()[engagement_id_label])
-    # print("Total spiky tweets:", len(spike_ids))
-    return spike_ids
+    print("Total spiky tweets:", len(spike_ids))
+    return spike_ids 
 
 
 def get_bursty_tweets(tweets_df, ids, engagement_type, get_trend=False):

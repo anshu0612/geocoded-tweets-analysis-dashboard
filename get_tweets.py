@@ -127,7 +127,6 @@ def create_tweets_csv(db_name, data, collection_no,
 
         # if country specific filtering required
         if COUNTRY:
-            print("coming hererereer")
             # filtering country specific users user
             if not ((COUNTRY == SINGAPORE_LABEL) and str(u['id']) in sg_users) and  \
                 not (tweet['place'] and tweet['place']['country_code'] == COUNTRY_CODE) and \
@@ -376,7 +375,6 @@ def create_tweets_csv(db_name, data, collection_no,
             tweet_eng_csv_data['quoted_retweet_count'] = quoted_retweet_count
             tweet_eng_csv_data['quoted_favorite_count'] = quoted_favorite_count
 
-            print(db_name*10)
             # batch storing 1000 tweets
             df = pd.DataFrame(data=tweet_csv_data)
             tw_file_name = FRAGMENTED_TWEETS_PATH + "{}_{}.csv".format("tw_" + db_name.lower(),

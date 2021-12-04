@@ -57,7 +57,7 @@ CLUSTERS_INFO = dbc.Jumbotron(
             ] +
             [html.Div(
                 [COMMUNITIES_INFO_CONTENT.format(len(clusters_users))] +
-                [html.P('Cluster ' + k, style={"color": v['color'], 'margin': '0 0.4em', 'fontSize': '1.2em'})
+                [html.P('C' + k, style={"color": v['color'], 'margin': '0 0.4em', 'fontSize': '1.2em'})
                  for k, v in clusters_users.items()], style={"display": "flex"})], className='col-md-8'),
             dbc.Col([
                 html.Span('Filter by cluster', style={
