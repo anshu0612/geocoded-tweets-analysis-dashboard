@@ -1,7 +1,7 @@
 import re
 import pandas as pd
-import plotly.express as px
 import collections as col
+import plotly.express as px
 import matplotlib.pyplot as plt
 
 from constants.dash_constants import *

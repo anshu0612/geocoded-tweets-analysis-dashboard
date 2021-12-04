@@ -27,8 +27,8 @@ def get_top_influential_countries(tweets, top_countries_count=10):
 
     if COUNTRY:
         # if country specific then exclude that COUNTRY from top influencers
-        quoted_tweets = tweets[tweets['quoted_user_geo_coding'] != COUNTRY]
-        rts_tweets = tweets[tweets['retweeted_user_geo_coding'] != COUNTRY]
+        quoted_tweets = quoted_tweets[quoted_tweets['quoted_user_geo_coding'] != COUNTRY]
+        rts_tweets = rts_tweets[rts_tweets['retweeted_user_geo_coding'] != COUNTRY]
 
     quoted_rts_geo = list(quoted_tweets['quoted_user_geo_coding']) + \
         list(rts_tweets['retweeted_user_geo_coding'])
@@ -56,7 +56,9 @@ def generate_dash_influential_countries(top_country_influencer, save=False,
         top_influential_countries_data['count'].append(i[1])
         top_influential_countries_data['size'].append(
             round(i[1]/sum_influence*150, 2))
+        
         country_loc = countries_data[countries_data['Country'] == i[0]]
+        
         top_influential_countries_data['long'].append(
             float(country_loc.iloc[0]['Longitude (average)'].strip().strip('"')))
         top_influential_countries_data['lat'].append(

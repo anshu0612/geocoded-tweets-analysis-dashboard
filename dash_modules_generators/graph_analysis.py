@@ -211,8 +211,14 @@ def get_communities(G_pruned, tweets, save=False,
     nx.draw_networkx_edges(G2, communities_plot, alpha=0.5)
 
     communities_grouped = col.defaultdict(list)
-    for k, v in communities.items():
+
+    for k, v in communities.items():    
         communities_grouped[v].append(k)
+
+    
+    for k, v in communities_grouped:
+        print("&"*10, k, len(v))
+
 
     communities_grouped_ = {}
     for i, (k, v) in enumerate(communities_grouped.items()):
@@ -225,18 +231,13 @@ def get_communities(G_pruned, tweets, save=False,
     # communities_tweets = {'cluster': [], 'tweets': []}
     communities_tweets = {}
     for c, u in communities_grouped.items():
-        # print(u)
         cluster_tweets = tweets[
             (tweets['user_screenname_x'].isin(u) |
              tweets['retweeted_user_screenname'].isin(u) |
              tweets['quoted_user_screenname'].isin(u) |
              tweets['replied_to_user_screenname'].isin(u)) &
             (tweets['processed_tweet_text'].notna())]['processed_tweet_text'].tolist()
-        # cluster_tweets = cluster_tweets
-
         communities_tweets[c] = cluster_tweets
-        # communities_tweets['cluster'].extend(len(cluster_tweets)*[c])
-        # communities_tweets['cluster'].extend(cluster_tweets)
 
     if save:
         plt.savefig(communities_plot_save_path, bbox_inches='tight')
@@ -273,7 +274,7 @@ def remove_low_degree_edges(G):
 
 
 def get_min_degree_graph(G, min_degree):
-    while get_min_graph_degree(G) < min_degree:
+    while min_degree > 1 and get_min_graph_degree(G) < min_degree :
         G = remove_low_degree_edges(G)
     return G
 

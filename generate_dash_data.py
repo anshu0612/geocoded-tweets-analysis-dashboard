@@ -14,7 +14,6 @@ from pathlib import Path
 import warnings
 warnings.filterwarnings('ignore')
 
-
 class DashGenerator():
     def __init__(self):
 
@@ -30,7 +29,7 @@ class DashGenerator():
         self.G = None
         self.G_pruned = None
 
-    def generate_basic(self):
+    def generate_basics(self):
         # create `basics` directory  if not existing
         Path(DATA_DASH_PATH + "basics").mkdir(parents=True, exist_ok=True)
 
@@ -78,7 +77,7 @@ class DashGenerator():
 
     def generate_communities(self):
         Path(DATA_DASH_PATH + "networking").mkdir(parents=True, exist_ok=True)
-        self.G_pruned = get_min_degree_graph(self.G, 0)  # 5)
+        self.G_pruned = get_min_degree_graph(self.G, 1)  # 5)
         get_communities(self.G_pruned, self.tweets, True)
 
     def generate_bursty_quoted(self):
@@ -143,7 +142,7 @@ if __name__ == '__main__':
     dg = DashGenerator()
 
     # Generates basics stats about the tweets
-    dg.generate_basic()
+    dg.generate_basics()
     print("{} 1/8 Basics data generated {}".format('-'*10, '-'*10))
 
     # Generates global viral tweets
