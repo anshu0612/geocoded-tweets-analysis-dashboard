@@ -75,6 +75,11 @@ def create_quoted_card(tw):
             )))
 
 
+neg_bursty_quotes_children = [create_quoted_card(tw) for _, tw in quoted_spread_data_neg.iterrows()] \
+    if len(quoted_spread_data_pos) else []
+pos_bursty_quotes_children = [create_quoted_card(tw) for _, tw in quoted_spread_data_pos.iterrows()] \
+    if len(quoted_spread_data_neg) else []
+
 BURSTY_QUOTED_TWEETS = [
     dbc.Row(
         html.H5(['Reactive tweets']),
@@ -111,21 +116,19 @@ BURSTY_QUOTED_TWEETS = [
         [
             dbc.Col(
                 [
-                    dbc.Alert('Positive outburst',
+                    dbc.Alert('Positive outburst' + ('' if len(quoted_spread_data_pos) else " not found"),
                               className='alert-heading', style={'color': 'green'}),
-                    dbc.Row(children=[create_quoted_card(
-                        tw) for _, tw in quoted_spread_data_pos.iterrows()])
-                ], className='outburst', style={'maxHeight': '40em', 'overflowY': 'scroll'}
+                    dbc.Row(children=pos_bursty_quotes_children)
+                ], className='outburst col-md-6', style={'maxHeight': '40em', 'overflowY': 'scroll'},
             ),
             dbc.Col(
                 [
-                    dbc.Alert('Negative outburst',
+                    dbc.Alert('Negative outburst' + ('' if len(quoted_spread_data_neg) else " not found"),
                               className='alert-heading', style={'color': '#C70039'}),
-                    dbc.Row(id='neg-quotes-sentiment', className='outburst', style={'maxHeight': '40em', 'overflowY': 'scroll'},
-                            children=[create_quoted_card(tw) for _, tw in quoted_spread_data_neg.iterrows()])
-                ]
+                    dbc.Row(children=neg_bursty_quotes_children)
+                ],  style={'maxHeight': '40em', 'overflowY': 'scroll'},
             )
-        ]
+        ], className='outburst col-md-12'
     ),
 
 ]

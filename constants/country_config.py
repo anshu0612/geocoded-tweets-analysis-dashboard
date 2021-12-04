@@ -1,32 +1,32 @@
-# COUNTRY = None
+# Please do not update this file if global tweets are collected i.e., not country-specific
 
-# COUNTRY_CODE = None
-# COUNTRY_SLANGS = None
+# (String) Check COUNTRY_TO_ALPHA2 for reference
+# Example: 'Singapore'
+COUNTRY = None 
 
-# COUNTRY_LONG = None
-# COUNTRY_LAT = None
+# (String) Should be Alpha2 country code
+# Check COUNTRY_TO_ALPHA2 for reference
+# Example: 'SG'
+COUNTRY_CODE = None 
 
-# COUNTRY_LOCATION_SLANGS = None
-# COUNTRY_USER_DESCRIPTION_SLANGS = None
+# (List) of country slangs
+# Example: ['sg', 'spore', 'singapore', 'singapura']
+COUNTRY_SLANGS = None
 
-# HASHTAGS_COUNTRY_FILTERS = None
+COUNTRY_LONG = None
+COUNTRY_LAT = None
 
-# KNOWN_COUNTRY_TWITTER_USERNAMES = []
+# (String) of country slangs used by people
+# Slangs are separated by '|' 
+# Example: 'sg|spore|singapore|singapura'
+COUNTRY_LOCATION_SLANGS = None
 
-# KNOWN_USERNAMES_COUNTRIES = {}
+# (String) of country slangs used by people
+# Slangs are separated by '|' 
+# Example: 'sg|spore|singapore|singapura'
+COUNTRY_USER_DESCRIPTION_SLANGS = None
 
-COUNTRY = 'India'
-
-COUNTRY_CODE = 'IN'
-COUNTRY_SLANGS = ['India']
-
-COUNTRY_LONG = 77
-COUNTRY_LAT = 20
-
-COUNTRY_LOCATION_SLANGS = 'India|india'
-COUNTRY_USER_DESCRIPTION_SLANGS = 'India|india'
-
-HASHTAGS_COUNTRY_FILTERS = ['India']
+HASHTAGS_COUNTRY_FILTERS = None
 
 KNOWN_COUNTRY_TWITTER_USERNAMES = []
 

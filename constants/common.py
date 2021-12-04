@@ -9,8 +9,6 @@ DEFAULT_DB_NAME = 'COVID_VACCINE'
 
 GEOCODER_AGENT_NAME = 'pulse-monitoring'
 
-US_LAT = 39.8283
-US_LNG = 98.5795
 FLAG_FIX_USA = 'united-states-of-america'
 FLAG_URL = 'https://cdn.countryflags.com/thumbs/{}/flag-400.png'
 
@@ -28,9 +26,6 @@ else:
     TWEETS_PATH = DATA_PATH + '{}_tweets.csv'.format(GLOBAL_LABEL.lower())
 
 DATA_DASH_PATH = DATA_PATH + 'dash_output/'
-
-DISPLAY_NONE = {'display': 'none'}
-DISPLAY_INLINE = {'display': 'inline'}
 
 FRAGMENTED_TWEETS_PATH = DATA_PATH + 'fragmented_tweets/tweets/'
 FRAGMENTED_TWEETS_ENGAGEMENTS_PATH = DATA_PATH + \

@@ -207,14 +207,15 @@ def get_communities(G_pruned, tweets, save=False,
         communities_grouped[v].append(k)
 
     # taking top 8 large clusters
-    larger_clusters = sorted(communities_grouped, key = lambda c: len(communities_grouped[c]), reverse=True)[:8]
+    larger_clusters = sorted(communities_grouped, key=lambda c: len(
+        communities_grouped[c]), reverse=True)[:8]
 
     reamapped_communities = {}
     for k, v in communities.items():
         # if cluster not among the largest clusters then slip it
         if v not in larger_clusters:
             continue
-        
+
         # remapping the clusters in the range of 0-8
         reamapped_communities[k] = larger_clusters.index(v)
 
@@ -229,17 +230,16 @@ def get_communities(G_pruned, tweets, save=False,
     for idx, cluster_no in enumerate(larger_clusters):
         cluster_tweets = tweets[
             (tweets['user_screenname_x'].isin(communities_grouped[cluster_no]) |
-            tweets['retweeted_user_screenname'].isin(communities_grouped[cluster_no]) |
-            tweets['quoted_user_screenname'].isin(communities_grouped[cluster_no]) |
-            tweets['replied_to_user_screenname'].isin(communities_grouped[cluster_no])) &
+             tweets['retweeted_user_screenname'].isin(communities_grouped[cluster_no]) |
+             tweets['quoted_user_screenname'].isin(communities_grouped[cluster_no]) |
+             tweets['replied_to_user_screenname'].isin(communities_grouped[cluster_no])) &
             (tweets['processed_tweet_text'].notna())]['processed_tweet_text'].tolist()
         communities_tweets[idx] = cluster_tweets
-
 
     # communities_tweets = {'cluster': [], 'tweets': []}
     # communities_tweets = {}
     # for c, u in communities_grouped.items():
-    #     if c in larger_clusters: 
+    #     if c in larger_clusters:
     #         cluster_tweets = tweets[
     #             (tweets['user_screenname_x'].isin(u) |
     #             tweets['retweeted_user_screenname'].isin(u) |
@@ -282,9 +282,6 @@ def get_graph_min_degree(Graph):
 #     return G_pruned
 
 def create_min_degree_graph(G_old, min_degree=2):
-    # while get_graph_min_degree(G) < min_degree:
-    #     G = remove_low_degree_edges(G)
-
     G = nx.Graph()
     for u, v, data in G_old.edges(data=True):
         w = data['weight'] if 'weight' in data else 1.0
@@ -310,8 +307,8 @@ def generate_cytograph_data(G):
     for node in G.nodes:
         if node in user_community:
             node_data = {'data': {'id': node, 'label': node},
-                        'classes': str(user_community[node]),
-                        'position': {'x': G_pos[node][0], 'y': G_pos[node][1]}}
+                         'classes': str(user_community[node]),
+                         'position': {'x': G_pos[node][0], 'y': G_pos[node][1]}}
             cyto_data['data'].append(node_data)
 
     for edge in G.edges:

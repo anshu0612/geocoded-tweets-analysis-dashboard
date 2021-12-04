@@ -145,7 +145,7 @@ def create_tweets_csv(db_name, data, collection_no,
             p = tweet['place']
             geo_info = 'PLACE|{}|{}|{}'.format(p['full_name'],
                                                p['country'], p['country_code'])
-
+        
         user_geo_tagging.append(geo_info)
 
         tweet_time.append(tweet['created_at'])

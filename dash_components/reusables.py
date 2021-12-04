@@ -10,11 +10,15 @@ from constants.dash_constants import DASH_DATE_FORMAT, ERROR_INSUFFICIENT_TWEETS
 from constants.common import FLAG_FIX_USA, FLAG_URL, DATE_FORMAT, TWITTER_BASE_URL
 
 # dummy figure
-dummy_fig = px.treemap(
-    names=[ERROR_INSUFFICIENT_TWEETS],
-    parents=['']
-)
-dummy_fig.update_layout(margin=dict(t=20, l=0, r=0, b=0))
+
+
+def get_dummy_fig(msg):
+    dummy_fig = px.treemap(
+        names=[msg],
+        parents=['']
+    )
+    dummy_fig.update_layout(margin=dict(t=20, l=0, r=0, b=0))
+    return dummy_fig
 
 
 def generate_rts_info(tw):
@@ -27,7 +31,9 @@ def generate_rts_info(tw):
                     className='quoted-info',
                     children=[
                         html.Span('Posted by: '),
-                        html.Span(tw['retweeted_user_screenname']),
+                        html.A(html.Span(tw['retweeted_user_screenname']),
+                               target='_blank',
+                               href=TWITTER_BASE_URL + tw['retweeted_user_screenname']),
                         html.Span(
                             Img(
                                 className='quoted-flag',

@@ -31,7 +31,7 @@ def get_tweet_id_by_spike(tweets_df, engagement_type, percentile=PERCENTILE):
     spike_ids = list(spike_df[spike_df['delta_engagement']
                      > spike_value].reset_index()[engagement_id_label])
     print("Total spiky tweets:", len(spike_ids))
-    return spike_ids 
+    return spike_ids
 
 
 def get_bursty_tweets(tweets_df, ids, engagement_type, get_trend=False):
@@ -104,8 +104,8 @@ def generate_dash_bursty_retweets(eng_tweets,
                                   save,
                                   trend_save_path,
                                   info_save_path,
-                                  tweets_limit=25,
                                   percentile=PERCENTILE,
+                                  tweets_limit=25,
                                   top_tweets_count=TOP_RTS_POS_NEG):
 
     c_ids = get_tweet_id_by_count(eng_tweets, RETWEET, top_tweets_count)
@@ -185,7 +185,6 @@ def get_high_spreadrate_quoted_by_sentiment(tweets_df, rate=SENTIMENT_SPREAD_THR
     quoted_by_sentiment['neg_percent'] = quoted_by_sentiment['negative'] / (quoted_by_sentiment['positive'] +
                                                                             quoted_by_sentiment['negative'] +
                                                                             quoted_by_sentiment['neutral'])*100
-
     return quoted_by_sentiment[(quoted_by_sentiment['pos_percent'] >= rate) |
                                (quoted_by_sentiment['neg_percent'] >= rate)]
 

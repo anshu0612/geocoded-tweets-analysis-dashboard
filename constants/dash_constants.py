@@ -13,8 +13,8 @@ ROUTE_TITLE_STYLE = {'margin': '1em 1em', 'color': 'rgb(0, 150, 255)'}
 
 ERROR_INSUFFICIENT_TWEETS = 'Oops! Not enough tweets. Try other filter value.'
 
-NAVBAR_TITLE = "{} ".format(COUNTRY + "'s") if COUNTRY else GLOBAL_LABEL
-NAVBAR_TITLE += "Pulse Monitoring through Twitter's Lens"
+NAVBAR_TITLE = "{}".format(COUNTRY + "'s") if COUNTRY else GLOBAL_LABEL
+NAVBAR_TITLE += " Pulse Monitoring through Twitter's Lens"
 
 TWITTER_LOGO_PATH = 'assets/twitter-logo.png'
 APP_LOGO_PATH = 'assets/pulse.png'
@@ -32,6 +32,10 @@ DAILY_TWEETS_HEADING = 'Daily tweets count'
 DAILY_TWEETS_PATH = DATA_DASH_PATH + 'basics/daily_tweets.csv'
 
 # -------------------
+ERROR_INSUFFICIENT_HASHTAGS = 'Seems there are limited hashtags for analysis'
+ERROR_INSUFFICIENT_MENTIONS = 'Seems there are limited mentions for anallysis'
+ERROR_INSUFFICIENT_SENTIMENTS = 'Seems there are limitied tweets for sentiment analysis'
+
 MENTIONS_HASHTAGS_SENTIMENT_HEADING = 'Trending hashtags, mentions and public sentiments'
 MENTIONS_HASHTAGS_SENTIMENT_INFO_CONTENT = '1. Top hashtags and mentions by frequency. \n 2.' \
     + 'Sentiments distribution of public'
@@ -92,6 +96,9 @@ QUOTED = 'quoted'
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------ Retweets --------------------------------------------------------------
+ERROR_LOCAL_RETWEETS = 'Viral local retweets not found'
+ERROR_GLOBAL_RETWEETS = 'Viral global retweets not found'
+
 VIRAL_RETWEETS_INFO_CONTENT = '(2) highly retweeted by count or (3) received an unusual number of endorsements - retweets and favorites'
 VIRAL_RETWEETS_DATE_INFO_CONTENT = 'Tweets created between {} and {} that are (1) by '
 

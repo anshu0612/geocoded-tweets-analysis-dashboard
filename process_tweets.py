@@ -24,11 +24,11 @@ class ProcessData():
             2. Join tweets and tweets' engagement data
         '''
         # csvs containing users and tweets specific data
-        tw_data = pd.concat([pd.read_csv(csv_file, index_col=0, header=0, engine='python') for csv_file in glob.glob(
+        tw_data = pd.concat([pd.read_csv(csv_file, index_col=0, header=0, engine='c') for csv_file in glob.glob(
             os.path.join(tweets_path, "*.csv"))], axis=0, ignore_index=True)
 
         # csvs containing the collected tweets' engagement data - retweets, replies and quoted tweets
-        tw_eng_data = pd.concat([pd.read_csv(csv_file, index_col=0, header=0, engine='python') for csv_file in glob.glob(
+        tw_eng_data = pd.concat([pd.read_csv(csv_file, index_col=0, header=0, engine='c') for csv_file in glob.glob(
             os.path.join(engagements_tweets_path, "*.csv"))], axis=0, ignore_index=True)
 
         self.tweets = tw_data.merge(tw_eng_data, on="tweet_id", how='inner')
