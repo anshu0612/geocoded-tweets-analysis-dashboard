@@ -81,7 +81,7 @@ class DashGenerator():
     def generate_networking_data(self):
         Path(DATA_DASH_PATH + "networking").mkdir(parents=True, exist_ok=True)
 
-        generate_cytograph_data(self.G_pruned)
+        generate_networking_graph_data(self.G_pruned)
 
     def generate_communities(self):
         Path(DATA_DASH_PATH + "networking").mkdir(parents=True, exist_ok=True)

@@ -5,7 +5,7 @@ import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 import dash_html_components as html
 
-from constants.dash_constants import INTERACTIONS_GRAPH_INFO_CONTENT, \
+from constants.dash_constants import NETWORKING_GRAPH_INFO_CONTENT, \
     INFLUENTIAL_USERS_INFO_CONTENT, INFLUENTIAL_USERS_PATH, \
     TOP_COUNTRY_INFLUENCER_PATH, \
     INFLUENTIAL_COUNTRIES_INFO_CONTENT 
@@ -28,9 +28,9 @@ INFLUENTIAL_USERS_INFO = dbc.Jumbotron(
     dbc.Row(
         [dbc.Col(
             children=[
-                html.Span('Interactions graph: ',
+                html.Span('Networking graph: ',
                           style={'color': '#000', 'marginRight': '10px'}),
-                html.P(INTERACTIONS_GRAPH_INFO_CONTENT),
+                html.P(NETWORKING_GRAPH_INFO_CONTENT),
                 html.Span('Influential users: ',
                           style={'color': '#0096FF', 'marginRight': '10px'}),
                 html.P(INFLUENTIAL_USERS_INFO_CONTENT),

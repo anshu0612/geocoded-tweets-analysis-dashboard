@@ -145,7 +145,7 @@ class ProcessData():
 
     def processed_tweets_text(self):
         '''
-            Cleaning up tweets
+            Cleaning up tweets text
         '''
         pre = TwitterDataProcessing()
         processed_tweets = [pre.clean_text(text)

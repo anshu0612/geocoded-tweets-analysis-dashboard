@@ -61,10 +61,10 @@ def _get_min_following_followers_id(sg_accounts_followers, min_following_require
         `min_following_required`  Singapore-based accounts
     '''
     users_count = Counter(sg_accounts_followers)
-    users_2 = [k for k, v in users_count.items() if v >=
-               min_following_required]
+    min_following_users = [k for k, v in users_count.items() if v >=
+                           min_following_required]
     f = open(MIN_SG_ACCOUNTS_FOLLWERS_PATH, "w")
-    for u in users_2:
+    for u in min_following_users:
         f.write("{}\n".format(u))
     f.flush()
     f.close()

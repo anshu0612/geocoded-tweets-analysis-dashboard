@@ -206,28 +206,28 @@ def get_communities(G_pruned, tweets, save=False,
     for k, v in communities.items():
         communities_grouped[v].append(k)
 
-    # taking top 8 large clusters
-    larger_clusters = sorted(communities_grouped, key=lambda c: len(
+    # taking top 8 large communities
+    larger_communities = sorted(communities_grouped, key=lambda c: len(
         communities_grouped[c]), reverse=True)[:8]
 
     reamapped_communities = {}
     for k, v in communities.items():
-        # if cluster not among the largest clusters then slip it
-        if v not in larger_clusters:
+        # if cluster not among the largest communities then slip it
+        if v not in larger_communities:
             continue
 
-        # remapping the clusters in the range of 0-8
-        reamapped_communities[k] = larger_clusters.index(v)
+        # remapping the communities in the range of 0-8
+        reamapped_communities[k] = larger_communities.index(v)
 
     communities_grouped_with_colors = {}
-    for idx, cluster_no in enumerate(larger_clusters):
+    for idx, cluster_no in enumerate(larger_communities):
         communities_grouped_with_colors[idx] = {
             "users": communities_grouped[cluster_no],
-            "color": CLUSTER_COLORS_DICT[str(idx)]
+            "color": COMMUNITIES_COLORS_DICT[str(idx)]
         }
 
     communities_tweets = {}
-    for idx, cluster_no in enumerate(larger_clusters):
+    for idx, cluster_no in enumerate(larger_communities):
         cluster_tweets = tweets[
             (tweets['user_screenname_x'].isin(communities_grouped[cluster_no]) |
              tweets['retweeted_user_screenname'].isin(communities_grouped[cluster_no]) |
@@ -235,18 +235,6 @@ def get_communities(G_pruned, tweets, save=False,
              tweets['replied_to_user_screenname'].isin(communities_grouped[cluster_no])) &
             (tweets['processed_tweet_text'].notna())]['processed_tweet_text'].tolist()
         communities_tweets[idx] = cluster_tweets
-
-    # communities_tweets = {'cluster': [], 'tweets': []}
-    # communities_tweets = {}
-    # for c, u in communities_grouped.items():
-    #     if c in larger_clusters:
-    #         cluster_tweets = tweets[
-    #             (tweets['user_screenname_x'].isin(u) |
-    #             tweets['retweeted_user_screenname'].isin(u) |
-    #             tweets['quoted_user_screenname'].isin(u) |
-    #             tweets['replied_to_user_screenname'].isin(u)) &
-    #             (tweets['processed_tweet_text'].notna())]['processed_tweet_text'].tolist()
-    #         communities_tweets[c] = cluster_tweets
 
     if save:
         plt.savefig(communities_plot_save_path, bbox_inches='tight')
@@ -263,7 +251,7 @@ def get_communities(G_pruned, tweets, save=False,
         print('Saved:', communities_user_save_path,
               user_to_community_save_path, communities_tweets_save_path)
 
-    print('number of clusters created:', len(communities_grouped_with_colors))
+    print('number of communities created:', len(communities_grouped_with_colors))
     return communities_grouped
 
 
@@ -294,10 +282,10 @@ def create_min_degree_graph(G_old, min_degree=2):
     return G
 
 
-def generate_cytograph_data(G):
+def generate_networking_graph_data(G):
     # Generating position of the nodes using the `spring_layout`
     G_pos = nx.spring_layout(G)
-    cyto_data = {'data': []}
+    networking_graph__data = {'data': []}
 
     file = open(NETWORKING_GRAPH_DATA, 'w')
 
@@ -309,17 +297,17 @@ def generate_cytograph_data(G):
             node_data = {'data': {'id': node, 'label': node},
                          'classes': str(user_community[node]),
                          'position': {'x': G_pos[node][0], 'y': G_pos[node][1]}}
-            cyto_data['data'].append(node_data)
+            networking_graph__data['data'].append(node_data)
 
     for edge in G.edges:
         if edge[0] in user_community and edge[1] in user_community:
             edge_data = {'data': {'source': edge[0], 'target': edge[1]}}
-            cyto_data['data'].append(edge_data)
+            networking_graph__data['data'].append(edge_data)
             # file.write(node_data)
 
-    json.dump(cyto_data, file)
+    json.dump(networking_graph__data, file)
     file.close()
-    return cyto_data
+    return networking_graph__data
 
 
 # communities_plot = nx.spring_layout(G2)

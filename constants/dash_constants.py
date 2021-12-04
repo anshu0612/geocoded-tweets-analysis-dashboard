@@ -33,7 +33,7 @@ DAILY_TWEETS_PATH = DATA_DASH_PATH + 'basics/daily_tweets.csv'
 
 # -------------------
 ERROR_INSUFFICIENT_HASHTAGS = 'Seems there are limited hashtags for analysis'
-ERROR_INSUFFICIENT_MENTIONS = 'Seems there are limited mentions for anallysis'
+ERROR_INSUFFICIENT_MENTIONS = 'Seems there are limited mentions for analysis'
 ERROR_INSUFFICIENT_SENTIMENTS = 'Seems there are limitied tweets for sentiment analysis'
 
 MENTIONS_HASHTAGS_SENTIMENT_HEADING = 'Trending hashtags, mentions and public sentiments'
@@ -139,9 +139,9 @@ QUOTED_SENTIMENT_SPEAD_PATH = DATA_DASH_PATH + 'quoted/sentiment_spread.csv'
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------ Networking  ----------------------------------------------------------------
 # Graph styling
-CLUSTER_START_COLOR = 3
-CLUSTER_COLORS_DICT = {str(idx): color for idx, color in enumerate(
-    px.colors.qualitative.Bold[CLUSTER_START_COLOR:])}
+COMMUNITIES_START_COLOR = 3
+COMMUNITIES_COLORS_DICT = {str(idx): color for idx, color in enumerate(
+    px.colors.qualitative.Bold[COMMUNITIES_START_COLOR:])}
 CIRCLE_SIZE = '14px'
 FONT_SIZE = '8px'
 LINE_WIDTH = '0.2px'
@@ -149,10 +149,10 @@ NETWORKING_GRAPH_HEIGHT = '500px'
 
 MIN_DEGREE_TO_HAVE = 40
 
-INTERACTIONS_GRAPH_INFO_CONTENT = 'A directed weighted graph of interactions - replies, retweets, and quoted tweets' \
+NETWORKING_GRAPH_INFO_CONTENT = 'A directed weighted graph of interactions - replies, retweets, and quoted tweets' \
     ' between the users.  The weights denote the number of interactions between two users.'
 
-INFLUENTIAL_USERS_INFO_CONTENT = 'Applied PageRanking on interactions graph to get the top 50 users.' \
+INFLUENTIAL_USERS_INFO_CONTENT = 'Applied PageRanking on networking graph to get the top 50 users.' \
     ' The number signifies the ranking of a user. '
 
 INFLUENTIAL_USERS_PATH = DATA_DASH_PATH + 'influencers/top_users.csv'
@@ -165,6 +165,7 @@ COMMUNITIES_USERS_PATH = DATA_DASH_PATH + 'networking/clusters_users.json'
 COMMUNITIES_TWEETS_PATH = DATA_DASH_PATH + 'networking/clusters_tweets.json'
 USER_TO_COMMUNITY_PATH = DATA_DASH_PATH + 'networking/user_to_cluster.json'
 
+COMMUNITIES_USERS_TITLE = 'List of users in the selected cluster'
 NETWORKING_NOTE_CONTENT = 'Note: The networking graph might take a few seconds to get stable.'
 NETWORKING_HELPER_CONTENT = 'Play around the nodes of this interactive graph once it is stable.'
 NETWORKING_DATA = DATA_DASH_PATH + 'networking/networking.json'

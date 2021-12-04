@@ -36,7 +36,7 @@ def _get_sg_users():
     return sg_users
 
 
-def create_tweets_csv(db_name, data, collection_no,
+def _create_tweets_csv(db_name, data, collection_no,
                       start_csv_no=1,
                       running_tweets_save_count=1000,
                       max_csv_tweets_count=8000):
@@ -553,7 +553,7 @@ def get_tweets_from_db(db_name, collection_no_list, running_tweets_save_count, m
         print('Starting to collect tweets for collection no. {}'.format(
             collection_no).center(100, '-'))
 
-        create_tweets_csv(db_name, collection_data, collection_no, 4,
+        _create_tweets_csv(db_name, collection_data, collection_no, 4,
                           running_tweets_save_count, max_csv_tweets_count)
 
     server.stop()
@@ -562,13 +562,9 @@ def get_tweets_from_db(db_name, collection_no_list, running_tweets_save_count, m
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
-    # parser.add_argument('--is_country_set', type=str, default="y",
-    #                     help="Are tweets collected country specific?")
-
     parser.add_argument('--db_name', type=str, default=DEFAULT_DB_NAME,
                         help="Database name to fetch tweets from")
 
-    #range(84, curr_max_collection_no + 1),
     parser.add_argument('--collection_no_list', type=int, nargs="*",
                         help="List of MongoDB collections")
 

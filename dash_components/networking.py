@@ -9,17 +9,17 @@ from constants.common import *
 from constants.dash_constants import *
 
 with open(COMMUNITIES_USERS_PATH, 'r') as f:
-    clusters_users = json.load(f)
+    communities_users = json.load(f)
 
 with open(NETWORKING_DATA, 'r') as f:
-    cyto_data = json.load(f)
+    networking_data = json.load(f)
 
 graph_stylesheet = []
-for cluster_no in range(len(clusters_users)):
+for cluster_no in range(len(communities_users)):
     obj = {
         'selector': '.' + str(cluster_no),
         'style': {
-            'background-color': CLUSTER_COLORS_DICT[str(cluster_no)],
+            'background-color': COMMUNITIES_COLORS_DICT[str(cluster_no)],
             'content': 'data(label)',
             'height': CIRCLE_SIZE,
             'width': CIRCLE_SIZE,
@@ -41,32 +41,32 @@ graph_stylesheet.append(
 )
 
 NETWORKING_GRAPH = cyto.Cytoscape(
-    id='cytoscape-nodes',
+    id='networking-graph--nodes',
     layout={'name': 'cose'},
     style={'width': '100%', 'height': NETWORKING_GRAPH_HEIGHT, 'margin': '0'},
-    elements=cyto_data['data'],
+    elements=networking_data['data'],
     stylesheet=graph_stylesheet
 )
 
-CLUSTERS_INFO = dbc.Jumbotron(
+COMMUNITIES_INFO = dbc.Jumbotron(
     dbc.Row(
         [dbc.Col(
             children=[
-                html.Span('Clustered users/communities',
+                html.Span('Communities',
                           style={'color': '#0096FF', 'marginRight': '10px'})
             ] +
             [html.Div(
-                [COMMUNITIES_INFO_CONTENT.format(len(clusters_users))] +
+                [COMMUNITIES_INFO_CONTENT.format(len(communities_users))] +
                 [html.P('C' + k, style={"color": v['color'], 'margin': '0 0.4em', 'fontSize': '1.2em'})
-                 for k, v in clusters_users.items()], style={"display": "flex"})], className='col-md-8'),
+                 for k, v in communities_users.items()], style={"display": "flex"})], className='col-md-8'),
             dbc.Col([
-                html.Span('Filter by cluster', style={
+                html.Span('Filter by community', style={
                     'fontSize': '0.8em'}),
                 dcc.Dropdown(
-                    id='dropdown-clusters',
+                    id='dropdown-communities',
                     options=[
                         {'label': i, 'value': i}
-                        for i in clusters_users.keys()
+                        for i in communities_users.keys()
                     ],
                     value='0')],
                     className='col-md-4'
@@ -77,16 +77,16 @@ CLUSTERS_INFO = dbc.Jumbotron(
     style={'margin': '1em 0 2em 0'},
     className='col-md-12')
 
-CLUSTERS_TWEETS_WORD_FREQ = dcc.Loading(
-    id='loading-clusters-tweets',
+COMMUNITIES_TWEETS_WORD_FREQ = dcc.Loading(
+    id='loading-communities-tweets',
     children=[
-        dcc.Graph(id='word-freq-clusters')],
+        dcc.Graph(id='word-freq-communities')],
     type='dot',
 )
 
 # networking
 NETWORKING = dbc.Container([
-    dbc.Row(CLUSTERS_INFO),
+    dbc.Row(COMMUNITIES_INFO),
     dbc.Row([
         dbc.Col(
             [
@@ -103,12 +103,12 @@ NETWORKING = dbc.Container([
             ], className='col-md-8'
         ),
         dbc.Col(
-            CLUSTERS_TWEETS_WORD_FREQ, className='col-md-4')
+            COMMUNITIES_TWEETS_WORD_FREQ, className='col-md-4')
     ]),
     html.Hr(),
-    html.P("List of users in the selected cluster.",
+    html.P(COMMUNITIES_USERS_TITLE,
            style={'textAlign': 'center'}),
     html.Hr(),
-    dbc.Row(id='clusters-users'),
+    dbc.Row(id='communities-users'),
     html.Hr()
 ])

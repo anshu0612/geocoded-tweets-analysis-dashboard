@@ -10,8 +10,6 @@ from constants.dash_constants import DASH_DATE_FORMAT, ERROR_INSUFFICIENT_TWEETS
 from constants.common import FLAG_FIX_USA, FLAG_URL, DATE_FORMAT, TWITTER_BASE_URL
 
 # dummy figure
-
-
 def get_dummy_fig(msg):
     dummy_fig = px.treemap(
         names=[msg],
@@ -21,7 +19,7 @@ def get_dummy_fig(msg):
     return dummy_fig
 
 
-def generate_rts_info(tw):
+def generate_rewteets_info(tw):
     return (
         dbc.CardBody(
             [
@@ -99,7 +97,7 @@ def generate_influential_users(idx, tw):
     )
 
 
-def cluster_user_ui(idx, username):
+def communities_users_ui(idx, username):
     return html.P(html.A(html.Span(str(
         idx + 1) + '. ' + username),
         style={'cursor': 'pointer'},

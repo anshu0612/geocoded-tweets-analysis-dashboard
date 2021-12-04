@@ -30,7 +30,6 @@ from dash_components.reusables import *
 # setup
 app = dash.Dash(__name__, suppress_callback_exceptions=True,
                 external_stylesheets=[dbc.themes.BOOTSTRAP])
-# app.layout = html.Div(children=[NAVBAR, MAIN_CONTAINER])
 server = app.server
 
 app.layout = html.Div([
@@ -47,30 +46,32 @@ app.layout = html.Div([
         style={'display': 'flex', 'justifyContent': 'center'}
     ),
     html.Hr(),
-    # content will be rendered in this element
     html.Div(id='page-content')
 ])
 
 
-# --------------------------- DATA LOADING -----------------
-# load the tweets
+# --------------------------- Data Loading ----------------------------------
+# tweets
 tweets = pd.read_csv(TWEETS_PATH)
-# get tweets dtae range
+
+#  tweets date range
 min_date, max_date = get_date_range(tweets)
+
 # influential users
 influential_users = pd.read_csv(INFLUENTIAL_USERS_PATH)
 
-with open(NETWORKING_DATA, 'r') as f:
-    cyto_data = json.load(f)
-
-pst_tweets = pd.read_csv(POTENTIALLY_SENSITIVE_TWEETS_PATH)
-
-
 # influencial countries data
+# ---- list of influencial countries
 influential_countries = pd.read_csv(TOP_COUNTRY_INFLUENCER_PATH)
+# --- tweets from the influencial countries
 influential_countries_tweets = pd.read_csv(TOP_COUNTRY_INFLUENCER_TWEETS_PATH)
 
-# local --------
+# potentially sensitive tweets
+pst_tweets = pd.read_csv(POTENTIALLY_SENSITIVE_TWEETS_PATH)
+
+# viral tweets through retweets
+# -------- local
+# local is only valid for country-specific tweets
 if COUNTRY:
     all_local_rts_trend = pd.read_csv(ALL_LOCAL_RTS_TREND_PATH)
     all_local_rts_info = pd.read_csv(ALL_LOCAL_RTS_INFO_PATH)
@@ -81,8 +82,7 @@ if COUNTRY:
     neg_local_rts_trend = pd.read_csv(NEG_LOCAL_RTS_TREND_PATH)
     neg_local_rts_info = pd.read_csv(NEG_LOCAL_RTS_INFO_PATH)
 
-
-# global --------
+# -------- global
 all_global_rts_trend = pd.read_csv(ALL_GLOBAL_RTS_TREND_PATH)
 all_global_rts_info = pd.read_csv(ALL_GLOBAL_RTS_INFO_PATH)
 
@@ -92,19 +92,26 @@ pos_global_rts_info = pd.read_csv(POS_GLOBAL_RTS_INFO_PATH)
 neg_global_rts_trend = pd.read_csv(NEG_GLOBAL_RTS_TREND_PATH)
 neg_global_rts_info = pd.read_csv(NEG_GLOBAL_RTS_INFO_PATH)
 
-
+# communities tweets
 with open(COMMUNITIES_TWEETS_PATH, 'r') as f:
-    clusters_tweets = json.load(f)
+    communities_tweets = json.load(f)
 
+# communities users
 with open(COMMUNITIES_USERS_PATH, 'r') as f:
-    clusters_users = json.load(f)
+    communities_users = json.load(f)
 
-# ----------------------------  CALLBACKS -----------------
+# communities network graph
+with open(NETWORKING_DATA, 'r') as f:
+    networking_graph_data = json.load(f)
+
+# ----------------------------  Callbacks ----------------------------------
+
+# routing callback
 
 
 @app.callback(Output('page-content', 'children'),
               [Input('url', 'pathname')])
-def display_page(pathname):
+def get_display_page(pathname):
     if pathname == NETWORKING_PATH:
         return html.Div(children=[NETWORKING])
     elif pathname == ENGAGEMENTS_PATH:
@@ -115,6 +122,7 @@ def display_page(pathname):
         return html.Div(children=[TWEETS])
 
 
+# callback for hashtags, mentions and sentiments update by `start_date` and `end_date`
 @app.callback(
     [Output('fig-hashtags', 'figure'),
      Output('fig-mentions', 'figure'),
@@ -122,16 +130,16 @@ def display_page(pathname):
     Input('url', 'pathname'),
     Input('hash-mention-sent-datepick', 'start_date'),
     Input('hash-mention-sent-datepick', 'end_date'))
-def update_hash_mentions_sent_output(pathname, start_date, end_date):
+def get_hash_mentions_sentiment_by_dates(pathname, start_date, end_date):
     if not pathname == HOME_PATH:
         raise PreventUpdate
 
+    # hashtags
     df_hashtags = generate_dash_hashtags(tweets, start_date, end_date)
-
     if len(df_hashtags):
         fig_hashtags = px.bar(df_hashtags, x='counts', y='hashtag',
-                            color_discrete_sequence=['#E49B0F'],
-                            orientation='h', template=DASH_TEMPLATE)
+                              color_discrete_sequence=['#E49B0F'],
+                              orientation='h', template=DASH_TEMPLATE)
         fig_hashtags.update_layout(
             title='Top hashtags distribution',
             margin=dict(l=200, r=0, t=30, b=4),
@@ -141,12 +149,12 @@ def update_hash_mentions_sent_output(pathname, start_date, end_date):
     else:
         fig_hashtags = get_dummy_fig(ERROR_INSUFFICIENT_HASHTAGS)
 
-
+    # mentions
     df_mentions = generate_dash_mentions(tweets, start_date, end_date)
     if len(df_mentions):
         fig_mentions = px.bar(df_mentions, x='counts', y='mention',
-                            color_discrete_sequence=['#009ACD'],
-                            orientation='h', template=DASH_TEMPLATE)
+                              color_discrete_sequence=['#009ACD'],
+                              orientation='h', template=DASH_TEMPLATE)
         fig_mentions.update_layout(
             title='Top mentions distribution',
             margin=dict(l=0, r=0, t=30, b=4),
@@ -156,8 +164,8 @@ def update_hash_mentions_sent_output(pathname, start_date, end_date):
     else:
         fig_mentions = get_dummy_fig(ERROR_INSUFFICIENT_MENTIONS)
 
+    # sentiments
     df_sentiments = generate_dash_sentiments(tweets, start_date, end_date)
-    
     if len(df_sentiments):
         fig_sentiments = px.bar(df_sentiments, x='count', y='tweet_sentiment',
                                 color_discrete_sequence=[
@@ -175,22 +183,36 @@ def update_hash_mentions_sent_output(pathname, start_date, end_date):
     return (fig_hashtags, fig_mentions, fig_sentiments)
 
 
+# callback for potentially sensitive tweets' frequent words update by `date`
 @app.callback(
-    [Output('cytoscape-nodes', 'zoom'),
-     Output('cytoscape-nodes', 'elements')],
-    [Input('bt-reset', 'n_clicks')]
-)
-def reset_layout(n_clicks):
-    return [1, cyto_data['data']]
+    Output('freq-count-psts-tweets', 'figure'),
+    Input('url', 'pathname'),
+    Input('psts-datepick', 'date'))
+def get_potentially_sensitive_tweets_by_date(pathname, date=min_date):
+    if not pathname == HOME_PATH:
+        raise PreventUpdate
+
+    pst_tweets_by_date = pst_tweets[
+        pst_tweets['processed_tweet_text'].notna() &
+        pst_tweets['tweet_date'].between(
+            date, date, inclusive='both')]['processed_tweet_text']
+
+    words_freq = plotly_wordcloud(list(pst_tweets_by_date), str(date))
+
+    if not words_freq:
+        words_freq = get_dummy_fig(ERROR_INSUFFICIENT_TWEETS)
+
+    return words_freq
 
 
+# callback for influential countries' tweets' frequent words update by `country`
 @app.callback(
     [Output('fig-world-influence', 'figure'),
         Output('word-cloud-influential-country', 'figure')],
     Input('url', 'pathname'),
     Input('dropdown-top-influence-countries', 'value'),
 )
-def gen_influential_countries_wordfreq(pathname, country):
+def get_influential_countries_word_frequency_by_country(pathname, country):
     if not pathname == INFLUENCERS_PATH:
         raise PreventUpdate
 
@@ -200,6 +222,7 @@ def gen_influential_countries_wordfreq(pathname, country):
     selected_country_data = influential_countries[influential_countries['country'] == country].to_dict('records')[
         0]
 
+    # make country-centric with lines only if country-specific tweets collected
     if COUNTRY:
         fig_world_influence = go.Figure(go.Scattermapbox(
             mode='markers+lines',
@@ -255,26 +278,26 @@ def gen_influential_countries_wordfreq(pathname, country):
 
     return (fig_world_influence, words_freq)
 
+# callback for influential users update by `country`
 
-@app.callback(
-    Output('freq-count-psts-tweets', 'figure'),
+
+@ app.callback(
+    Output('influencers-chips-row', 'children'),
     Input('url', 'pathname'),
-    Input('psts-datepick', 'date'))
-def psts_output(pathname, date=min_date):
-    if not pathname == HOME_PATH:
+    Input('dropdown-top-influence-users-countries', 'value')
+)
+def get_infuential_users_by_country(pathname, country):
+    if not pathname == INFLUENCERS_PATH:
         raise PreventUpdate
+    if country == 'All':
+        filtered_users = influential_users
+    else:
+        filtered_users = influential_users[influential_users['user_geo_coding'] == country]
 
-    pst_tweets_by_date = pst_tweets[
-        pst_tweets['processed_tweet_text'].notna() &
-        pst_tweets['tweet_date'].between(
-            date, date, inclusive='both')]['processed_tweet_text']
+    return [generate_influential_users(i, tw) for i, tw in filtered_users.iterrows()]
 
-    words_freq = plotly_wordcloud(list(pst_tweets_by_date), str(date))
 
-    if not words_freq:
-        words_freq = get_dummy_fig(ERROR_INSUFFICIENT_TWEETS)
-
-    return words_freq
+# callback for viral local tweets (via retweeting) update by `sentiment`
 
 
 @app.callback(
@@ -282,14 +305,11 @@ def psts_output(pathname, date=min_date):
         Output('local-rts-cumulative', 'figure'),
         Output('local-rts-delta', 'figure'),
         Output('local-rts', 'children'),
-        # Output('local-rts-table', 'columns')
-        # Output('local-rts-table', 'colors')
     ],
     Input('url', 'pathname'),
     Input('local-rts-sentiment-select', 'value')
-    # ],
 )
-def get_local_rts_trend(pathname, selected_sentiment):
+def get_local_retweets_trend_by_sentiments(pathname, selected_sentiment):
     if not pathname == ENGAGEMENTS_PATH:
         raise PreventUpdate
 
@@ -350,7 +370,7 @@ def get_local_rts_trend(pathname, selected_sentiment):
             yaxis_title='Increment in engagements'
         )
 
-        rts_info = [generate_rts_info(tw) for _, tw in info_data.iterrows()]
+        rts_info = [generate_rewteets_info(tw) for _, tw in info_data.iterrows()]
     else:
         rts_info = ERROR_LOCAL_RETWEETS
         fig_trend_delta = get_dummy_fig(ERROR_LOCAL_RETWEETS)
@@ -358,20 +378,19 @@ def get_local_rts_trend(pathname, selected_sentiment):
 
     return (fig_trend_cum, fig_trend_delta, rts_info)
 
+# callback for viral global tweets (via retweeting) update by `sentiment`
+
 
 @app.callback(
     [
         Output('global-rts-cumulative', 'figure'),
         Output('global-rts-delta', 'figure'),
-        Output('global-rts', 'children'),
-        # Output('global-rts-table', 'columns')
-        # Output('global-rts-table', 'colors')
+        Output('global-rts', 'children')
     ],
     Input('url', 'pathname'),
     Input('global-rts-sentiment-select', 'value')
-    # ],
 )
-def get_global_rts_trend(pathname, selected_sentiment):
+def get_global_retweets_trend_by_sentiment(pathname, selected_sentiment):
     if not pathname == ENGAGEMENTS_PATH:
         raise PreventUpdate
 
@@ -425,7 +444,7 @@ def get_global_rts_trend(pathname, selected_sentiment):
             yaxis_title='Increment in engagements'
         )
 
-        rts_info = [generate_rts_info(tw) for _, tw in info_data.iterrows()]
+        rts_info = [generate_rewteets_info(tw) for _, tw in info_data.iterrows()]
 
     else:
         rts_info = ERROR_LOCAL_RETWEETS
@@ -434,49 +453,45 @@ def get_global_rts_trend(pathname, selected_sentiment):
 
     return (fig_trend_cum, fig_trend_delta, rts_info)
 
-
-@ app.callback(
-    Output('influencers-chips-row', 'children'),
-    Input('url', 'pathname'),
-    Input('dropdown-top-influence-users-countries', 'value')
-)
-def gen_infuential_users_by_country(pathname, country):
-    if not pathname == INFLUENCERS_PATH:
-        raise PreventUpdate
-    if country == 'All':
-        filtered_users = influential_users
-    else:
-        filtered_users = influential_users[influential_users['user_geo_coding'] == country]
-
-    return [generate_influential_users(i, tw) for i, tw in filtered_users.iterrows()]
+# callback for influential users update by `country`
 
 
 @ app.callback(
-    [Output('word-freq-clusters', 'figure'),
-     Output('clusters-users', 'children')],
+    [Output('word-freq-communities', 'figure'),
+     Output('communities-users', 'children')],
     Input('url', 'pathname'),
-    Input('dropdown-clusters', 'value')
+    Input('dropdown-communities', 'value')
 )
-def gen_clusters_word_freq(pathname, cluster):
+def get_communities_word_frequency_by_country(pathname, cluster):
     if not pathname == NETWORKING_PATH:
         raise PreventUpdate
 
     words_freq = plotly_wordcloud(
-        clusters_tweets[cluster], 'Cluster ' + cluster, CLUSTER_COLORS_DICT[cluster])
+        communities_tweets[cluster], 'Cluster ' + cluster, COMMUNITIES_COLORS_DICT[cluster])
     if not words_freq:
         words_freq = get_dummy_fig(ERROR_INSUFFICIENT_TWEETS)
 
-    cluster_users_ui = []
-    for idx, u in enumerate(clusters_users[cluster]['users']):
-        cluster_users_ui.append(
-            cluster_user_ui(idx, u)
+    communities_users_ui_list = []
+    for idx, u in enumerate(communities_users[cluster]['users']):
+        communities_users_ui_list.append(
+            communities_users_ui(idx, u)
         )
 
-    return (words_freq, cluster_users_ui)
+    return (words_freq, communities_users_ui_list)
+
+# reset the networking graph
+
+
+@app.callback(
+    [Output('networking-graph-nodes', 'zoom'),
+     Output('networking-graph-nodes', 'elements')],
+    [Input('bt-reset', 'n_clicks')]
+)
+def reset_networking_graph(n_clicks):
+    return [n_clicks, networking_graph_data['data']]
 
 
 # ----------------------------  Flask Server -----------------
-
 warnings.filterwarnings('ignore')
 if __name__ == '__main__':
     app.run_server(debug=True,
