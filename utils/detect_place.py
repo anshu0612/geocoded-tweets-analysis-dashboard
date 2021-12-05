@@ -3,7 +3,7 @@ import spacy
 from geopy.geocoders import Nominatim
 
 from constants.common import COUNTRY, ALPHA2_TO_COUNTRY, COUNTRY_TO_ALPHA2, GEOCODER_AGENT_NAME
-from constants.country_config import KNOWN_USERNAMES_COUNTRIES
+from constants.country_config import KNOWN_USERNAMES_COUNTRY
 
 locator = Nominatim(user_agent=GEOCODER_AGENT_NAME)
 nlp = spacy.load('en_core_web_sm')
@@ -63,7 +63,7 @@ def geo_coding(tweet):
     try:
         u = tweet['user']
 
-        if u['screen_name'] in KNOWN_USERNAMES_COUNTRIES:
+        if u['screen_name'] in KNOWN_USERNAMES_COUNTRY:
             country_info = (
                 ALPHA2_TO_COUNTRY[u['screen_name']], u['screen_name'])
             coding_type = 'Knowns'

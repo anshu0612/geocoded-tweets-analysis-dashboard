@@ -23,4 +23,4 @@ COUNTRY_SLANGS = ['India', 'Bharat']
 
 # (Dictionary) - {<twitter_user_screen_name>: <twitter_user_country_code>} - Prior knowledge of a user's country
 # Example {'muttons': 'SG', 'POTUS': 'US'}
-KNOWN_USERNAMES_COUNTRIES = {}
+KNOWN_USERNAMES_COUNTRY = {}

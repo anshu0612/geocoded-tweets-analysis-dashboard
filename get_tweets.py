@@ -527,6 +527,9 @@ def _create_tweets_csv(db_name, data, collection_no,
 
 
 def _set_connetion():
+    '''
+        Connecting to the remote MongoDB server
+    '''
     return SSHTunnelForwarder(
         os.environ.get('MONGO_HOST'),
         ssh_username=os.environ.get('MONGO_USER'),

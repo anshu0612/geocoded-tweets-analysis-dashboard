@@ -151,8 +151,8 @@ python3 get_tweets.py --db_name COVID_VACCINE --collection_no_list 88 89
 | max_csv_tweets_count | Maximum no. of tweets to save in a csv | 10000 |
 
 The csv files for the: 
-- The **country-specific** tweets will be saved in `data/<country>\fragmented_tweets\tweets` and `data\<country>\fragmented_tweets\tweets\tweets_engagements` directories
-- The **global** tweets will be saved in `data/global\fragmented_tweets\tweets` and `data\global\fragmented_tweets\tweets_engagements` directories
+- The **country-specific** tweets will be saved in `data/<country>/fragmented_tweets/tweets` and `data/<country>/fragmented_tweets/tweets/tweets_engagements` directories
+- The **global** tweets will be saved in `data/global/fragmented_tweets/tweets` and `data/global/fragmented_tweets/tweets_engagements` directories
 
 ###  Step :four: &nbsp; : &nbsp; Process tweets 
 

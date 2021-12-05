@@ -9,7 +9,7 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from utils.process_text import TwitterDataProcessing
 from constants.common import FRAGMENTED_TWEETS_PATH, \
     FRAGMENTED_TWEETS_ENGAGEMENTS_PATH, DATE_FORMAT
-from constants.country_config import COUNTRY_SLANGS, KNOWN_USERNAMES_COUNTRIES
+from constants.country_config import COUNTRY_SLANGS, KNOWN_USERNAMES_COUNTRY
 from constants.common import COUNTRY, TWEETS_PATH, SINGAPORE_LABEL
 
 
@@ -144,17 +144,17 @@ class ProcessData():
         # print(t)
 
         for _, row in self.tweets.iterrows():
-            if row['user_screenname_x'] in KNOWN_USERNAMES_COUNTRIES:
+            if row['user_screenname_x'] in KNOWN_USERNAMES_COUNTRY:
                 # print(row['user_screenname_x'])
-                row['user_geo_coding'] = KNOWN_USERNAMES_COUNTRIES[row['user_screenname_x']]
+                row['user_geo_coding'] = KNOWN_USERNAMES_COUNTRY[row['user_screenname_x']]
 
             if row['tweet_enagagement_type'] == RETWEET:
-                if row['retweeted_user_screenname'] in KNOWN_USERNAMES_COUNTRIES:
-                    row['retweeted_user_geo_coding'] = KNOWN_USERNAMES_COUNTRIES[row['retweeted_user_screenname']]
+                if row['retweeted_user_screenname'] in KNOWN_USERNAMES_COUNTRY:
+                    row['retweeted_user_geo_coding'] = KNOWN_USERNAMES_COUNTRY[row['retweeted_user_screenname']]
 
             if row['tweet_enagagement_type'] == QUOTED:
-                if row['quoted_user_screenname'] in KNOWN_USERNAMES_COUNTRIES:
-                    row['quoted_user_geo_coding'] = KNOWN_USERNAMES_COUNTRIES[row['quoted_user_screenname']]
+                if row['quoted_user_screenname'] in KNOWN_USERNAMES_COUNTRY:
+                    row['quoted_user_geo_coding'] = KNOWN_USERNAMES_COUNTRY[row['quoted_user_screenname']]
 
 
         # t = self.tweets[self.tweets['user_screenname_x'] == 'ChannelNewsAsia'][['user_screenname_x', 'user_geo_coding']]
@@ -246,9 +246,9 @@ if __name__ == "__main__":
     process = ProcessData()
     formatter = '-'*10
 
-    # print("concat_and_join_data 🚧 {}".format(formatter))
-    # process.concat_and_join_data()
-    # print("concat_and_join_data ✅ {}".format(formatter))
+    print("concat_and_join_data 🚧 {}".format(formatter))
+    process.concat_and_join_data()
+    print("concat_and_join_data ✅ {}".format(formatter))
 
     print("add_tweet_date 🚧 {}".format(formatter))
     process.add_tweet_date()
@@ -285,13 +285,13 @@ if __name__ == "__main__":
     process.remove_amp_from_tweets_text()
     print("remove_amp_from_tweets_text ✅ {}".format(formatter))
 
-    # print("processed_tweets_text 🚧 {} Note: This might take time depending on the data size. 🧹, 🧽 in-progress".format(formatter))
-    # process.processed_tweets_text()
-    # print("processed_tweets_text ✅ {}".format(formatter))
+    print("processed_tweets_text 🚧 {} Note: This might take time depending on the data size. 🧹, 🧽 in-progress".format(formatter))
+    process.processed_tweets_text()
+    print("processed_tweets_text ✅ {}".format(formatter))
 
-    # print("add_sentiments 🙂 😐 😒 🚧 {} Note: This might take time depending on the data size.".format(formatter))
-    # process.add_sentiments()
-    # print("add_sentiments ✅ {}".format(formatter))
+    print("add_sentiments 🙂 😐 😒 🚧 {} Note: This might take time depending on the data size.".format(formatter))
+    process.add_sentiments()
+    print("add_sentiments ✅ {}".format(formatter))
 
     print("save_final_csv 🚧 {}".format(formatter))
     process.save_final_csv()
