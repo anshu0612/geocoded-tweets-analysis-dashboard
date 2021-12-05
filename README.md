@@ -96,6 +96,9 @@ docker container run -d -p 5000:5000 geocoded-tweets-insights-dash
 
 # Running the Application for Custom Country-specific or Global Level Tweets Data
 
+The application starts processing tweets that are ingested into the remote MongoDB server.
+
+
 ####  Step 1: Setup MongoDB configurations 
 
 Create an .env file, and add the below required details for fetching tweets from MongoDB
@@ -224,3 +227,7 @@ TWITTER_APP_SECRET = 'XXXX'
 TWITTER_OAUTH_TOKEN = 'XXXX'
 TWITTER_OAUTH_TOKEN_SECRET = 'XXXX'
 ```
+
+#### Acknowledgement 
+
+Thanks @chrisvdweth for providing the list of Singapore-linked offcial accounts. 
