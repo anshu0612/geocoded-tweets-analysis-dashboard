@@ -228,7 +228,7 @@ TWITTER_OAUTH_TOKEN = 'XXXX'
 TWITTER_OAUTH_TOKEN_SECRET = 'XXXX'
 ```
 
-## Contact
+# Contact
 
 If you have any questions, feel free to open an issue or directly contact me via: `anshu@comp.nus.edu.sg` or `anshu.singh173@gmail.com`
 
