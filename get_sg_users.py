@@ -1,3 +1,6 @@
+'''
+    Part of this code has been written by Christian von der Weth (@chrisvdweth). 
+'''
 # from io import DEFAULT_BUFFER_SIZE
 import os
 import time
