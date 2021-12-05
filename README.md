@@ -38,7 +38,7 @@ Checkout the demos for:
   - [Using Docker](#using-docker)
 - [Running the Application for Custom Country-specific or Global Level Tweets Data](#running-the-application-for-custom-country-specific-or-global-level-tweets-data)
 - [Additional Step for Singapore-based Users Tweets Collection](#additional-step-for-singapore-based-users-tweets-collection)
-- [Future Work](#future-work)
+<!-- - [Future Work](#future-work) -->
 <!-- tocstop -->
 
 
@@ -79,7 +79,7 @@ python3 app.py
 
 If you face environment dependencies then you can use **docker** instead. 
 
-- Clone the respository 
+- Clone the repository 
 - Install Docker on your system 
 
 - Run the below command to build the docker image
@@ -192,23 +192,35 @@ python3 app.py
 
 # Additional Step for Singapore-based Users Tweets Collection
 
-### Fetching followers of the Singapore-based official accounts`
+Since I started building the dashboard for Singapore, there is an additional step, can say, Step 0 for Singapore-based users' tweets collection.  
 
+The step involves collecting Twitter users who follow at least `X` number of Singapore-linked official accounts (such as Ministry of Education, Health, and so on). The heuristic is to know the potential Singapore-based users and subsequently collect tweets from those users. 
 
-Running the below command fetches the followers of the 59 collected Singapore-based official accounts. 
-```
+The provided sample of users in `data\singapore\min_following_users.txt` lists the users who follow at least `2` of the `59 Singapore-linked official accounts` (check the diagram below for your reference). During tweets collection, this file is used - as one of the steps -   to filter Singapore-based tweets. 
+
+![Alt text](assets/flow_for_sg_users.png)
+
+#### Collecting followers of the Singapore-linked official accounts`
+
+Running the below command fetches the followers of the `59 Singapore-based official accounts`. 
+```bash
 python3 get_sg_users.py --min_following_required 2
 ```
 **Arguments**
-![Alt text](assets/flow_for_sg_users.png)
+
 | Argument | Description | Default
 | ---- | --- | --- |
 | min_following_required | Filter users following at least these number of Singapore-based official accounts | 2 |
 
 The file `data/singapore/min_following_users.txt` contains the user ids of the collected twitter Singapore-based official accounts.
 
-The list of followers will be saved in `data/singapore/sg_accounts_followers/` folder.
+> The list of followers will be saved in `data/singapore/sg_accounts_followers/` folder.
 
-## Future Work
+To collect the followers using the Twitter API, add the credentials in the `.env` file 
 
-
+```python
+TWITTER_APP_KEY = 'XXXX'
+TWITTER_APP_SECRET = 'XXXX'
+TWITTER_OAUTH_TOKEN = 'XXXX'
+TWITTER_OAUTH_TOKEN_SECRET = 'XXXX'
+```
