@@ -229,5 +229,5 @@ TWITTER_OAUTH_TOKEN_SECRET = 'XXXX'
 ```
 
 #### Acknowledgement 
-
-Thanks @chrisvdweth for providing the list of Singapore-linked official accounts. 
+Thanks, Christian von der Weth (@chrisvdweth) and Jithin vachery (@jithinvachery) for the guidance.  
+@chrisvdweth provided the list of Singapore-linked official accounts. 
