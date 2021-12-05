@@ -52,6 +52,7 @@ The repository contains code for:
 - Pipeline for generating key insights i.e., dashboard data (`csv` and `json` files)
 - Plotly Dash application for visualizing the insights
 
+One can refer to this detailed [documentation](https://docs.google.com/document/d/1jr9FAraF93lWkf3H2HbpLlMsTxVcQk-JTRa6JuJuJPA/edit?usp=sharing). The documentation provides detail on the collected data, geocoding, key insights generation, and so on.
 
 # Running the Application for Sample Tweets Data
 
