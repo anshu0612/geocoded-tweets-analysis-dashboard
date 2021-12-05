@@ -54,7 +54,7 @@ SG_SCREEN_NAMES = ['mindefsg', 'MOEsg', 'sporeMOH', 'LTAsg', 'SMRT_Singapore', '
 DEFAULT_MIN_FOLLOWING_REQUIRED = 2
 
 # path to the directory to save files containing Singapore-based official twitter accounts followers
-SG_ACCOUNTS_FOLLOWERS_PATH = 'data/sg_accounts_followers/'
+SG_ACCOUNTS_FOLLOWERS_PATH = 'data/singapore/sg_accounts_followers/'
 
 # path to the file to save users who follow x no. of Singapore-based official twitter accounts
-MIN_SG_ACCOUNTS_FOLLWERS_PATH = "data/general/min_following_users.txt"
+MIN_SG_ACCOUNTS_FOLLWERS_PATH = 'data/singapore/min_following_users.txt'

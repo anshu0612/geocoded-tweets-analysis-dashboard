@@ -68,8 +68,8 @@ class DashGenerator():
         self.G = create_weighted_directed_graph(
             all_interacting_users, weighted_interacting_edges)
 
-    def get_prominenet_groups(self):
-        generate_prominenet_groups(self.G)
+    # def get_prominenet_groups(self):
+    #     generate_prominenet_groups(self.G)
 
     def get_influential_users(self):
         top_ranking = get_top_ranked_users(self.G)

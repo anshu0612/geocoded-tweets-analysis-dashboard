@@ -25,10 +25,10 @@ def generate_dash_basic_stats(tweets, save=False, basics_save_path=BASICS_PATH):
 
     min_date, max_date = get_date_range(tweets)
 
-    daily_tweets = tweets.groupby(
+    daily_tweets_count = tweets.groupby(
         'tweet_date')['tweet_id'].count().reset_index(name='count')
-    avg_tweets = sum(daily_tweets['count']) / \
-        len(daily_tweets['count'])
+    avg_tweets = sum(daily_tweets_count['count']) / \
+        len(daily_tweets_count['count'])
 
     users = tweets['user_id_x'].nunique()
 
@@ -65,23 +65,30 @@ def generate_dash_hashtags(tweets, from_date, to_date, save=False, hashtags_save
     if not to_date:
         to_date = max_date
 
+    # filtering tweets in the date range
     tweets_hashtags = tweets[tweets['entity_hashtags'].notna(
     ) & tweets['tweet_date'].between(from_date, to_date, inclusive='both')]['entity_hashtags']
 
     hashtags = []
 
+    # joining all the country name slangs 
     country_slangs = '|'.join(COUNTRY_SLANGS)
     
+    # creating list of hashtags
     for h in tweets_hashtags:
         h_list = [hh for hh in h.split(
+            # excluding the country name slangs 
             '|') if COUNTRY_CODE and (hh not in country_slangs)]
         hashtags.extend(h_list)
 
+    # counting hashtags and sorting them by count
     count_hashtags = col.Counter(hashtags).most_common()
+
+    # getting the top hashtags by frequency
     hashtags = [c[0] for c in count_hashtags[:top_hash_count]]
     counts = [c[1] for c in count_hashtags[:top_hash_count]]
 
-    # Saving data for the dashboard
+    # data for the dashboard
     hashtags_data = {
         "counts": counts[::-1],
         "hashtag": hashtags[::-1]
@@ -103,17 +110,19 @@ def generate_dash_mentions(tweets, from_date, to_date, save=False, mentions_save
     if not to_date:
         to_date = max_date
 
+    # filtering tweets in the date range
     tweets_mentions = tweets[tweets['entity_mentions'].notna(
     ) & tweets['tweet_date'].between(from_date, to_date, inclusive='both')]['entity_mentions']
 
     mentions = []
 
+    # getting the top mentions by frequency
     for m in tweets_mentions:
         m_list = [mm for mm in m.split('|')]
         mentions.extend(m_list)
 
     count_mentions = col.Counter(mentions).most_common()
-
+     # getting the top mentions by frequency
     mentions = [c[0] for c in count_mentions[:top_mentions_count]]
     counts = [c[1] for c in count_mentions[:top_mentions_count]]
 
@@ -138,7 +147,9 @@ def generate_dash_sentiments(tweets, from_date, to_date, save=False, sentiments_
         from_date = min_date
     if not to_date:
         to_date = max_date
-
+    
+    # filtering tweets by date range
+    # getting sentiment distribution for positive, negative and neutral categories
     df_sentiments = tweets[tweets['tweet_date'].between(from_date, to_date, inclusive='both')] \
         .value_counts(subset=['tweet_sentiment']).reset_index(name='count').sort_values(['count'], ascending=False)
 
@@ -152,9 +163,13 @@ def generate_dash_potentially_sensitive_tweets(tweets, save=False,
                                                pst_count_save_path=POTENTIALLY_SENSITIVE_TWEETS_COUNT_PATH,
                                                pst_tweets_save_path=POTENTIALLY_SENSITIVE_TWEETS_PATH,
                                                percentile=POTENTIALLY_SENSITIVE_TWEETS_DEFAULT_PERCENTILE):
+    
+    # filter tweets marked as potentially sensitive
     tweets_pst = tweets[tweets['tweet_possibly_sensitive'] == True]
+    # counting potentially sensitive tweets by date
     c_tweets_pst = tweets_pst.value_counts(subset=['tweet_date']).reset_index(name='count') \
         .sort_values(['tweet_date'], ascending=False)
+    # getting potentially sensitive tweets and their dates
     pst_tweets = tweets_pst[['tweet_date', 'processed_tweet_text']]
 
     if save:

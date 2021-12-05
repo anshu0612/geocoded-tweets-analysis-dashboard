@@ -108,7 +108,7 @@ def get_top_ranked_users(G, top_users_count=50):
     return list(ranked_users)[:top_users_count]
 
 
-def generate_prominenet_groups(G, k=2):
+def generate_prominent_groups(G, k=2):
     groups = nx.algorithms.centrality.prominent_group(G, 2)
     print(groups)
 
@@ -176,6 +176,10 @@ def generate_dash_influential_users_tweets(tweets, top_ranking,
 
 
 def quality_check_pagerank(tweets, top_ranking, top_users_count):
+    '''
+        Computes the percentage of verified users among the estimated 
+        top 50 influential users 
+    '''
     verified_users = tweets[tweets['user_verified']
                             == True]['user_screenname_x']
     rt_verified_users = tweets[(tweets['tweet_enagagement_type'] == 'Retweet') & (
@@ -197,6 +201,7 @@ def get_communities(G_pruned, tweets, save=False,
                     communities_tweets_save_path=COMMUNITIES_TWEETS_PATH,
                     user_to_community_save_path=USER_TO_COMMUNITY_PATH):
 
+    # converting the directed graph to undirected graph for running the Louvain's algorithm
     G2 = G_pruned.to_undirected()
 
     # Running the Louvain's algorithm for communities detection
@@ -210,14 +215,14 @@ def get_communities(G_pruned, tweets, save=False,
     larger_communities = sorted(communities_grouped, key=lambda c: len(
         communities_grouped[c]), reverse=True)[:8]
 
-    reamapped_communities = {}
+    remapped_communities = {}
     for k, v in communities.items():
         # if community not among the largest communities then slip it
         if v not in larger_communities:
             continue
 
         # remapping the communities in the range of 0-8
-        reamapped_communities[k] = larger_communities.index(v)
+        remapped_communities[k] = larger_communities.index(v)
 
     communities_grouped_with_colors = {}
     for idx, community_no in enumerate(larger_communities):
@@ -238,9 +243,8 @@ def get_communities(G_pruned, tweets, save=False,
 
     if save:
         # plt.savefig(communities_plot_save_path, bbox_inches='tight')
-
         with open(user_to_community_save_path, 'w') as f:
-            json.dump(reamapped_communities, f)
+            json.dump(remapped_communities, f)
 
         with open(communities_user_save_path, 'w') as f:
             json.dump(communities_grouped_with_colors, f)
@@ -262,18 +266,20 @@ def get_graph_min_degree(Graph):
     return np.min(degrees)
 
 
-def create_min_degree_graph(G_old, min_degree=MIN_DEGREE_OF_NETWORKING_GRAPH):
-    print("MIN_DEGREE_OF_NETWORKING_GRAPH", MIN_DEGREE_OF_NETWORKING_GRAPH)
-    G = nx.Graph()
-    for u, v, data in G_old.edges(data=True):
-        w = data['weight'] if 'weight' in data else 1.0
-        if G.has_edge(u, v):
-            G[u][v]['weight'] += w
-        else:
-            G.add_edge(u, v, weight=w)
+def create_min_degree_graph(G, min_degree=MIN_DEGREE_OF_NETWORKING_GRAPH):
+    G_pruned = nx.Graph()
 
-    G = nx.k_core(G, k=min_degree)
-    return G
+    # converting the multigraph to unigraph i.e. - single edge between the nodes
+    # to run the K-core algorithm
+    for u, v, data in G.edges(data=True):
+        w = data['weight'] if 'weight' in data else 1.0
+        if G_pruned.has_edge(u, v):
+            G_pruned[u][v]['weight'] += w
+        else:
+            G_pruned.add_edge(u, v, weight=w)
+    # using the K-core algorithm to get a graph of required minimum degree
+    G_pruned = nx.k_core(G_pruned, k=min_degree)
+    return G_pruned
 
 
 def generate_networking_graph_data(G):

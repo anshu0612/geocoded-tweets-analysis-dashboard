@@ -19,23 +19,25 @@ def plot_top_influential_countries(c_quoted_rts_geo, x_top=10):
 
 
 def get_top_influential_countries(tweets, top_countries_count=10):
-    # Selecting tweets created by users from other countries and known geocoding.
+    # selecting retweets and quoted tweets from known countries.
     quoted_tweets = tweets[(tweets['tweet_enagagement_type'] == 'Quote') &
                            (tweets['quoted_user_geo_coding'] != 'Unknown')]
 
-    rts_tweets = tweets[(tweets['tweet_enagagement_type'] == 'Retweet') &
+    retweets_tweets = tweets[(tweets['tweet_enagagement_type'] == 'Retweet') &
                         (tweets['retweeted_user_geo_coding'] != 'Unknown')]
 
     if COUNTRY:
         # if country specific then exclude that COUNTRY from top influencers
         quoted_tweets = quoted_tweets[quoted_tweets['quoted_user_geo_coding'] != COUNTRY]
-        rts_tweets = rts_tweets[rts_tweets['retweeted_user_geo_coding'] != COUNTRY]
+        retweeted_tweets = retweets_tweets[retweets_tweets['retweeted_user_geo_coding'] != COUNTRY]
 
-    quoted_rts_geo = list(quoted_tweets['quoted_user_geo_coding']) + \
-        list(rts_tweets['retweeted_user_geo_coding'])
-    c_quoted_rts_geo = col.Counter(quoted_rts_geo).most_common()
+    # putting the geo locations of the retweets and quoted 
+    # tweets creators together in a list for counting
+    quoted_retweets_geolocations = list(quoted_tweets['quoted_user_geo_coding']) + \
+        list(retweeted_tweets['retweeted_user_geo_coding'])
+    c_quoted_retweets_geo = col.Counter(quoted_retweets_geolocations).most_common()
     # plot_top_influential_countries(c_quoted_rts_geo)
-    return c_quoted_rts_geo[:top_countries_count]
+    return c_quoted_retweets_geo[:top_countries_count]
 
 
 def generate_dash_influential_countries(top_country_influencer, save=False,

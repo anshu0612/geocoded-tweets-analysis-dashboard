@@ -36,9 +36,9 @@ def _get_sg_users():
 
 
 def _create_tweets_csv(db_name, data, collection_no,
-                      start_csv_no=1,
-                      running_tweets_save_count=1000,
-                      max_csv_tweets_count=8000):
+                       start_csv_no=1,
+                       running_tweets_save_count=1000,
+                       max_csv_tweets_count=8000):
 
     if COUNTRY == SINGAPORE_LABEL:
         sg_users = _get_sg_users()
@@ -144,7 +144,7 @@ def _create_tweets_csv(db_name, data, collection_no,
             p = tweet['place']
             geo_info = 'PLACE|{}|{}|{}'.format(p['full_name'],
                                                p['country'], p['country_code'])
-        
+
         user_geo_tagging.append(geo_info)
 
         tweet_time.append(tweet['created_at'])
@@ -556,7 +556,7 @@ def get_tweets_from_db(db_name, collection_no_list, running_tweets_save_count, m
             collection_no).center(100, '-'))
 
         _create_tweets_csv(db_name, collection_data, collection_no, 4,
-                          running_tweets_save_count, max_csv_tweets_count)
+                           running_tweets_save_count, max_csv_tweets_count)
 
     server.stop()
 
