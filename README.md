@@ -230,4 +230,4 @@ TWITTER_OAUTH_TOKEN_SECRET = 'XXXX'
 
 #### Acknowledgement 
 
-Thanks @chrisvdweth for providing the list of Singapore-linked offcial accounts. 
+Thanks @chrisvdweth for providing the list of Singapore-linked official accounts. 
