@@ -30,12 +30,12 @@ def generate_rewteets_info(tw):
                 html.P(
                     className='quoted-info',
                     children=[
-                        html.Span('Posted by: '),
+                        html.Span('Posted by: ', className='more-info'),
                         html.A(html.Span(tw['retweeted_user_screenname']),
                                target='_blank',
                                href=TWITTER_BASE_URL + tw['retweeted_user_screenname']),
-                        html.Span(children=' ✅' if tw['retweeted_user_verified'] else '', style={
-                            'color': 'red'}),
+                        html.Span(
+                            children=' ✅' if tw['retweeted_user_verified'] else ''),
                         html.Span(
                             Img(
                                 className='quoted-flag',
@@ -45,9 +45,9 @@ def generate_rewteets_info(tw):
                                     if tw['retweeted_user_geo_coding'].lower() != 'united states' else FLAG_FIX_USA)
                             )
                         ),
-                        html.Span(' | Created on: ' +
-                                  dt.strftime(dt.strptime(
-                                      tw['retweeted_tweet_date'], DATE_FORMAT), DASH_DATE_FORMAT)),
+                        html.Span(' | Created on: ', className='more-info'),
+                        html.Span(dt.strftime(dt.strptime(
+                            tw['retweeted_tweet_date'], DATE_FORMAT), DASH_DATE_FORMAT)),
                         html.Span(
                             ' | 🔁 ', className='quoted-endorsements'),
                         html.Span(
@@ -57,7 +57,7 @@ def generate_rewteets_info(tw):
                         html.Span(human_format(tw['total_engagement']),
                                   className='quoted-endorsements'),
                         html.Span(
-                            '| Sentiment : ', className='quoted-endorsements'),
+                            '| Sentiment : ', className='quoted-endorsements more-info'),
                         html.Span(tw['tweet_sentiment'],
                                   style={
                             'color': 'green' if tw['tweet_sentiment'] == 'positive' else '#C70039'}

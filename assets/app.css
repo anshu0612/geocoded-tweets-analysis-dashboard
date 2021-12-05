@@ -7,8 +7,11 @@ body {
 }
 
 .DateInput_input {
-    width: 8em;
-    
+    width: 8em;   
+}
+
+.more-info {
+    font-weight: 600;
 }
 
 .twitter-user {

@@ -26,6 +26,13 @@ COUNTRY_SLANGS = ['sg', 'spore', 'singapore', 'singapura']
 KNOWN_USERNAMES_COUNTRIES = {
     'muttons': 'SG',
     'cz_binance': 'SG',
+    'leehsienloong': 'SG',
+    'ChannelNewsAsia': 'SG',
+    'stbusinessdesk': 'SG',
+    'IrrawaddyNews': 'MM', 
+    'TODAYonline': 'SG',
+    'straits_times': 'SG',
+    'kixes': 'SG'
 }
 
 # -------------------------- EXTRA INFO FOR SINGAPORE ---------------------------

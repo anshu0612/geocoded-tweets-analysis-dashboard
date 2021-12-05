@@ -29,9 +29,10 @@ def create_quoted_card(tw):
                         html.P(
                             className='quoted-info',
                             children=[
-                                html.Span('Posted by: '),
+                                html.Span('Posted by: ',
+                                          className='more-info'),
                                 html.Span(tw['quoted_user_screenname']),
-                                html.Span(children=' ☑' if tw['quoted_user_verified'] else '', style={
+                                html.Span(children=' ✅' if tw['quoted_user_verified'] else '', style={
                                     'color': '#0096FF'}),
                                 html.Span(
                                     Img(
@@ -43,10 +44,10 @@ def create_quoted_card(tw):
                                     )
                                 ),
 
-                                html.Span(' | Created on: ' +
-                                          dt.strftime(dt.strptime(
-                                              tw['quoted_tweet_date'], DATE_FORMAT), DASH_NO_YEAR_FORMAT)),
-
+                                html.Span(' | Created on: ',
+                                          className='more-info'),
+                                html.Span(dt.strftime(dt.strptime(
+                                    tw['quoted_tweet_date'], DATE_FORMAT), DASH_NO_YEAR_FORMAT)),
                                 html.Span(
                                     ' | 🔁 ', className='quoted-endorsements'),
                                 html.Span(

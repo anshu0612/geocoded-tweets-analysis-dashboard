@@ -3,18 +3,34 @@ import glob
 import pandas as pd
 import collections as col
 import matplotlib.pyplot as plt
+from constants.dash_constants import QUOTED, RETWEET
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 from utils.process_text import TwitterDataProcessing
 from constants.common import FRAGMENTED_TWEETS_PATH, \
     FRAGMENTED_TWEETS_ENGAGEMENTS_PATH, DATE_FORMAT
-from constants.country_config import COUNTRY_SLANGS
+from constants.country_config import COUNTRY_SLANGS, KNOWN_USERNAMES_COUNTRIES
 from constants.common import COUNTRY, TWEETS_PATH, SINGAPORE_LABEL
+
+
+def return_on_failure(value):
+    def decorate(f):
+        def applicator(*args, **kwargs):
+            try:
+                return f(*args, **kwargs)
+            except:
+                print('Error')
+                return value
+
+        return applicator
+
+    return decorate
 
 
 class ProcessData():
     def __init__(self):
-        self.tweets = None
+        print(TWEETS_PATH)
+        self.tweets = pd.read_csv(TWEETS_PATH)
 
     def concat_and_join_data(self, tweets_path=FRAGMENTED_TWEETS_PATH,
                              engagements_tweets_path=FRAGMENTED_TWEETS_ENGAGEMENTS_PATH):
@@ -22,6 +38,7 @@ class ProcessData():
             1. Concats the fragmented data stored in csvs
             2. Join tweets and tweets' engagement data
         '''
+        print(FRAGMENTED_TWEETS_PATH, FRAGMENTED_TWEETS_ENGAGEMENTS_PATH)
         # csvs containing users and tweets specific data
         tw_data = pd.concat([pd.read_csv(csv_file, index_col=0, header=0, engine='c') for csv_file in glob.glob(
             os.path.join(tweets_path, "*.csv"))], axis=0, ignore_index=True)
@@ -102,6 +119,7 @@ class ProcessData():
     def set_unknown_for_multiple_geocodings(self):
         '''
             List of users with more than 2 geocoding are set to Unknown
+            Note: This issue is taken care of during tweets collection
         '''
         users_geocode_country_count = self.tweets.groupby(
             'user_screenname_x')['user_geo_coding'].nunique().reset_index(name='count')
@@ -116,6 +134,31 @@ class ProcessData():
             users_geocode_country_count_gtr_2), 'retweeted_user_geo_coding'] = 'Unknown'
         self.tweets.loc[self.tweets['user_screenname_x'].isin(
             users_geocode_country_count_gtr_2), 'retweeted_user_geo_coding'] = 'Unknown'
+
+    def set_known_geocodings(self):
+        '''
+            Set the known geocodings provided in the `country_config.py` file
+        '''
+
+        # t = self.tweets[self.tweets['user_screenname_x'] == 'ChannelNewsAsia'][['user_screenname_x', 'user_geo_coding']]
+        # print(t)
+
+        for _, row in self.tweets.iterrows():
+            if row['user_screenname_x'] in KNOWN_USERNAMES_COUNTRIES:
+                # print(row['user_screenname_x'])
+                row['user_geo_coding'] = KNOWN_USERNAMES_COUNTRIES[row['user_screenname_x']]
+
+            if row['tweet_enagagement_type'] == RETWEET:
+                if row['retweeted_user_screenname'] in KNOWN_USERNAMES_COUNTRIES:
+                    row['retweeted_user_geo_coding'] = KNOWN_USERNAMES_COUNTRIES[row['retweeted_user_screenname']]
+
+            if row['tweet_enagagement_type'] == QUOTED:
+                if row['quoted_user_screenname'] in KNOWN_USERNAMES_COUNTRIES:
+                    row['quoted_user_geo_coding'] = KNOWN_USERNAMES_COUNTRIES[row['quoted_user_screenname']]
+
+
+        # t = self.tweets[self.tweets['user_screenname_x'] == 'ChannelNewsAsia'][['user_screenname_x', 'user_geo_coding']]
+        # print(t)
 
     def filter_country_tweets(self):
         '''
@@ -148,10 +191,12 @@ class ProcessData():
             Cleaning up tweets text
         '''
         pre = TwitterDataProcessing()
+        print("Processing tweets")
         processed_tweets = [pre.clean_text(text)
                             for text in self.tweets['tweet_text']]
         self.tweets['processed_tweet_text'] = processed_tweets
 
+        print("Processing QUOTED tweets")
         processed_quoted_tweets = [pre.clean_text(text) if
                                    isinstance(text, str) == True else '' for text in self.tweets['quoted_tweet_text']]
         self.tweets['processed_quoted_tweet_text'] = processed_quoted_tweets
@@ -178,10 +223,12 @@ class ProcessData():
         '''
             Adding sentiments to tweets and quoted tweets
         '''
+        print('Adding sentiments for tweets')
         tw_sentiment = [self.get_sentiment(
             text) for text in self.tweets['processed_tweet_text']]
         self.tweets['tweet_sentiment'] = tw_sentiment
 
+        print('Adding sentiments for QUOTED tweets')
         quoted_tw_sentiment = [self.get_sentiment(
             text) if text != '' else None for text in self.tweets['processed_quoted_tweet_text']]
         self.tweets['quoted_tweet_sentiment'] = quoted_tw_sentiment
@@ -199,9 +246,9 @@ if __name__ == "__main__":
     process = ProcessData()
     formatter = '-'*10
 
-    print("concat_and_join_data 🚧 {}".format(formatter))
-    process.concat_and_join_data()
-    print("concat_and_join_data ✅ {}".format(formatter))
+    # print("concat_and_join_data 🚧 {}".format(formatter))
+    # process.concat_and_join_data()
+    # print("concat_and_join_data ✅ {}".format(formatter))
 
     print("add_tweet_date 🚧 {}".format(formatter))
     process.add_tweet_date()
@@ -224,6 +271,10 @@ if __name__ == "__main__":
     process.set_unknown_for_multiple_geocodings()
     print("set_unknown_for_multiple_geocodings ✅ {}".format(formatter))
 
+    print("set_known_geocodings 🚧 {}".format(formatter))
+    process.set_known_geocodings()
+    print("set_known_geocodings ✅ {}".format(formatter))
+
     # filtering only if country-specific required
     if COUNTRY:
         print("filter_country_tweets 🚧 {}".format(formatter))
@@ -234,13 +285,13 @@ if __name__ == "__main__":
     process.remove_amp_from_tweets_text()
     print("remove_amp_from_tweets_text ✅ {}".format(formatter))
 
-    print("processed_tweets_text 🚧 {} Note: This might take time depending on the data size.".format(formatter))
-    process.processed_tweets_text()
-    print("processed_tweets_text ✅ {}".format(formatter))
+    # print("processed_tweets_text 🚧 {} Note: This might take time depending on the data size. 🧹, 🧽 in-progress".format(formatter))
+    # process.processed_tweets_text()
+    # print("processed_tweets_text ✅ {}".format(formatter))
 
-    print("add_sentiments 🚧 {} Note: This might take time depending on the data size.".format(formatter))
-    process.add_sentiments()
-    print("add_sentiments ✅ {}".format(formatter))
+    # print("add_sentiments 🙂 😐 😒 🚧 {} Note: This might take time depending on the data size.".format(formatter))
+    # process.add_sentiments()
+    # print("add_sentiments ✅ {}".format(formatter))
 
     print("save_final_csv 🚧 {}".format(formatter))
     process.save_final_csv()
