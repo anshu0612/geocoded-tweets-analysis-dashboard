@@ -10,7 +10,7 @@ from constants.dash_constants import NETWORKING_GRAPH_INFO_CONTENT, \
     TOP_COUNTRY_INFLUENCER_PATH, \
     INFLUENTIAL_COUNTRIES_INFO_CONTENT 
     
-from constants.country_config import COUNTRY
+from constants.common import COUNTRY
 
 # Load influential users
 influential_users = pd.read_csv(INFLUENTIAL_USERS_PATH)

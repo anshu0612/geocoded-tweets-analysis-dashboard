@@ -193,7 +193,7 @@ def quality_check_pagerank(tweets, top_ranking, top_users_count):
 
 def get_communities(G_pruned, tweets, save=False,
                     communities_user_save_path=COMMUNITIES_USERS_PATH,
-                    communities_plot_save_path=COMMUNITIES_PLOT_PATH,
+                    # communities_plot_save_path=COMMUNITIES_PLOT_PATH,
                     communities_tweets_save_path=COMMUNITIES_TWEETS_PATH,
                     user_to_community_save_path=USER_TO_COMMUNITY_PATH):
 
@@ -212,7 +212,7 @@ def get_communities(G_pruned, tweets, save=False,
 
     reamapped_communities = {}
     for k, v in communities.items():
-        # if cluster not among the largest communities then slip it
+        # if community not among the largest communities then slip it
         if v not in larger_communities:
             continue
 
@@ -220,24 +220,24 @@ def get_communities(G_pruned, tweets, save=False,
         reamapped_communities[k] = larger_communities.index(v)
 
     communities_grouped_with_colors = {}
-    for idx, cluster_no in enumerate(larger_communities):
+    for idx, community_no in enumerate(larger_communities):
         communities_grouped_with_colors[idx] = {
-            "users": communities_grouped[cluster_no],
+            "users": communities_grouped[community_no],
             "color": COMMUNITIES_COLORS_DICT[str(idx)]
         }
 
     communities_tweets = {}
-    for idx, cluster_no in enumerate(larger_communities):
-        cluster_tweets = tweets[
-            (tweets['user_screenname_x'].isin(communities_grouped[cluster_no]) |
-             tweets['retweeted_user_screenname'].isin(communities_grouped[cluster_no]) |
-             tweets['quoted_user_screenname'].isin(communities_grouped[cluster_no]) |
-             tweets['replied_to_user_screenname'].isin(communities_grouped[cluster_no])) &
+    for idx, community_no in enumerate(larger_communities):
+        community_tweets = tweets[
+            (tweets['user_screenname_x'].isin(communities_grouped[community_no]) |
+             tweets['retweeted_user_screenname'].isin(communities_grouped[community_no]) |
+             tweets['quoted_user_screenname'].isin(communities_grouped[community_no]) |
+             tweets['replied_to_user_screenname'].isin(communities_grouped[community_no])) &
             (tweets['processed_tweet_text'].notna())]['processed_tweet_text'].tolist()
-        communities_tweets[idx] = cluster_tweets
+        communities_tweets[idx] = community_tweets
 
     if save:
-        plt.savefig(communities_plot_save_path, bbox_inches='tight')
+        # plt.savefig(communities_plot_save_path, bbox_inches='tight')
 
         with open(user_to_community_save_path, 'w') as f:
             json.dump(reamapped_communities, f)
@@ -251,7 +251,8 @@ def get_communities(G_pruned, tweets, save=False,
         print('Saved:', communities_user_save_path,
               user_to_community_save_path, communities_tweets_save_path)
 
-    print('number of communities created:', len(communities_grouped_with_colors))
+    print('number of communities created:',
+          len(communities_grouped_with_colors))
     return communities_grouped
 
 
@@ -261,15 +262,8 @@ def get_graph_min_degree(Graph):
     return np.min(degrees)
 
 
-# def remove_low_degree_edges(G):
-#     G_pruned = G.copy()
-#     low_degree_nodes = [node for node, degree in dict(
-#         G_pruned.degree()).items() if degree < 10]
-#     # print('Number of users to be removed with degree less than {}: {}'.format(en(low_degree_nodes)))
-#     G_pruned.remove_nodes_from(low_degree_nodes)
-#     return G_pruned
-
-def create_min_degree_graph(G_old, min_degree=2):
+def create_min_degree_graph(G_old, min_degree=MIN_DEGREE_OF_NETWORKING_GRAPH):
+    print("MIN_DEGREE_OF_NETWORKING_GRAPH", MIN_DEGREE_OF_NETWORKING_GRAPH)
     G = nx.Graph()
     for u, v, data in G_old.edges(data=True):
         w = data['weight'] if 'weight' in data else 1.0
@@ -308,10 +302,3 @@ def generate_networking_graph_data(G):
     json.dump(networking_graph__data, file)
     file.close()
     return networking_graph__data
-
-
-# communities_plot = nx.spring_layout(G2)
-# cmap = cm.get_cmap('viridis', max(communities.values()) + 1)
-# nx.draw_networkx_nodes(G2, communities_plot, communities.keys(), node_size=40,
-#                        cmap=cmap, node_color=list(communities.values()))
-# nx.draw_networkx_edges(G2, communities_plot, alpha=0.5)

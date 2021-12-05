@@ -16,8 +16,7 @@ from constants.common import FRAGMENTED_TWEETS_ENGAGEMENTS_PATH, \
     FRAGMENTED_TWEETS_PATH, \
     DEFAULT_DB_NAME, \
     ALT_GEO_NOT_FOUND, SINGAPORE_LABEL
-from constants.country_config import COUNTRY
-from constants.common import GLOBAL_LABEL
+from constants.country_config import COUNTRY_CODE
 
 load_dotenv()
 
@@ -582,8 +581,9 @@ if __name__ == "__main__":
     assert isinstance(args.max_csv_tweets_count, int)
     # assert args.is_country_set in ['y', 'n']
 
-    if COUNTRY:
-        from constants.country_config import COUNTRY_SLANGS, COUNTRY_CODE
+    if COUNTRY_CODE:
+        from constants.country_config import COUNTRY_SLANGS
+        from constants.common import COUNTRY
 
         if COUNTRY == SINGAPORE_LABEL:
             from constants.country_config import MIN_SG_ACCOUNTS_FOLLWERS_PATH

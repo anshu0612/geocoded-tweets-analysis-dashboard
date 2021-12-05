@@ -1,7 +1,7 @@
 import plotly.express as px
 from wordcloud import WordCloud, STOPWORDS
 from constants.dash_constants import DASH_TEMPLATE
-from constants.country_config import COUNTRY
+from constants.common import COUNTRY
 
 def plotly_wordcloud(tweets_text, filtered_for, bar_color='#1ca9c9'):
 

@@ -2,6 +2,7 @@ import collections as col
 import pandas as pd
 import matplotlib.pyplot as plt
 from constants.dash_constants import *
+from constants.common import COUNTRY
 
 
 def plot_top_influential_countries(c_quoted_rts_geo, x_top=10):
@@ -56,15 +57,24 @@ def generate_dash_influential_countries(top_country_influencer, save=False,
         top_influential_countries_data['count'].append(i[1])
         top_influential_countries_data['size'].append(
             round(i[1]/sum_influence*150, 2))
-        
         country_loc = countries_data[countries_data['Country'] == i[0]]
-        
+
         top_influential_countries_data['long'].append(
             float(country_loc.iloc[0]['Longitude (average)'].strip().strip('"')))
         top_influential_countries_data['lat'].append(
             float(country_loc.iloc[0]['Latitude (average)'].strip().strip('"')))
 
-    top_influential_countries_df = pd.DataFrame(top_influential_countries_data)
+    if COUNTRY:
+        # Adding data for `COUNTRY`
+        country_loc = countries_data[countries_data['Country'] == COUNTRY]
+        top_influential_countries_data['country'].append(COUNTRY)
+        top_influential_countries_data['count'].append(0)
+        top_influential_countries_data['size'].append(0)
+        top_influential_countries_data['lat'].append(
+            float(country_loc.iloc[0]['Latitude (average)'].strip().strip('"')))
+        top_influential_countries_data['long'].append(
+            float(country_loc.iloc[0]['Longitude (average)'].strip().strip('"')))
+        top_influential_countries_df = pd.DataFrame(top_influential_countries_data)
 
     if save:
         pd.DataFrame.to_csv(top_influential_countries_df,

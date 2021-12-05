@@ -1,4 +1,4 @@
-from constants.country_config import COUNTRY
+from constants.country_config import COUNTRY_CODE
 
 SINGAPORE_LABEL = 'Singapore'
 GLOBAL_LABEL = 'Global'
@@ -17,19 +17,6 @@ TWITTER_STATUS_PATH = TWITTER_BASE_URL + '{}/status/{}'
 
 # Dates
 DATE_FORMAT = '%Y-%m-%d'
-
-if COUNTRY:
-    DATA_PATH = 'data/{}/'.format(COUNTRY.lower())
-    TWEETS_PATH = DATA_PATH + '{}_tweets.csv'.format(COUNTRY.lower())
-else:
-    DATA_PATH = 'data/{}/'.format(GLOBAL_LABEL.lower())
-    TWEETS_PATH = DATA_PATH + '{}_tweets.csv'.format(GLOBAL_LABEL.lower())
-
-DATA_DASH_PATH = DATA_PATH + 'dash_output/'
-
-FRAGMENTED_TWEETS_PATH = DATA_PATH + 'fragmented_tweets/tweets/'
-FRAGMENTED_TWEETS_ENGAGEMENTS_PATH = DATA_PATH + \
-    'fragmented_tweets/tweets_engagements/'
 
 # from pycountry package
 COUNTRY_TO_ALPHA2 = {'Aruba': 'AW',
@@ -558,3 +545,19 @@ COUNTRY_APLHA_2_TO_3 = {'AW': 'ABW', 'AF': 'AFG', 'AO': 'AGO', 'AI': 'AIA', 'AX'
                         'TW': 'TWN', 'TZ': 'TZA', 'UG': 'UGA', 'UA': 'UKR', 'UM': 'UMI', 'UY': 'URY', 'US': 'USA', 'UZ': 'UZB', 'VA': 'VAT', 'VC': 'VCT',
                         'VE': 'VEN', 'VG': 'VGB', 'VI': 'VIR', 'VN': 'VNM', 'VU': 'VUT', 'WF': 'WLF', 'WS': 'WSM', 'YE': 'YEM', 'ZA': 'ZAF', 'ZM': 'ZMB',
                         'ZW': 'ZWE'}
+
+
+if COUNTRY_CODE:
+    COUNTRY = ALPHA2_TO_COUNTRY[COUNTRY_CODE]
+    DATA_PATH = 'data/{}/'.format(COUNTRY.lower())
+    TWEETS_PATH = DATA_PATH + '{}_tweets.csv'.format(COUNTRY.lower())
+else:
+    COUNTRY = None
+    DATA_PATH = 'data/{}/'.format(GLOBAL_LABEL.lower())
+    TWEETS_PATH = DATA_PATH + '{}_tweets.csv'.format(GLOBAL_LABEL.lower())
+
+DATA_DASH_PATH = DATA_PATH + 'dash_output/'
+
+FRAGMENTED_TWEETS_PATH = DATA_PATH + 'fragmented_tweets/tweets/'
+FRAGMENTED_TWEETS_ENGAGEMENTS_PATH = DATA_PATH + \
+    'fragmented_tweets/tweets_engagements/'

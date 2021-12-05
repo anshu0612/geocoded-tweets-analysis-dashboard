@@ -2,8 +2,8 @@ import re
 import spacy
 from geopy.geocoders import Nominatim
 
-from constants.common import ALPHA2_TO_COUNTRY, COUNTRY_TO_ALPHA2, GEOCODER_AGENT_NAME
-from constants.country_config import COUNTRY, KNOWN_USERNAMES_COUNTRIES
+from constants.common import COUNTRY, ALPHA2_TO_COUNTRY, COUNTRY_TO_ALPHA2, GEOCODER_AGENT_NAME
+from constants.country_config import KNOWN_USERNAMES_COUNTRIES
 
 locator = Nominatim(user_agent=GEOCODER_AGENT_NAME)
 nlp = spacy.load('en_core_web_sm')

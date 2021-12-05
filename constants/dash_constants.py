@@ -1,7 +1,6 @@
 # from typing import Counter
 import plotly.express as px
-from constants.common import DATA_DASH_PATH, GLOBAL_LABEL
-from constants.country_config import COUNTRY
+from constants.common import COUNTRY, DATA_DASH_PATH, GLOBAL_LABEL
 
 DASH_TEMPLATE = 'plotly_white'
 
@@ -89,7 +88,7 @@ Q_TWEET_USER_VERIFIED_LABEL = 'quoted_user_verified'
 Q_TWEET_DATE_LABEL = 'quoted_tweet_date'
 Q_USER_GEOCODING = 'quoted_user_geo_coding'
 
-SENTIMENT_SPREAD_THRESHOLD = 80
+SENTIMENT_SPREAD_THRESHOLD = .75
 
 RETWEET = 'retweet'
 QUOTED = 'quoted'
@@ -147,7 +146,7 @@ FONT_SIZE = '8px'
 LINE_WIDTH = '0.2px'
 NETWORKING_GRAPH_HEIGHT = '500px'
 
-MIN_DEGREE_TO_HAVE = 40
+MIN_DEGREE_OF_NETWORKING_GRAPH = 2
 
 NETWORKING_GRAPH_INFO_CONTENT = 'A directed weighted graph of interactions - replies, retweets, and quoted tweets' \
     ' between the users.  The weights denote the number of interactions between two users.'
@@ -160,12 +159,12 @@ INFLUENTIAL_USERS_TWEETS_PATH = DATA_DASH_PATH + \
     'influencers/top_users_tweets.csv'
 
 COMMUNITIES_INFO_CONTENT = '{} communties: '
-COMMUNITIES_PLOT_PATH = DATA_DASH_PATH + 'networking/clusters'
-COMMUNITIES_USERS_PATH = DATA_DASH_PATH + 'networking/clusters_users.json'
-COMMUNITIES_TWEETS_PATH = DATA_DASH_PATH + 'networking/clusters_tweets.json'
-USER_TO_COMMUNITY_PATH = DATA_DASH_PATH + 'networking/user_to_cluster.json'
+COMMUNITIES_PLOT_PATH = DATA_DASH_PATH + 'networking/communities'
+COMMUNITIES_USERS_PATH = DATA_DASH_PATH + 'networking/communities_users.json'
+COMMUNITIES_TWEETS_PATH = DATA_DASH_PATH + 'networking/communities_tweets.json'
+USER_TO_COMMUNITY_PATH = DATA_DASH_PATH + 'networking/user_to_community.json'
 
-COMMUNITIES_USERS_TITLE = 'List of users in the selected cluster'
+COMMUNITIES_USERS_TITLE = 'List of users in the selected community'
 NETWORKING_NOTE_CONTENT = 'Note: The networking graph might take a few seconds to get stable.'
 NETWORKING_HELPER_CONTENT = 'Play around the nodes of this interactive graph once it is stable.'
 NETWORKING_DATA = DATA_DASH_PATH + 'networking/networking.json'

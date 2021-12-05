@@ -1,33 +1,53 @@
-# Please do not update this file if global tweets are collected i.e., not country-specific
+'''
+PLEASE DO NOT UPDATE THIS FILE IF:
+You intend to collect global tweets i.e., not country-specific tweets
 
-# (String) Check COUNTRY_TO_ALPHA2 for reference
-# Example: 'Singapore'
-COUNTRY = None 
+PLEASE ONLY UPDATE THIS FILE IF: 
+You intend to collect country-specific tweets
+'''
 
 # (String) Should be Alpha2 country code
-# Check COUNTRY_TO_ALPHA2 for reference
+# Check `COUNTRY_TO_ALPHA2` for reference in constants/commmon.py file
 # Example: 'SG'
-COUNTRY_CODE = None 
+COUNTRY_CODE = 'SG'
 
 # (List) of country slangs
-# Example: ['sg', 'spore', 'singapore', 'singapura']
-COUNTRY_SLANGS = None
+# Example 1: ['sg', 'spore', 'singapore', 'singapura']
+# Example 2: ['United States', 'america', 'usa', 'us', 'united states of america', 'u.s.', 'states', 'u.s.a']
+# --------- USE: ---------
+# 1. Helps in estimating a user's location based on the country name slangs
+# 2. Filtering tweets based on the country name slangs  present in
+#    `location description` and `profile description` of a user
+# 3. Skip the country name slangs from the top hashtags
+COUNTRY_SLANGS = ['sg', 'spore', 'singapore', 'singapura']
 
-COUNTRY_LONG = None
-COUNTRY_LAT = None
+# (Dictionary) - {<twitter_user_screen_name>: <twitter_user_country_code>} - Prior knowledge of a user's country
+# Example {'muttons': 'SG', 'POTUS': 'US'}
+KNOWN_USERNAMES_COUNTRIES = {
+    'muttons': 'SG',
+    'cz_binance': 'SG',
+}
 
-# (String) of country slangs used by people
-# Slangs are separated by '|' 
-# Example: 'sg|spore|singapore|singapura'
-COUNTRY_LOCATION_SLANGS = None
+# -------------------------- EXTRA INFO FOR SINGAPORE ---------------------------
+# --------------------------------------------------------------------------------
 
-# (String) of country slangs used by people
-# Slangs are separated by '|' 
-# Example: 'sg|spore|singapore|singapura'
-COUNTRY_USER_DESCRIPTION_SLANGS = None
+# Singapore-based official twitter accounts
+SG_SCREEN_NAMES = ['mindefsg', 'MOEsg', 'sporeMOH', 'LTAsg', 'SMRT_Singapore', 'SBSTransit_Ltd',
+                   'SingaporeHDB', 'MNDSingapore', 'mhasingapore', 'SingaporePolice', 'URAsg',
+                   'MAS_sg', 'MOFsg', 'ICASingapore', 'SingaporeMCI', 'nlbsingapore', 'IMDAsg',
+                   'NEAsg', 'nparksbuzz', 'SGSportsHub', 'govsingapore', 'SingaporeCAAS', 'MFAsg',
+                   'iremembersg', 'youthsg', 'NUSingapore', 'NTUsg', 'sgSMU', 'sutdsg', 'SGRedCross',
+                   'STcom', 'ChannelNewsAsia', 'TODAYonline', 'asiaonecom', 'thenewpaper', 'MothershipSG',
+                   'Singtel', 'StarHub', 'MyRepublicSG', 'M1Singapore', 'temasekpoly', 'singaporetech',
+                   'SingaporePoly', 'PUBsingapore', 'NgeeAnnNP', 'ITESpore', 'mediacorp', 'YahooSG',
+                   'TimeOutSG', 'VisitSingapore', 'stb_sg', 'GovTechSG', 'SGmagazine', 'mySingapore',
+                   'sgelection', 'SGAG_SG', 'TEDxSingapore', 'STATravelSG', 'STPix']
 
-HASHTAGS_COUNTRY_FILTERS = None
+# fetch users following at least this number of Singapore-based official twitter accounts
+DEFAULT_MIN_FOLLOWING_REQUIRED = 2
 
-KNOWN_COUNTRY_TWITTER_USERNAMES = []
+# path to the directory to save files containing Singapore-based official twitter accounts followers
+SG_ACCOUNTS_FOLLOWERS_PATH = 'data/sg_accounts_followers/'
 
-KNOWN_USERNAMES_COUNTRIES = {}
+# path to the file to save users who follow x no. of Singapore-based official twitter accounts
+MIN_SG_ACCOUNTS_FOLLWERS_PATH = "data/general/min_following_users.txt"

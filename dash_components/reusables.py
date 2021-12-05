@@ -10,6 +10,8 @@ from constants.dash_constants import DASH_DATE_FORMAT, ERROR_INSUFFICIENT_TWEETS
 from constants.common import FLAG_FIX_USA, FLAG_URL, DATE_FORMAT, TWITTER_BASE_URL
 
 # dummy figure
+
+
 def get_dummy_fig(msg):
     dummy_fig = px.treemap(
         names=[msg],
@@ -32,6 +34,8 @@ def generate_rewteets_info(tw):
                         html.A(html.Span(tw['retweeted_user_screenname']),
                                target='_blank',
                                href=TWITTER_BASE_URL + tw['retweeted_user_screenname']),
+                        html.Span(children=' ✅' if tw['retweeted_user_verified'] else '', style={
+                            'color': 'red'}),
                         html.Span(
                             Img(
                                 className='quoted-flag',
@@ -79,9 +83,9 @@ def generate_influential_users(idx, tw):
                         idx + 1) + '. ' + tw['user_screenname']),
                         style={'cursor': 'pointer'},
                         target='blank_',
-                        href=TWITTER_BASE_URL + tw['user_screenname'],),
-                    html.Span(children=' ☑' if tw['user_verified'] else '', style={
-                        'color': '#0096FF'}),
+                        href=TWITTER_BASE_URL + tw['user_screenname'], className="twitter-user"),
+                    html.Span(children=' ✅' if tw['user_verified'] else '', style={
+                              'fontSize': '0.6em'}),
                     html.Span(
                         Img(
                             className='influencer-flag',
@@ -100,6 +104,6 @@ def generate_influential_users(idx, tw):
 def communities_users_ui(idx, username):
     return html.P(html.A(html.Span(str(
         idx + 1) + '. ' + username),
-        style={'cursor': 'pointer'},
+        className='twitter-user',
         target='blank_',
-        href=TWITTER_BASE_URL + username), className='influencer-badge')
+        href=TWITTER_BASE_URL + username))

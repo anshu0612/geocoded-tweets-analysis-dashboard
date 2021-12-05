@@ -11,7 +11,7 @@ from dash.exceptions import PreventUpdate
 import plotly.graph_objects as go
 
 
-from constants.country_config import COUNTRY, COUNTRY_LAT, COUNTRY_LONG
+from constants.common import COUNTRY
 from constants.dash_constants import *
 
 from utils.wordcloud import plotly_wordcloud
@@ -205,6 +205,24 @@ def get_potentially_sensitive_tweets_by_date(pathname, date=min_date):
     return words_freq
 
 
+# callback for influential users update by `country`
+
+
+@app.callback(
+    Output('influencers-chips-row', 'children'),
+    Input('url', 'pathname'),
+    Input('dropdown-top-influence-users-countries', 'value')
+)
+def get_infuential_users_by_country(pathname, country='All'):
+    if not pathname == INFLUENCERS_PATH:
+        raise PreventUpdate
+    if country == 'All':
+        filtered_users = influential_users
+    else:
+        filtered_users = influential_users[influential_users['user_geo_coding'] == country]
+    return [generate_influential_users(i, tw) for i, tw in filtered_users.iterrows()]
+
+
 # callback for influential countries' tweets' frequent words update by `country`
 @app.callback(
     [Output('fig-world-influence', 'figure'),
@@ -224,10 +242,14 @@ def get_influential_countries_word_frequency_by_country(pathname, country):
 
     # make country-centric with lines only if country-specific tweets collected
     if COUNTRY:
+        country_data = influential_countries[influential_countries['country'] == COUNTRY]
+        country_lat = country_data['lat']
+        country_long = country_data['long']
+
         fig_world_influence = go.Figure(go.Scattermapbox(
             mode='markers+lines',
-            lon=[COUNTRY_LONG],
-            lat=[COUNTRY_LAT],
+            lon=[country_long],
+            lat=[country_lat],
             name=COUNTRY,
             text=[COUNTRY],
             marker={'size': 2}))
@@ -235,8 +257,8 @@ def get_influential_countries_word_frequency_by_country(pathname, country):
         for _, row in influential_countries.iterrows():
             fig_world_influence.add_trace(go.Scattermapbox(
                 mode='markers+lines',
-                lon=[row['long'], COUNTRY_LONG],
-                lat=[row['lat'], COUNTRY_LAT],
+                lon=[row['long'], country_long],
+                lat=[row['lat'], country_lat],
                 name=row['country'],
                 text=[row['country'], COUNTRY],
                 marker={'size': [row['size'], 2]}))
@@ -244,6 +266,8 @@ def get_influential_countries_word_frequency_by_country(pathname, country):
     else:
         fig_world_influence = go.Figure(go.Scattermapbox())
         for _, row in influential_countries.iterrows():
+            if row['country'] == COUNTRY:
+                continue
             fig_world_influence.add_trace(go.Scattermapbox(
                 mode='markers',
                 lon=[row['long']],
@@ -278,28 +302,8 @@ def get_influential_countries_word_frequency_by_country(pathname, country):
 
     return (fig_world_influence, words_freq)
 
-# callback for influential users update by `country`
-
-
-@ app.callback(
-    Output('influencers-chips-row', 'children'),
-    Input('url', 'pathname'),
-    Input('dropdown-top-influence-users-countries', 'value')
-)
-def get_infuential_users_by_country(pathname, country):
-    if not pathname == INFLUENCERS_PATH:
-        raise PreventUpdate
-    if country == 'All':
-        filtered_users = influential_users
-    else:
-        filtered_users = influential_users[influential_users['user_geo_coding'] == country]
-
-    return [generate_influential_users(i, tw) for i, tw in filtered_users.iterrows()]
-
 
 # callback for viral local tweets (via retweeting) update by `sentiment`
-
-
 @app.callback(
     [
         Output('local-rts-cumulative', 'figure'),
@@ -370,7 +374,8 @@ def get_local_retweets_trend_by_sentiments(pathname, selected_sentiment):
             yaxis_title='Increment in engagements'
         )
 
-        rts_info = [generate_rewteets_info(tw) for _, tw in info_data.iterrows()]
+        rts_info = [generate_rewteets_info(tw)
+                    for _, tw in info_data.iterrows()]
     else:
         rts_info = ERROR_LOCAL_RETWEETS
         fig_trend_delta = get_dummy_fig(ERROR_LOCAL_RETWEETS)
@@ -444,7 +449,8 @@ def get_global_retweets_trend_by_sentiment(pathname, selected_sentiment):
             yaxis_title='Increment in engagements'
         )
 
-        rts_info = [generate_rewteets_info(tw) for _, tw in info_data.iterrows()]
+        rts_info = [generate_rewteets_info(tw)
+                    for _, tw in info_data.iterrows()]
 
     else:
         rts_info = ERROR_LOCAL_RETWEETS
@@ -453,26 +459,26 @@ def get_global_retweets_trend_by_sentiment(pathname, selected_sentiment):
 
     return (fig_trend_cum, fig_trend_delta, rts_info)
 
-# callback for influential users update by `country`
+# callback for community's frequent words by `country`
 
 
-@ app.callback(
+@app.callback(
     [Output('word-freq-communities', 'figure'),
      Output('communities-users', 'children')],
     Input('url', 'pathname'),
     Input('dropdown-communities', 'value')
 )
-def get_communities_word_frequency_by_country(pathname, cluster):
+def get_communities_word_frequency_by_country(pathname, community):
     if not pathname == NETWORKING_PATH:
         raise PreventUpdate
 
     words_freq = plotly_wordcloud(
-        communities_tweets[cluster], 'Cluster ' + cluster, COMMUNITIES_COLORS_DICT[cluster])
+        communities_tweets[community], 'Community ' + community, COMMUNITIES_COLORS_DICT[community])
     if not words_freq:
         words_freq = get_dummy_fig(ERROR_INSUFFICIENT_TWEETS)
 
     communities_users_ui_list = []
-    for idx, u in enumerate(communities_users[cluster]['users']):
+    for idx, u in enumerate(communities_users[community]['users']):
         communities_users_ui_list.append(
             communities_users_ui(idx, u)
         )
@@ -485,10 +491,10 @@ def get_communities_word_frequency_by_country(pathname, cluster):
 @app.callback(
     [Output('networking-graph-nodes', 'zoom'),
      Output('networking-graph-nodes', 'elements')],
-    [Input('bt-reset', 'n_clicks')]
+    [Input('networking-graph-btn-reset', 'n_clicks')]
 )
 def reset_networking_graph(n_clicks):
-    return [n_clicks, networking_graph_data['data']]
+    return [1, networking_graph_data['data']]
 
 
 # ----------------------------  Flask Server -----------------

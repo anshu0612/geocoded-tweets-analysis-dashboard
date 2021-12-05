@@ -11,6 +11,14 @@ body {
     
 }
 
+.twitter-user {
+    margin: 0.6em;
+    cursor: pointer;
+    text-decoration: underline;
+    color: black;
+    text-decoration-color: #007FFF;
+}
+
 .outburst {
     max-height: 30em !important;
     overflow-y: scroll !important;

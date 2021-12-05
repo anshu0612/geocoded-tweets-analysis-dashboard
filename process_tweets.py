@@ -8,9 +8,8 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from utils.process_text import TwitterDataProcessing
 from constants.common import FRAGMENTED_TWEETS_PATH, \
     FRAGMENTED_TWEETS_ENGAGEMENTS_PATH, DATE_FORMAT
-from constants.country_config import COUNTRY_LOCATION_SLANGS, \
-    COUNTRY_USER_DESCRIPTION_SLANGS, COUNTRY
-from constants.common import TWEETS_PATH, SINGAPORE_LABEL
+from constants.country_config import COUNTRY_SLANGS
+from constants.common import COUNTRY, TWEETS_PATH, SINGAPORE_LABEL
 
 
 class ProcessData():
@@ -122,14 +121,15 @@ class ProcessData():
         '''
             Filter tweets for `COUNTRY`
         '''
+        country_slangs = '|'.join(COUNTRY_SLANGS)
         self.tweets = self.tweets[
             # 1. geo coded as Singapore
             # (self.tweets['user_geo_coding'] == 'Unknown') |
             (self.tweets['user_geo_coding'] == COUNTRY) |
             # 2. user location contains `COUNTRY_LOCATION_SLANGS`
-            (self.tweets['user_location'].str.contains(COUNTRY_LOCATION_SLANGS, regex=True, case=False)) |
+            (self.tweets['user_location'].str.contains(country_slangs, regex=True, case=False)) |
             # 3. user description contains `COUNTRY_USER_DESCRIPTION_SLANGS`
-            (self.tweets['user_desc'].str.contains(COUNTRY_USER_DESCRIPTION_SLANGS, regex=True, case=False)) |
+            (self.tweets['user_desc'].str.contains(country_slangs, regex=True, case=False)) |
             # 4. Quoted tweets by `COUNTRY`` users and
             ((self.tweets['quoted_user_geo_coding'] == COUNTRY) & (self.tweets['user_geo_coding'].isna())) |
             ((self.tweets['retweeted_user_geo_coding'] == COUNTRY) & (self.tweets['user_geo_coding'].isna()))]
@@ -234,11 +234,11 @@ if __name__ == "__main__":
     process.remove_amp_from_tweets_text()
     print("remove_amp_from_tweets_text ✅ {}".format(formatter))
 
-    print("processed_tweets_text 🚧 {}".format(formatter))
+    print("processed_tweets_text 🚧 {} Note: This might take time depending on the data size.".format(formatter))
     process.processed_tweets_text()
     print("processed_tweets_text ✅ {}".format(formatter))
 
-    print("add_sentiments 🚧 {}".format(formatter))
+    print("add_sentiments 🚧 {} Note: This might take time depending on the data size.".format(formatter))
     process.add_sentiments()
     print("add_sentiments ✅ {}".format(formatter))
 

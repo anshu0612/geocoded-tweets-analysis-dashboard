@@ -15,11 +15,11 @@ with open(NETWORKING_DATA, 'r') as f:
     networking_data = json.load(f)
 
 graph_stylesheet = []
-for cluster_no in range(len(communities_users)):
+for community_no in range(len(communities_users)):
     obj = {
-        'selector': '.' + str(cluster_no),
+        'selector': '.' + str(community_no),
         'style': {
-            'background-color': COMMUNITIES_COLORS_DICT[str(cluster_no)],
+            'background-color': COMMUNITIES_COLORS_DICT[str(community_no)],
             'content': 'data(label)',
             'height': CIRCLE_SIZE,
             'width': CIRCLE_SIZE,
@@ -41,7 +41,7 @@ graph_stylesheet.append(
 )
 
 NETWORKING_GRAPH = cyto.Cytoscape(
-    id='networking-graph--nodes',
+    id='networking-graph-nodes',
     layout={'name': 'cose'},
     style={'width': '100%', 'height': NETWORKING_GRAPH_HEIGHT, 'margin': '0'},
     elements=networking_data['data'],
@@ -90,9 +90,8 @@ NETWORKING = dbc.Container([
     dbc.Row([
         dbc.Col(
             [
-                dbc.Row(dbc.Button("Reset Graph", id='bt-reset',
+                dbc.Row(dbc.Button("Reset Graph", id='networking-graph-btn-reset',
                         color="primary", className="me-1", size="sm")),
-                dbc.Row(NETWORKING_GRAPH),
                 dbc.Row(
                     [
                         dbc.Row(dbc.Alert(
@@ -100,6 +99,8 @@ NETWORKING = dbc.Container([
                                     style={'color': '#893843', 'fontSize': '0.7em'}),
                                 NETWORKING_HELPER_CONTENT],
                             color="light"))]),
+                dbc.Row(NETWORKING_GRAPH),
+
             ], className='col-md-8'
         ),
         dbc.Col(

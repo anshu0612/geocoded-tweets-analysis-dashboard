@@ -59,7 +59,7 @@ def get_bursty_tweets_info(tweets_df, engagement_type):
     engagement_id_label = RT_TWEET_ID_LABEL if engagement_type == RETWEET else Q_TWEET_ID_LABEL
 #     engagement_date_label = RT_TWEET_DATE_LABEL if engagement_type == RETWEET else Q_TWEET_DATE_LABEL
     engagement_user_label = RT_TWEET_USER_LABEL if engagement_type == RETWEET else Q_TWEET_USER_LABEL
-    engagement_user_verified_label = RT_TWEET_USER_LABEL if engagement_type == RETWEET else Q_TWEET_USER_LABEL
+    engagement_user_verified_label = RT_TWEET_USER_VERIFIED_LABEL if engagement_type == RETWEET else Q_TWEET_USER_VERIFIED_LABEL
     engagement_date = RT_TWEET_DATE_LABEL if engagement_type == RETWEET else Q_TWEET_DATE_LABEL
     engagement_geocoding_label = RT_USER_GEOCODING if engagement_type == RETWEET else Q_USER_GEOCODING
 
@@ -180,11 +180,11 @@ def get_high_spreadrate_quoted_by_sentiment(tweets_df, rate=SENTIMENT_SPREAD_THR
 
     quoted_by_sentiment['pos_percent'] = quoted_by_sentiment['positive'] / (quoted_by_sentiment['positive'] +
                                                                             quoted_by_sentiment['negative'] +
-                                                                            quoted_by_sentiment['neutral'])*100
+                                                                            quoted_by_sentiment['neutral'])
 
     quoted_by_sentiment['neg_percent'] = quoted_by_sentiment['negative'] / (quoted_by_sentiment['positive'] +
                                                                             quoted_by_sentiment['negative'] +
-                                                                            quoted_by_sentiment['neutral'])*100
+                                                                            quoted_by_sentiment['neutral'])
     return quoted_by_sentiment[(quoted_by_sentiment['pos_percent'] >= rate) |
                                (quoted_by_sentiment['neg_percent'] >= rate)]
 
@@ -212,8 +212,8 @@ def generate_dash_bursty_quotes_by_sentiment(bursty_quoted_tweets,
     # Adding `spread_type` and `spread_rate`. SENTIMENT_SPREAD_THRESHOLD% <= positivity spread and SENTIMENT_SPREAD_THRESHOLD% <= negativity spread
     final_most_spread_quoted['spread_type'] = ['positive' if spread_rate >=
                                                SENTIMENT_SPREAD_THRESHOLD else 'negative' for spread_rate in final_most_spread_quoted['pos_percent']]
-    final_most_spread_quoted['spread_rate'] = [round(row['pos_percent'], 2) if row['spread_type'] == 'positive'
-                                               else round(row['neg_percent'], 2) for _, row in final_most_spread_quoted.iterrows()]
+    final_most_spread_quoted['spread_rate'] = [round(row['pos_percent']*100, 2) if row['spread_type'] == 'positive'
+                                               else round(row['neg_percent']*100, 2) for _, row in final_most_spread_quoted.iterrows()]
 
     final_most_spread_quoted.drop(
         ['pos_percent', 'neg_percent'], 1, inplace=True)
