@@ -3,9 +3,9 @@
 This is an **interactive**, **configurable** and **generic** dashboard. 
 It helps in visualizing some key insights from tweets of **country-specific** or **global** users. 
 
+--------------------------------------------------------------------------------
 > The application is built using [Plotly Dash](https://plotly.com/dash/).
-
--------------
+--------------------------------------------------------------------------------
 
 The key insights include:
 
@@ -101,9 +101,10 @@ MONGO_HOST = <mongo_host>
 MONGO_USER = <mongo_username>
 MONGO_PASS = <mongo_password>
 ```
-
+--------------------------------------------------------------------------------
 > You can update the `get_tweets.py` file for any other source of tweets data
 --------------------------------------------------------------------------------
+
 
 ###  Step :two: &nbsp; : &nbsp; Update the `constants/country_config.py` file
 
@@ -129,6 +130,7 @@ COUNTRY_SLANGS = []
 KNOWN_USERNAMES_COUNTRIES = {}
 ```
 
+--------------------------------------------------------------------------------
 > :heavy_exclamation_mark: **Important:** Do not update the file if you intend to collect global tweets from the users 
 --------------------------------------------------------------------------------
 
@@ -149,8 +151,8 @@ python3 get_tweets.py --db_name COVID_VACCINE --collection_no_list 88 89
 | max_csv_tweets_count | Maximum no. of tweets to save in a csv | 10000 |
 
 The csv files for the: 
-- The **country-specific** tweets will be saved in `data\<country>\fragmented_tweets\tweets` and `data\<country>\fragmented_tweets\tweets\tweets_engagements` directories
-- The **global** tweets will be saved in `data\global\fragmented_tweets\tweets` and `data\global\fragmented_tweets\tweets_engagements` directories
+- The **country-specific** tweets will be saved in `data/<country>\fragmented_tweets\tweets` and `data\<country>\fragmented_tweets\tweets\tweets_engagements` directories
+- The **global** tweets will be saved in `data/global\fragmented_tweets\tweets` and `data\global\fragmented_tweets\tweets_engagements` directories
 
 ###  Step :four: &nbsp; : &nbsp; Process tweets 
 
@@ -186,7 +188,6 @@ Yay! If you successfully ran all the above steps, then go ahead and run the appl
 ```bash
 python3 app.py
 ```
----------------------
 
 ## Additional Step for Singapore-based Users Tweets Collection
 
@@ -202,9 +203,9 @@ python3 get_sg_users.py --min_following_required 2
 | ---- | --- | --- |
 | min_following_required | Filter users following at least these number of Singapore-based official accounts | 2 |
 
-The file `/data/min_following_users.txt` contains the user ids of the collected twitter Singapore-based official accounts.
+The file `data/singapore/min_following_users.txt` contains the user ids of the collected twitter Singapore-based official accounts.
 
-The list of followers will be saved in `/data/sg_accounts_followers` folder.
+The list of followers will be saved in `data/singapore/sg_accounts_followers/` folder.
 
 ## Future Work
 
