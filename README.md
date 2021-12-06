@@ -57,6 +57,8 @@ Refer to this detailed [documentation](https://docs.google.com/document/d/1jr9FA
 
 # Visualizing the key insights from the sample tweets data
 
+Download the sample data from [this]() link and keep the `data` folder at the root level.
+
 ## Manual Setup
 
 - Git clone the repository 
