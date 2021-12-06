@@ -243,9 +243,8 @@ def get_influential_countries_word_frequency_by_country(pathname, country):
     # make country-centric with lines only if country-specific tweets collected
     if COUNTRY:
         country_data = influential_countries[influential_countries['country'] == COUNTRY]
-        country_lat = country_data['lat']
-        country_long = country_data['long']
-
+        country_lat = str(country_data['lat'].iloc[0])
+        country_long = str(country_data['long'].iloc[0])
         fig_world_influence = go.Figure(go.Scattermapbox(
             mode='markers+lines',
             lon=[country_long],

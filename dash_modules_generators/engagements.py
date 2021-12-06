@@ -21,13 +21,19 @@ def get_tweet_id_by_spike(tweets_df, engagement_type, percentile=PERCENTILE):
 
     grouped_sorted_date = tweets_df.groupby([engagement_id_label, 'tweet_date']).apply(
         pd.DataFrame.sort_values, 'tweet_date').reset_index(drop=True)
+
     max_grouped_sorted_date = grouped_sorted_date.groupby(
         [engagement_id_label, 'tweet_date'])['total_engagement'].max().reset_index()
+
     max_grouped_sorted_date['delta_engagement'] = max_grouped_sorted_date.groupby(
         [engagement_id_label])['total_engagement'].diff().fillna(0).astype(int)
+
     spike_df = max_grouped_sorted_date.groupby(engagement_id_label).nth(1)
 
+    # getting a spike value based on set percentile
     spike_value = spike_df['delta_engagement'].quantile(percentile)
+
+    #
     spike_ids = list(spike_df[spike_df['delta_engagement']
                      > spike_value].reset_index()[engagement_id_label])
     print("Total spiky tweets:", len(spike_ids))
@@ -219,6 +225,7 @@ def generate_dash_bursty_quotes_by_sentiment(bursty_quoted_tweets,
         ['pos_percent', 'neg_percent'], 1, inplace=True)
 
     final_most_spread_quoted = final_most_spread_quoted
+    print("~"*50, len(final_most_spread_quoted))
     if save:
         pd.DataFrame.to_csv(final_most_spread_quoted,
                             sentiment_spread_save_path)

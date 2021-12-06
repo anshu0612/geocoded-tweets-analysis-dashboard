@@ -71,7 +71,9 @@ TOP_COUNTRY_INFLUENCER_TWEETS_PATH = DATA_DASH_PATH + \
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------ Engagements -----------------------------------------------------------
-PERCENTILE = .90
+PERCENTILE = .3  # .90, IN: .3, US: .3
+MIN_DEGREE_OF_NETWORKING_GRAPH = 2  # SG: 8, IN: 2, US: 3, Global: 2
+
 TOP_RTS_POS_NEG = 10
 
 RT_TWEET_ID_LABEL = 'retweeted_tweet_id'
@@ -88,7 +90,7 @@ Q_TWEET_USER_VERIFIED_LABEL = 'quoted_user_verified'
 Q_TWEET_DATE_LABEL = 'quoted_tweet_date'
 Q_USER_GEOCODING = 'quoted_user_geo_coding'
 
-SENTIMENT_SPREAD_THRESHOLD = .75
+SENTIMENT_SPREAD_THRESHOLD = .3  # .75, IN: .3, US: .3
 
 RETWEET = 'retweet'
 QUOTED = 'quoted'
@@ -146,7 +148,6 @@ FONT_SIZE = '8px'
 LINE_WIDTH = '0.2px'
 NETWORKING_GRAPH_HEIGHT = '500px'
 
-MIN_DEGREE_OF_NETWORKING_GRAPH = 2
 
 NETWORKING_GRAPH_INFO_CONTENT = 'A directed weighted graph of interactions - replies, retweets, and quoted tweets' \
     ' between the users.  The weights denote the number of interactions between two users.'

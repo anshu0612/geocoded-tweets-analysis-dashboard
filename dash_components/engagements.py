@@ -76,10 +76,8 @@ def create_quoted_card(tw):
             )))
 
 
-neg_bursty_quotes_children = [create_quoted_card(tw) for _, tw in quoted_spread_data_neg.iterrows()] \
-    if len(quoted_spread_data_pos) else []
-pos_bursty_quotes_children = [create_quoted_card(tw) for _, tw in quoted_spread_data_pos.iterrows()] \
-    if len(quoted_spread_data_neg) else []
+neg_bursty_quotes_children = [create_quoted_card(tw) for _, tw in quoted_spread_data_neg.iterrows()]
+pos_bursty_quotes_children = [create_quoted_card(tw) for _, tw in quoted_spread_data_pos.iterrows()]
 
 BURSTY_QUOTED_TWEETS = [
     dbc.Row(

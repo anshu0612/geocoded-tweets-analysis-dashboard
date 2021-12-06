@@ -23,13 +23,13 @@ def get_top_influential_countries(tweets, top_countries_count=10):
     quoted_tweets = tweets[(tweets['tweet_enagagement_type'] == 'Quote') &
                            (tweets['quoted_user_geo_coding'] != 'Unknown')]
 
-    retweets_tweets = tweets[(tweets['tweet_enagagement_type'] == 'Retweet') &
+    retweeted_tweets = tweets[(tweets['tweet_enagagement_type'] == 'Retweet') &
                         (tweets['retweeted_user_geo_coding'] != 'Unknown')]
 
     if COUNTRY:
         # if country specific then exclude that COUNTRY from top influencers
         quoted_tweets = quoted_tweets[quoted_tweets['quoted_user_geo_coding'] != COUNTRY]
-        retweeted_tweets = retweets_tweets[retweets_tweets['retweeted_user_geo_coding'] != COUNTRY]
+        retweeted_tweets = retweeted_tweets[retweeted_tweets['retweeted_user_geo_coding'] != COUNTRY]
 
     # putting the geo locations of the retweets and quoted 
     # tweets creators together in a list for counting
@@ -76,7 +76,8 @@ def generate_dash_influential_countries(top_country_influencer, save=False,
             float(country_loc.iloc[0]['Latitude (average)'].strip().strip('"')))
         top_influential_countries_data['long'].append(
             float(country_loc.iloc[0]['Longitude (average)'].strip().strip('"')))
-        top_influential_countries_df = pd.DataFrame(top_influential_countries_data)
+    
+    top_influential_countries_df = pd.DataFrame(top_influential_countries_data)
 
     if save:
         pd.DataFrame.to_csv(top_influential_countries_df,
