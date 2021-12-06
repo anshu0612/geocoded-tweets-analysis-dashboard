@@ -25,9 +25,9 @@ The key insights include:
 Checkout the demos for: 
 - Country-specific tweets:
     - :singapore:	&nbsp; [Singapore](http://sg-tweets-monitoring.herokuapp.com/) 
-    - :india: &nbsp; [India](http://sg-tweets-monitoring.herokuapp.com/)
-    - :us:	&nbsp; [United States](http://sg-tweets-monitoring.herokuapp.com/)
-- :earth_americas:&nbsp; [Global tweets](http://sg-tweets-monitoring.herokuapp.com/) 
+    - :india: &nbsp; [India](http://in-tweets-monitoring.herokuapp.com/)
+    - :us:	&nbsp; [United States](http://us-tweets-monitoring.herokuapp.com/)
+- :earth_americas:&nbsp; [Global tweets](https://global-tweets-monitoring.herokuapp.com/) 
 
 ## Content
 
