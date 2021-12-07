@@ -19,6 +19,9 @@ The key insights include:
 :small_orange_diamond: &nbsp; Daily tweets counts <br />
 :small_orange_diamond: &nbsp; Basic statistics - total tweets, avg no. of tweets per day, no. of unique users, and date range of the collected tweets <br />
   
+***These insights can help the regulatory agencies, decision-makers, and so on in taking appropriate action.***
+
+
 ![Alt text](assets/dash_glimpse.png)
 
 
