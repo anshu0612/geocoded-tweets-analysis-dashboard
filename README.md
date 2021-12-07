@@ -10,9 +10,9 @@ The key insights include:
 :small_orange_diamond: &nbsp; Top influential users and their country <br />
 :small_orange_diamond: &nbsp; Top influential countries and analyzing tweets from those countries <br />
 :small_orange_diamond: &nbsp; Communities of users; networking graph and communities' tweets analysis <br />
-:small_orange_diamond: &nbsp; Reactive tweets (among the viral quoted tweets) - tweets that received extreme sentiments <br />
-:small_orange_diamond: &nbsp; Viral local retweets (By users based in the specified country. For global level, viral local tweets are ignored) <br />
-:small_orange_diamond: &nbsp; Viral global retweets (By users NOT based in the specified country.) <br />
+:small_orange_diamond: &nbsp; Reactive tweets (viral tweets through quotes) - tweets that received extreme sentiments <br />
+:small_orange_diamond: &nbsp; Viral local tweets through retweets (By users based in the specified country. For global level, viral local tweets are ignored <br />
+:small_orange_diamond: &nbsp; Viral global tweets through retweets (By users NOT based in the specified country.) <br />
 :small_orange_diamond: &nbsp; Potentially sensitive tweets analysis <br />
 :small_orange_diamond: &nbsp; Popular mentions and hashtags <br />
 :small_orange_diamond: &nbsp; Sentiment analysis <br />
