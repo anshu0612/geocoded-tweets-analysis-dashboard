@@ -10,21 +10,24 @@ The key insights include:
 :small_orange_diamond: &nbsp; Top influential users and their country <br />
 :small_orange_diamond: &nbsp; Top influential countries and analyzing tweets from those countries <br />
 :small_orange_diamond: &nbsp; Communities of users; networking graph and communities' tweets analysis <br />
-:small_orange_diamond: &nbsp; Reactive tweets (among the viral quoted tweets) - tweets that received extreme sentiments <br />
-:small_orange_diamond: &nbsp; Viral local retweets (By users based in the specified country. For global level, viral local tweets are ignored) <br />
-:small_orange_diamond: &nbsp; Viral global retweets (By users NOT based in the specified country.) <br />
+:small_orange_diamond: &nbsp; Reactive tweets (viral tweets through quotes with extreme sentiments) <br />
+:small_orange_diamond: &nbsp; Viral local tweets through retweets (By users based in the specified country. For global level, viral local tweets are ignored <br />
+:small_orange_diamond: &nbsp; Viral global tweets through retweets (By users NOT based in the specified country.) <br />
 :small_orange_diamond: &nbsp; Potentially sensitive tweets analysis <br />
 :small_orange_diamond: &nbsp; Popular mentions and hashtags <br />
 :small_orange_diamond: &nbsp; Sentiment analysis <br />
 :small_orange_diamond: &nbsp; Daily tweets counts <br />
 :small_orange_diamond: &nbsp; Basic statistics - total tweets, avg no. of tweets per day, no. of unique users, and date range of the collected tweets <br />
   
+***These insights can help the regulatory agencies and decision-makers in taking appropriate action.***
+
+
 ![Alt text](assets/dash_glimpse.png)
 
 
 Checkout the demos for: 
 - Country-specific tweets:
-    - :singapore:	&nbsp; [Singapore](http://sg-tweets-monitoring.herokuapp.com/) 
+    - :singapore:	&nbsp; [Singapore](https://sg-tweets-monitoring.herokuapp.com/) 
     - :india: &nbsp; [India](http://in-tweets-monitoring.herokuapp.com/)
     - :us:	&nbsp; [United States](http://us-tweets-monitoring.herokuapp.com/)
 - :earth_americas:&nbsp; [Global tweets](https://global-tweets-monitoring.herokuapp.com/) 
@@ -56,6 +59,8 @@ The repository contains code for:
 Refer to this detailed [documentation](https://docs.google.com/document/d/1jr9FAraF93lWkf3H2HbpLlMsTxVcQk-JTRa6JuJuJPA/edit?usp=sharing). The documentation provides details on the collected data, geocoding, approach towards key insights generation, implementation using python, and so on.
 
 # Visualizing the key insights from the sample tweets data
+
+Download the sample data from [this]() link and keep the `data` folder at the root level.
 
 ## Manual Setup
 
