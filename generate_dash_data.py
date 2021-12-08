@@ -87,13 +87,21 @@ class DashGenerator():
 
     def get_reactive_tweets(self):
         Path(DATA_DASH_PATH + 'quoted').mkdir(parents=True, exist_ok=True)
+
+        # get the tweets with quotes
         quoted_tws = get_quoted_tweets(self.tweets)
+
+        # filter the tweets by date range
         quoted_tws = get_quoted_tweets_by_date(
             quoted_tws, self.min_date, self.max_date)
+        
+        # get viral quoted tweets
         viral_quoted_tweets = get_viral_quoted_tweets(quoted_tws)
 
+        # get reactive tweets
         reactive_tweets_with_extreme_sentiments = get_reactive_tweets_with_extreme_sentiments(
             viral_quoted_tweets)
+        
         generate_dash_reactive_tweets_with_extreme_sentiments(
             viral_quoted_tweets, reactive_tweets_with_extreme_sentiments, True)
 

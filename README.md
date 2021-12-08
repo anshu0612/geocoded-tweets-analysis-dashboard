@@ -206,7 +206,7 @@ Since I started building the dashboard for Singapore, there is an additional ste
 
 The step involves collecting Twitter users who follow at least `X` number of Singapore-linked official accounts (such as Ministry of Education, Health, and so on). The heuristic is to know the potential Singapore-based users and subsequently collect tweets from those users. 
 
-The provided sample of users in `data\singapore\min_following_users.txt` lists the users who follow at least `2` of the `59 Singapore-linked official accounts` (check the diagram below for your reference). During tweets collection, this file is used - as one of the steps -   to filter Singapore-based tweets. 
+The provided sample of users in `data/singapore/min_following_users.txt` lists the users who follow at least `2` of the `59 Singapore-linked official accounts` (check the diagram below for your reference). During tweets collection, this file is used - as one of the steps -   to filter Singapore-based tweets. 
 
 ![Alt text](assets/flow_for_sg_users.png)
 
