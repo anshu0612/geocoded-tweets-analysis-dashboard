@@ -56,10 +56,6 @@ if COUNTRY:
     INFLUENTIAL_COUNTRIES_INFO_CONTENT = "Countries whose users' tweets received/ing a high number of engagements by {}-based users" \
         " Bubble sizes reflect the relative total engagements, received by country-specific tweets.".format(
             COUNTRY)
-    # INFLUENTIAL_COUNTRIES_INFO_CONTENT = 'Tweets by non-{}-based users with a high number of engagements' \
-    #     '- retweets and quoted tweets, by {}-based users.' \
-    #     ' Bubble sizes reflect the relative total engagements, received by country-specific tweets.'.format(
-    #         COUNTRY, COUNTRY)
 else:
     INFLUENTIAL_COUNTRIES_INFO_CONTENT = "Countries whose users' tweets received/ing a high number of engagements." \
         " Bubble sizes reflect the relative total engagements, received by country-specific tweets."
@@ -71,8 +67,12 @@ TOP_COUNTRY_INFLUENCER_TWEETS_PATH = DATA_DASH_PATH + \
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------ Engagements -----------------------------------------------------------
-PERCENTILE = .3  # .90, IN: .3, US: .3
-MIN_DEGREE_OF_NETWORKING_GRAPH = 2  # SG: 8, IN: 2, US: 3, Global: 2
+# adjust these values depending on the data size
+# the higher number of tweets; the higher values 
+PERCENTILE = .9  # .9 | .3
+MIN_DEGREE_OF_NETWORKING_GRAPH = 8  # SG: 8  IN: 2, US: 3, Global: 2
+# set a value ranging from 0-1
+SENTIMENT_SPREAD_THRESHOLD = .75  #.75 | .3
 
 TOP_RTS_POS_NEG = 10
 
@@ -90,15 +90,13 @@ Q_TWEET_USER_VERIFIED_LABEL = 'quoted_user_verified'
 Q_TWEET_DATE_LABEL = 'quoted_tweet_date'
 Q_USER_GEOCODING = 'quoted_user_geo_coding'
 
-SENTIMENT_SPREAD_THRESHOLD = .3  # .75, IN: .3, US: .3
-
 RETWEET = 'retweet'
 QUOTED = 'quoted'
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------ Retweets --------------------------------------------------------------
-ERROR_LOCAL_RETWEETS = 'Viral local retweets not found'
-ERROR_GLOBAL_RETWEETS = 'Viral global retweets not found'
+ERROR_LOCAL_RETWEETS = 'Viral local retweeted tweets not found'
+ERROR_GLOBAL_RETWEETS = 'Viral global retweeted tweets not found'
 
 VIRAL_RETWEETS_INFO_CONTENT = '(2) highly retweeted by count or (3) received an unusual number of endorsements - retweets and favorites'
 VIRAL_RETWEETS_DATE_INFO_CONTENT = 'Tweets created between {} and {} that are (1) by '
@@ -133,7 +131,7 @@ QUOTED_SENTIMENT_COUNT_THRESHOLD = 10
 VIRAL_QUOTED_INFO_CONTENT = 'Tweets created between {} and {} that are (1) highly quoted by count or (2)' \
     ' received an unusual number of endorsements - retweets and favorites'
 
-REACTIVE_TWEETS_INFO_CONTENT = 'Viral quoted tweets with high intensity of extreme sentiments (positive and negative sentiments)'
+REACTIVE_TWEETS_INFO_CONTENT = 'Viral tweets that are quoted with high intensity of extreme sentiments (positive and negative sentiments)'
 
 QUOTED_SENTIMENT_SPEAD_PATH = DATA_DASH_PATH + 'quoted/sentiment_spread.csv'
 

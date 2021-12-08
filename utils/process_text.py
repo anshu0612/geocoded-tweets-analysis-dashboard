@@ -108,18 +108,22 @@ class TwitterDataProcessing():
     def replace_amp(self, text):
         return text.replace('&amp;', '&')
 
-    def clean_text(self, text):
+    def clean_text(self, text, for_sentiment_analysis=False):
         text = self.remove_userid(text)
         text = self.remove_urls(text)
         text = self.remove_RTs(text)
         text = self.remove_hashtags(text)
-        text = self.remove_emojis(text)
+
         text = self.remove_html(text)
         text = self.remove_numbers(text)
         text = self.expand_contractions(text)
         text = self.remove_puctuations(text)
         text = self.convert_to_lowercase(text)
-        text = self.remove_stopwords(text)
+
+        if not for_sentiment_analysis:
+            text = self.remove_emojis(text)
+            text = self.remove_stopwords(text)
+
         text = self.remove_new_line(text)
         text = self.remove_two_characters_word(text)
         text = self.remove_multiple_spaces(text)

@@ -1,3 +1,5 @@
+# Sample config file. Rename it to country_config.py to start parsing tweets for US-based twitter users
+
 '''
 PLEASE DO NOT UPDATE THIS FILE IF:
 You intend to collect global tweets i.e., not country-specific tweets

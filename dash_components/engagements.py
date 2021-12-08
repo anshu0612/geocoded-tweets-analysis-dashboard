@@ -135,7 +135,7 @@ BURSTY_QUOTED_TWEETS = [
 
 VIRAL_LOCAL_RETWEETS = [
     dbc.Row(
-        html.H5(['Viral local Retweets']),
+        html.H5(['Viral local retweeted tweets']),
         className='col-md-12'
     ),
     dbc.Row(
@@ -143,7 +143,7 @@ VIRAL_LOCAL_RETWEETS = [
             dbc.Row(
                 [dbc.Col(
                     children=[
-                        html.Span('Viral local retweets:',
+                        html.Span('Viral local retweeted tweets:',
                                   style={'color': '#0096FF', 'marginRight': '10px'}),
                         html.Span(
                             VIRAL_RETWEETS_DATE_INFO_CONTENT
@@ -203,7 +203,7 @@ VIRAL_LOCAL_RETWEETS = [
 
 VIRAL_GLOBAL_RETWEETS = [
     dbc.Row(
-        html.H5(['Viral global Retweets']),
+        html.H5(['Viral global retweeted tweets']),
         className='col-md-12'
     ),
     dbc.Row(
@@ -211,7 +211,7 @@ VIRAL_GLOBAL_RETWEETS = [
             dbc.Row(
                 [dbc.Col(
                     children=[
-                        html.Span('Viral global retweets:',
+                        html.Span('Viral global retweeted tweets:',
                                   style={'color': '#0096FF', 'marginRight': '10px'}),
                         html.Span(
                             VIRAL_RETWEETS_DATE_INFO_CONTENT.

@@ -156,7 +156,6 @@ class ProcessData():
                 if row['quoted_user_screenname'] in KNOWN_USERNAMES_COUNTRY:
                     row['quoted_user_geo_coding'] = KNOWN_USERNAMES_COUNTRY[row['quoted_user_screenname']]
 
-
         # t = self.tweets[self.tweets['user_screenname_x'] == 'ChannelNewsAsia'][['user_screenname_x', 'user_geo_coding']]
         # print(t)
 
@@ -192,12 +191,12 @@ class ProcessData():
         '''
         pre = TwitterDataProcessing()
         print("Processing tweets")
-        processed_tweets = [pre.clean_text(text)
+        processed_tweets = [pre.clean_text(text, for_sentiment_analysis=True)
                             for text in self.tweets['tweet_text']]
         self.tweets['processed_tweet_text'] = processed_tweets
 
         print("Processing QUOTED tweets")
-        processed_quoted_tweets = [pre.clean_text(text) if
+        processed_quoted_tweets = [pre.clean_text(text, for_sentiment_analysis=True) if
                                    isinstance(text, str) == True else '' for text in self.tweets['quoted_tweet_text']]
         self.tweets['processed_quoted_tweet_text'] = processed_quoted_tweets
 
