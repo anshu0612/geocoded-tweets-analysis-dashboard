@@ -5,21 +5,25 @@ It helps in visualizing some key insights from tweets of **country-specific** or
 
 > The application is built using [Plotly Dash](https://plotly.com/dash/).
 
+Detecting influential users, extracting local and global news and events, and understanding public perception from a specific country is a challenging problem and the focus of this work. 
+
 The key insights include:
 
-:small_orange_diamond: &nbsp; Top influential users and their country <br />
-:small_orange_diamond: &nbsp; Top influential countries and analyzing tweets from those countries <br />
-:small_orange_diamond: &nbsp; Communities of users; networking graph and communities' tweets analysis <br />
-:small_orange_diamond: &nbsp; Reactive tweets (viral tweets through quotes with extreme sentiments) <br />
-:small_orange_diamond: &nbsp; Viral local tweets through retweets (By users based in the specified country. For global level, viral local tweets are ignored <br />
-:small_orange_diamond: &nbsp; Viral global tweets through retweets (By users NOT based in the specified country.) <br />
-:small_orange_diamond: &nbsp; Potentially sensitive tweets analysis <br />
-:small_orange_diamond: &nbsp; Popular mentions and hashtags <br />
-:small_orange_diamond: &nbsp; Sentiment analysis <br />
-:small_orange_diamond: &nbsp; Daily tweets counts <br />
-:small_orange_diamond: &nbsp; Basic statistics - total tweets, avg no. of tweets per day, no. of unique users, and date range of the collected tweets <br />
-  
-***These insights can help the regulatory agencies and decision-makers in taking appropriate action.***
+- In particular, this work uses the geocoded tweets to infer: 		
+- Influential users and their country
+- Influential countries and analysis of tweets from those countries
+- User communities
+- Interactions network
+- Reactive tweets (viral tweets that are quoted with extreme sentiments)
+- Viral local tweets
+- Viral global tweets
+- Potentially sensitive tweets analysis
+- Popular mentions and hashtags
+- Sentiment analysis
+- Daily tweets counts
+- Basic statistics - total tweets, avg no. of tweets per day, no. of unique users, and date range of the collected tweets.
+
+***These insights can help the regulators and decision-makers take appropriate actions.***
 
 
 ![Alt text](assets/dash_glimpse.png)
