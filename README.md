@@ -7,9 +7,8 @@ It helps in visualizing some key insights from tweets of **country-specific** or
 
 Detecting influential users, extracting local and global news and events, and understanding public perception from a specific country is a challenging problem and the focus of this work. 
 
-The key insights include:
+In particular, this work uses the geocoded tweets to infer: 
 
-- In particular, this work uses the geocoded tweets to infer: 		
 - Influential users and their country
 - Influential countries and analysis of tweets from those countries
 - User communities
