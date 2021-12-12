@@ -1,4 +1,4 @@
-# :round_pushpin:	 Geocoded Tweets Analysis Dashboard :chart_with_downwards_trend:	 :chart_with_upwards_trend:	:bar_chart:	
+# :round_pushpin:	 Geocoded Tweets Insights Dashboard :chart_with_downwards_trend:	 :chart_with_upwards_trend:	:bar_chart:	
 
 This is an **interactive**, **configurable** and **generic** dashboard. 
 It helps in visualizing some key insights from tweets of **country-specific** or **global** users. 
