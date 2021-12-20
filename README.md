@@ -111,16 +111,25 @@ The application starts processing tweets that are ingested into the remote Mongo
 
 ####  Step 1: Collect tweets
 
+The below steps are a guide to collecting keywords specific tweets using the [Twitter Streaming API](https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/object-model/tweet) and ingesting them into MongoDB.
 
+- 
+Create an .env file, and add the below details:
 
-
-Create an .env file, and add the below required details for collecting and fetching tweets from MongoDB
+**Configure MongoDB** 
 ```python
 MONGO_HOST = <mongo_host>
 MONGO_USER = <mongo_username>
 MONGO_PASS = <mongo_password>
 ```
-
+**Twitter Credentials**
+ 
+```python
+TWITTER_APP_KEY = 'XXXX'
+TWITTER_APP_SECRET = 'XXXX'
+TWITTER_OAUTH_TOKEN = 'XXXX'
+TWITTER_OAUTH_TOKEN_SECRET = 'XXXX'
+``` 
 
 ####  Step 2: Update the `constants/country_config.py` file
 
@@ -231,13 +240,6 @@ The file `data/singapore/min_following_users.txt` contains the user ids of the c
 > The list of followers will be saved in `data/singapore/sg_accounts_followers/` folder.
 
 To collect the followers using the Twitter API, add the credentials in the `.env` file 
-
-```python
-TWITTER_APP_KEY = 'XXXX'
-TWITTER_APP_SECRET = 'XXXX'
-TWITTER_OAUTH_TOKEN = 'XXXX'
-TWITTER_OAUTH_TOKEN_SECRET = 'XXXX'
-```
 
 # Contact
 
