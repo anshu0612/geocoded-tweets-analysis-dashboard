@@ -111,25 +111,21 @@ The application starts processing tweets that are ingested into the remote Mongo
 
 ####  Step 1: Collect tweets
 
-The below steps are a guide to collecting keywords specific tweets using the [Twitter Streaming API](https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/object-model/tweet) and ingesting them into MongoDB.
+The below steps are a guide to collecting keywords and hashtags specific tweets using the [Twitter Streaming API](https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/object-model/tweet) and ingesting them into MongoDB.
 
-- 
-Create an .env file, and add the below details:
-
-**Configure MongoDB** 
-```python
-MONGO_HOST = <mongo_host>
-MONGO_USER = <mongo_username>
-MONGO_PASS = <mongo_password>
-```
-**Twitter Credentials**
- 
+-  Create an .env file, and add your **Twitter Credentials**  details:
 ```python
 TWITTER_APP_KEY = 'XXXX'
 TWITTER_APP_SECRET = 'XXXX'
 TWITTER_OAUTH_TOKEN = 'XXXX'
 TWITTER_OAUTH_TOKEN_SECRET = 'XXXX'
 ``` 
+- Add custom keywords and hashtags in `data/tweets_collection_filters/` (see sample `hashtags.csv` and `keywords.csv` files)
+
+- Sample command to run the python script to collect the tweets
+```bash
+python3 parse_tweets.py --db_name COVID_VACCINE
+
 
 ####  Step 2: Update the `constants/country_config.py` file
 
@@ -162,7 +158,16 @@ KNOWN_USERNAMES_COUNTRIES = {}
 
 ####  Step 3: Parse tweets 
 
-Sample command to run the python script to collect the tweets
+Connect to remote MongoDB by configuring the `.env` file 
+
+**Configure MongoDB** 
+```python
+MONGO_HOST = <mongo_host>
+MONGO_USER = <mongo_username>
+MONGO_PASS = <mongo_password>
+```
+
+Sample command to run the python script to parse the tweets
 ```bash
 python3 parse_tweets.py --db_name COVID_VACCINE --collection_no_list 88 89
 ```
