@@ -27,7 +27,6 @@ In particular, this work uses the geocoded tweets to infer:
 
 ![Alt text](assets/dash_glimpse.png)
 
-
 Checkout the demos for: 
 - Country-specific tweets:
     - :singapore:	&nbsp; [Singapore](https://sg-tweets-monitoring.herokuapp.com/) 
@@ -106,9 +105,6 @@ docker container run -d -p 5000:5000 geocoded-tweets-insights-dash
 
 # Visualizing the key insights from custom country-specific or global level tweets data
 
-The application starts processing tweets that are ingested into the remote MongoDB server.
-
-
 ####  Step 1: Collect tweets
 
 The below steps are a guide to collecting keywords and hashtags specific tweets using the [Twitter Streaming API](https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/object-model/tweet) and ingesting them into MongoDB.
@@ -122,12 +118,14 @@ TWITTER_OAUTH_TOKEN_SECRET = 'XXXX'
 ``` 
 - Add custom keywords and hashtags in `data/tweets_collection_filters/` (see sample `hashtags.csv` and `keywords.csv` files)
 
-- Sample command to run the python script to collect the tweets
+- Run the python script `collect_tweets.py` to collect the tweets.
+
+Sample:
 ```bash
-python3 parse_tweets.py --db_name COVID_VACCINE
+python3 collect_tweets.py --db_name COVID_VACCINE
+```
 
-
-####  Step 2: Update the `constants/country_config.py` file
+#### Step 2: Update the `constants/country_config.py` file
 
 For collecting country-specific tweets
 ```python
