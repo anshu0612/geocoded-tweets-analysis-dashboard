@@ -5,7 +5,7 @@ from constants.dash_constants import BASICS_PATH, DAILY_TWEETS_PATH, HASHTAGS_PA
     POTENTIALLY_SENSITIVE_TWEETS_COUNT_PATH, POTENTIALLY_SENSITIVE_TWEETS_PATH, \
     POTENTIALLY_SENSITIVE_TWEETS_DEFAULT_PERCENTILE, \
     SENTIMENTS_PATH
-from constants.country_config import COUNTRY_SLANGS, COUNTRY_CODE
+from constants.country_config import COUNTRY_ALTS, COUNTRY_CODE
 
 
 def get_date_range(tweets):
@@ -71,14 +71,14 @@ def generate_dash_hashtags(tweets, from_date, to_date, save=False, hashtags_save
 
     hashtags = []
 
-    # joining all the country name slangs 
-    country_slangs = '|'.join(COUNTRY_SLANGS)
+    # joining all the country name alternatives 
+    country_alts_str = '|'.join(COUNTRY_ALTS)
     
     # creating list of hashtags
     for h in tweets_hashtags:
         h_list = [hh for hh in h.split(
-            # excluding the country name slangs 
-            '|') if COUNTRY_CODE and (hh not in country_slangs)]
+            # excluding the country name alternatives 
+            '|') if COUNTRY_CODE and (hh not in country_alts_str)]
         hashtags.extend(h_list)
 
     # counting hashtags and sorting them by count

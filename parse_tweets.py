@@ -16,7 +16,7 @@ from constants.common import FRAGMENTED_TWEETS_ENGAGEMENTS_PATH, \
     FRAGMENTED_TWEETS_PATH, \
     DEFAULT_DB_NAME, \
     ALT_GEO_NOT_FOUND, SINGAPORE_LABEL
-from constants.country_config import COUNTRY_CODE
+from constants.country_config import COUNTRY_CODE, COUNTRY_ALTS
 
 load_dotenv()
 
@@ -130,9 +130,9 @@ def _create_tweets_csv(db_name, data, collection_no,
             if not ((COUNTRY == SINGAPORE_LABEL) and str(u['id']) in sg_users) and  \
                 not (tweet['place'] and tweet['place']['country_code'] == COUNTRY_CODE) and \
                     not (u['location'] and any(country_ref in u['location'].lower().split(' ')
-                                               for country_ref in COUNTRY_SLANGS)) and \
+                                               for country_ref in COUNTRY_ALTS)) and \
                     not (u['description'] and any(country_ref in u['description'].lower().split(' ')
-                                                  for country_ref in COUNTRY_SLANGS)):
+                                                  for country_ref in COUNTRY_ALTS)):
                 continue
 
         # GEO TAGGING
@@ -537,7 +537,7 @@ def _set_connetion():
         remote_bind_address=('127.0.0.1', 27017))
 
 
-def get_tweets_from_db(db_name, collection_no_list, running_tweets_save_count, max_csv_tweets_count):
+def parse_tweets_from_db(db_name, collection_no_list, running_tweets_save_count, max_csv_tweets_count):
 
     Path(FRAGMENTED_TWEETS_PATH).mkdir(parents=True, exist_ok=True)
     Path(FRAGMENTED_TWEETS_ENGAGEMENTS_PATH).mkdir(parents=True, exist_ok=True)
@@ -585,14 +585,14 @@ if __name__ == "__main__":
     # assert args.is_country_set in ['y', 'n']
 
     if COUNTRY_CODE:
-        from constants.country_config import COUNTRY_SLANGS
+        from constants.country_config import COUNTRY_ALTS
         from constants.common import COUNTRY
 
         if COUNTRY == SINGAPORE_LABEL:
             from constants.country_config import MIN_SG_ACCOUNTS_FOLLWERS_PATH
         print("The country is  ", COUNTRY)
 
-    get_tweets_from_db(
+    parse_tweets_from_db(
         db_name=args.db_name,
         # is_country_set = True if args.is_country_set == 'y' else False,
         collection_no_list=args.collection_no_list,

@@ -69,10 +69,10 @@ TOP_COUNTRY_INFLUENCER_TWEETS_PATH = DATA_DASH_PATH + \
 # ------------------------------------ Engagements -----------------------------------------------------------
 # adjust these values depending on the data size
 # the higher number of tweets; the higher values 
-PERCENTILE = .9  # .9 | .3
-MIN_DEGREE_OF_NETWORKING_GRAPH = 8  # SG: 8  IN: 2, US: 3, Global: 2
-# set a value ranging from 0-1
-SENTIMENT_SPREAD_THRESHOLD = .75  #.75 | .3
+PERCENTILE = 75  # .9 | .3
+MIN_DEGREE_OF_NETWORKING_GRAPH = 2 #8  # SG: 8  IN: 2, US: 3, Global: 2
+# set a value ranging from 0-100
+EXTREME_SENTIMENT_THRESHOLD = 60  #75 | 3
 
 TOP_RTS_POS_NEG = 10
 
@@ -142,7 +142,7 @@ COMMUNITIES_START_COLOR = 3
 COMMUNITIES_COLORS_DICT = {str(idx): color for idx, color in enumerate(
     px.colors.qualitative.Bold[COMMUNITIES_START_COLOR:])}
 CIRCLE_SIZE = '14px'
-FONT_SIZE = '8px'
+FONT_SIZE = '0px'
 LINE_WIDTH = '0.2px'
 NETWORKING_GRAPH_HEIGHT = '500px'
 

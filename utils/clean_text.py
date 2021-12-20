@@ -37,7 +37,7 @@ URL_REGEX = regex_or(url_start_1, url_start_2) + url_body + \
     "(?=(?:" + url_extra_crap_before_end + ")?" + url_end + ")"
 
 
-class TwitterDataProcessing():
+class TwitterDataCleaning():
 
     def __init__(self):
         # self.nlp = spacy.load('en_core_web_sm')
@@ -125,6 +125,6 @@ class TwitterDataProcessing():
             text = self.remove_stopwords(text)
 
         text = self.remove_new_line(text)
-        text = self.remove_two_characters_word(text)
+        # text = self.remove_two_characters_word(text)
         text = self.remove_multiple_spaces(text)
         return text

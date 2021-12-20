@@ -52,7 +52,7 @@ app.layout = html.Div([
 
 # --------------------------- Data Loading ----------------------------------
 # tweets
-tweets = pd.read_csv(TWEETS_PATH)
+tweets = pd.read_csv(TWEETS_PATH, lineterminator='\n')
 
 #  tweets date range
 min_date, max_date = get_date_range(tweets)

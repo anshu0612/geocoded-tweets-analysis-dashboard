@@ -6,10 +6,10 @@ import matplotlib.pyplot as plt
 from constants.dash_constants import QUOTED, RETWEET
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
-from utils.process_text import TwitterDataProcessing
+from utils.clean_text import TwitterDataCleaning
 from constants.common import FRAGMENTED_TWEETS_PATH, \
     FRAGMENTED_TWEETS_ENGAGEMENTS_PATH, DATE_FORMAT
-from constants.country_config import COUNTRY_SLANGS, KNOWN_USERNAMES_COUNTRY
+from constants.country_config import COUNTRY_ALTS, KNOWN_USERNAMES_COUNTRY
 from constants.common import COUNTRY, TWEETS_PATH, SINGAPORE_LABEL
 
 
@@ -30,7 +30,7 @@ def return_on_failure(value):
 class ProcessData():
     def __init__(self):
         print(TWEETS_PATH)
-        self.tweets = pd.read_csv(TWEETS_PATH)
+        self.tweets = None#pd.read_csv(TWEETS_PATH)
 
     def concat_and_join_data(self, tweets_path=FRAGMENTED_TWEETS_PATH,
                              engagements_tweets_path=FRAGMENTED_TWEETS_ENGAGEMENTS_PATH):
@@ -40,11 +40,11 @@ class ProcessData():
         '''
         print(FRAGMENTED_TWEETS_PATH, FRAGMENTED_TWEETS_ENGAGEMENTS_PATH)
         # csvs containing users and tweets specific data
-        tw_data = pd.concat([pd.read_csv(csv_file, index_col=0, header=0, engine='c') for csv_file in glob.glob(
+        tw_data = pd.concat([pd.read_csv(csv_file, index_col=0, header=0, engine='c', lineterminator='\n') for csv_file in glob.glob(
             os.path.join(tweets_path, "*.csv"))], axis=0, ignore_index=True)
 
         # csvs containing the collected tweets' engagement data - retweets, replies and quoted tweets
-        tw_eng_data = pd.concat([pd.read_csv(csv_file, index_col=0, header=0, engine='c') for csv_file in glob.glob(
+        tw_eng_data = pd.concat([pd.read_csv(csv_file, index_col=0, header=0, engine='c', lineterminator='\n') for csv_file in glob.glob(
             os.path.join(engagements_tweets_path, "*.csv"))], axis=0, ignore_index=True)
 
         self.tweets = tw_data.merge(tw_eng_data, on="tweet_id", how='inner')
@@ -163,15 +163,15 @@ class ProcessData():
         '''
             Filter tweets for `COUNTRY`
         '''
-        country_slangs = '|'.join(COUNTRY_SLANGS)
+        country_alts_str = '|'.join(COUNTRY_ALTS)
         self.tweets = self.tweets[
             # 1. geo coded as Singapore
             # (self.tweets['user_geo_coding'] == 'Unknown') |
             (self.tweets['user_geo_coding'] == COUNTRY) |
             # 2. user location contains `COUNTRY_LOCATION_SLANGS`
-            (self.tweets['user_location'].str.contains(country_slangs, regex=True, case=False)) |
+            (self.tweets['user_location'].str.contains(country_alts_str, regex=True, case=False)) |
             # 3. user description contains `COUNTRY_USER_DESCRIPTION_SLANGS`
-            (self.tweets['user_desc'].str.contains(country_slangs, regex=True, case=False)) |
+            (self.tweets['user_desc'].str.contains(country_alts_str, regex=True, case=False)) |
             # 4. Quoted tweets by `COUNTRY`` users and
             ((self.tweets['quoted_user_geo_coding'] == COUNTRY) & (self.tweets['user_geo_coding'].isna())) |
             ((self.tweets['retweeted_user_geo_coding'] == COUNTRY) & (self.tweets['user_geo_coding'].isna()))]
@@ -185,11 +185,11 @@ class ProcessData():
         self.tweets['quoted_tweet_text'] = [txt.replace('&amp;', '&') if isinstance(
             txt, str) else '' for txt in self.tweets['quoted_tweet_text']]
 
-    def processed_tweets_text(self):
+    def clean_tweets_text(self):
         '''
             Cleaning up tweets text
         '''
-        pre = TwitterDataProcessing()
+        pre = TwitterDataCleaning()
         print("Processing tweets")
         processed_tweets = [pre.clean_text(text, for_sentiment_analysis=True)
                             for text in self.tweets['tweet_text']]
@@ -200,7 +200,7 @@ class ProcessData():
                                    isinstance(text, str) == True else '' for text in self.tweets['quoted_tweet_text']]
         self.tweets['processed_quoted_tweet_text'] = processed_quoted_tweets
 
-    @staticmethod
+    @staticmethod 
     def get_sentiment(doc):
         '''
             Mapping sentiment scores to a label
@@ -284,9 +284,9 @@ if __name__ == "__main__":
     process.remove_amp_from_tweets_text()
     print("remove_amp_from_tweets_text ✅ {}".format(formatter))
 
-    print("processed_tweets_text 🚧 {} Note: This might take time depending on the data size. 🧹, 🧽 in-progress".format(formatter))
-    process.processed_tweets_text()
-    print("processed_tweets_text ✅ {}".format(formatter))
+    print("clean_tweets_text 🚧 {} Note: This might take time depending on the data size. 🧹, 🧽 in-progress".format(formatter))
+    process.clean_tweets_text()
+    print("clean_tweets_text ✅ {}".format(formatter))
 
     print("add_sentiments 🙂 😐 😒 🚧 {} Note: This might take time depending on the data size.".format(formatter))
     process.add_sentiments()

@@ -20,7 +20,7 @@ class DashGenerator():
         Path(DATA_DASH_PATH).mkdir(parents=True, exist_ok=True)
 
         # load the file containing selected country tweets
-        self.tweets = pd.read_csv(TWEETS_PATH)
+        self.tweets = pd.read_csv(TWEETS_PATH, lineterminator='\n')
         # storing min and max date of the data
         self.min_date = self.tweets['tweet_date'].min()
         self.max_date = self.tweets['tweet_date'].max()

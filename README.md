@@ -63,7 +63,7 @@ Refer to this detailed [documentation](https://docs.google.com/document/d/1jr9FA
 
 # Visualizing the key insights from the sample tweets data
 
-Download the sample data from [this]() link and keep the `data` folder at the root level.
+Download the sample data from [this](https://drive.google.com/drive/folders/1_oV92pmcem8qMjIaZ5KiBj5CzzIRXein?usp=sharing) link and keep the country-specific/global data inside the `data` folder.
 
 ## Manual Setup
 
@@ -109,16 +109,17 @@ docker container run -d -p 5000:5000 geocoded-tweets-insights-dash
 The application starts processing tweets that are ingested into the remote MongoDB server.
 
 
-####  Step 1: Setup MongoDB configurations 
+####  Step 1: Collect tweets
 
-Create an .env file, and add the below required details for fetching tweets from MongoDB
+
+
+
+Create an .env file, and add the below required details for collecting and fetching tweets from MongoDB
 ```python
 MONGO_HOST = <mongo_host>
 MONGO_USER = <mongo_username>
 MONGO_PASS = <mongo_password>
 ```
-
-> You can update the `parse_tweets.py` file for any other source of tweets data
 
 
 ####  Step 2: Update the `constants/country_config.py` file
@@ -130,15 +131,15 @@ For collecting country-specific tweets
 # Example: 'SG'
 COUNTRY_CODE = None
 
-# (List) of country slangs
+# (List) of country alternatives
 # Example 1: ['sg', 'spore', 'singapore', 'singapura']
 # Example 2: ['United States', 'america', 'usa', 'us', 'united states of america', 'u.s.', 'states', 'u.s.a']
 # --------- USE: ---------
-# 1. Helps in estimating a user's location based on the country name slangs
-# 2. Filtering tweets based on the country name slangs  present in 
+# 1. Helps in estimating a user's location based on the country name alternatives
+# 2. Filtering tweets based on the country name alternatives  present in 
 #    `location description` and `profile description` of a user
-# 3. Skip the country name slangs from the top hashtags
-COUNTRY_SLANGS = []
+# 3. Skip the country name alternatives from the top hashtags
+COUNTRY_ALTS = []
 
 # (Dictionary) - {<twitter_user_screen_name>: <twitter_user_country_code>} - Prior knowledge of a user's country
 # Example {'muttons': 'SG', 'POTUS': 'US'}
@@ -150,7 +151,7 @@ KNOWN_USERNAMES_COUNTRIES = {}
 --------------------------------------------------------------------------------
 
 
-####  Step 3: Collect tweets 
+####  Step 3: Parse tweets 
 
 Sample command to run the python script to collect the tweets
 ```bash

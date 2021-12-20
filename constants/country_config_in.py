@@ -13,15 +13,15 @@ You intend to collect country-specific tweets
 # Example: 'SG'
 COUNTRY_CODE = 'IN'
 
-# (List) of country slangs
+# (List) of country alternatives
 # Example 1: ['sg', 'spore', 'singapore', 'singapura']
 # Example 2: ['United States', 'america', 'usa', 'us', 'united states of america', 'u.s.', 'states', 'u.s.a']
 # --------- USE: ---------
-# 1. Helps in estimating a user's location based on the country name slangs
-# 2. Filtering tweets based on the country name slangs  present in 
+# 1. Helps in estimating a user's location based on the country name alternatives
+# 2. Filtering tweets based on the country name alternatives  present in 
 #    `location description` and `profile description` of a user
-# 3. Skip the country name slangs from the top hashtags
-COUNTRY_SLANGS = ['India', 'Bharat']
+# 3. Skip the country name alternatives from the top hashtags
+COUNTRY_ALTS = ['India', 'Bharat']
 
 # (Dictionary) - {<twitter_user_screen_name>: <twitter_user_country_code>} - Prior knowledge of a user's country
 # Example {'muttons': 'SG', 'POTUS': 'US'}

@@ -7,6 +7,7 @@ tweets.log
 
 # Uncomment the below folders for deployment on Heroku
 data
+!data/general/
 # data/sg.csv
 # data/dash_output/
 # data/fragmented_data

@@ -39,7 +39,7 @@ def get_tweet_ids_by_spike(tweets_df, engagement_type, percentile=PERCENTILE):
     spike_df = max_grouped_sorted_date.groupby(engagement_id_label).nth(1)
 
     # getting a spike value based on set percentile
-    spike_value = spike_df['delta_engagement'].quantile(percentile)
+    spike_value = spike_df['delta_engagement'].quantile(percentile/100)
 
     spike_ids = list(spike_df[spike_df['delta_engagement']
                      > spike_value].reset_index()[engagement_id_label])
@@ -194,7 +194,7 @@ def get_quoted_tweets_by_date(quoted_tweets, min_date, max_date, from_date=None,
     return quoted_tweets[(quoted_tweets['quoted_tweet_date'].between(from_date, to_date, inclusive='both'))]
 
 
-def get_reactive_tweets_with_extreme_sentiments(tweets_df, rate=SENTIMENT_SPREAD_THRESHOLD):
+def get_reactive_tweets_with_extreme_sentiments(tweets_df, rate=EXTREME_SENTIMENT_THRESHOLD):
 
     quoted_by_sentiment = tweets_df.groupby(['quoted_tweet_id', 'tweet_sentiment']).size()\
         .unstack(fill_value=0).reset_index()
@@ -207,13 +207,13 @@ def get_reactive_tweets_with_extreme_sentiments(tweets_df, rate=SENTIMENT_SPREAD
         (quoted_by_sentiment['negative'] > QUOTED_SENTIMENT_COUNT_THRESHOLD)]
 
     # compute ratio of positive sentiment for the quoted tweets of an original tweet
-    quoted_by_sentiment['pos_percent'] = quoted_by_sentiment['positive'] / (quoted_by_sentiment['positive'] +
-                                                                            quoted_by_sentiment['negative'] +
-                                                                            quoted_by_sentiment['neutral'])
+    quoted_by_sentiment['pos_percent'] = (quoted_by_sentiment['positive'] / (quoted_by_sentiment['positive'] +
+                                                                             quoted_by_sentiment['negative'] +
+                                                                             quoted_by_sentiment['neutral']))*100
     # compute ratio of negative sentiment for the quoted tweets of an original tweet
-    quoted_by_sentiment['neg_percent'] = quoted_by_sentiment['negative'] / (quoted_by_sentiment['positive'] +
-                                                                            quoted_by_sentiment['negative'] +
-                                                                            quoted_by_sentiment['neutral'])
+    quoted_by_sentiment['neg_percent'] = (quoted_by_sentiment['negative'] / (quoted_by_sentiment['positive'] +
+                                                                             quoted_by_sentiment['negative'] +
+                                                                             quoted_by_sentiment['neutral']))*100
     # returns tweets that are quoted with extreme sentiments
     return quoted_by_sentiment[(quoted_by_sentiment['pos_percent'] >= rate) |
                                (quoted_by_sentiment['neg_percent'] >= rate)]
@@ -239,11 +239,11 @@ def generate_dash_reactive_tweets_with_extreme_sentiments(reactive_quoted_tweets
     final_most_spread_quoted.drop(
         ['negative', 'positive', 'neutral'], 1, inplace=True)
 
-    # Adding `spread_type` and `spread_rate`. SENTIMENT_SPREAD_THRESHOLD% <= positivity spread and SENTIMENT_SPREAD_THRESHOLD% <= negativity spread
+    # Adding `spread_type` and `spread_rate`. EXTREME_SENTIMENT_THRESHOLD% <= positivity spread and EXTREME_SENTIMENT_THRESHOLD% <= negativity spread
     final_most_spread_quoted['spread_type'] = ['positive' if spread_rate >=
-                                               SENTIMENT_SPREAD_THRESHOLD else 'negative' for spread_rate in final_most_spread_quoted['pos_percent']]
-    final_most_spread_quoted['spread_rate'] = [round(row['pos_percent']*100, 2) if row['spread_type'] == 'positive'
-                                               else round(row['neg_percent']*100, 2) for _, row in final_most_spread_quoted.iterrows()]
+                                               EXTREME_SENTIMENT_THRESHOLD else 'negative' for spread_rate in final_most_spread_quoted['pos_percent']]
+    final_most_spread_quoted['spread_rate'] = [round(row['pos_percent'], 2) if row['spread_type'] == 'positive'
+                                               else round(row['neg_percent'], 2) for _, row in final_most_spread_quoted.iterrows()]
 
     final_most_spread_quoted.drop(
         ['pos_percent', 'neg_percent'], 1, inplace=True)
