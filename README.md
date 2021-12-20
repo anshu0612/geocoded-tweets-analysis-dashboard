@@ -118,7 +118,7 @@ MONGO_USER = <mongo_username>
 MONGO_PASS = <mongo_password>
 ```
 
-> You can update the `get_tweets.py` file for any other source of tweets data
+> You can update the `parse_tweets.py` file for any other source of tweets data
 
 
 ####  Step 2: Update the `constants/country_config.py` file
@@ -154,7 +154,7 @@ KNOWN_USERNAMES_COUNTRIES = {}
 
 Sample command to run the python script to collect the tweets
 ```bash
-python3 get_tweets.py --db_name COVID_VACCINE --collection_no_list 88 89
+python3 parse_tweets.py --db_name COVID_VACCINE --collection_no_list 88 89
 ```
 
 **Arguments**
