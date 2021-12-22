@@ -249,6 +249,6 @@ To collect the followers using the Twitter API, add the credentials in the `.env
 If you have any questions, feel free to open an issue or directly contact me via: `anshu@comp.nus.edu.sg` or `anshu.singh173@gmail.com`
 
 # Acknowledgement 
-Thanks, Prof. Mohan Kankanhalli, Christian von der Weth (@chrisvdweth), and Jithin Vachery (@jithinvachery) for the guidance.
-I am grateful to LRFI and N-CRiPT for their support.
+Thanks, Prof. Mohan Kankanhalli, Dr. Christian von der Weth (@chrisvdweth), and Dr. Jithin Vachery (@jithinvachery) for the guidance.
+I am grateful to [Lloyd’s Register Foundation Institute for the Public Understanding of Risk (IPUR)](https://ipur.nus.edu.sg/about/) and [NUS Centre for Research in Privacy Technologies](https://ncript.comp.nus.edu.sg/site/ncript/home/)for their support.
 I would also like to acknowledge Reyha (@reyha) for her initial contributions that provided directions to this work.
