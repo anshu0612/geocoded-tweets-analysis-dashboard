@@ -249,5 +249,6 @@ To collect the followers using the Twitter API, add the credentials in the `.env
 If you have any questions, feel free to open an issue or directly contact me via: `anshu@comp.nus.edu.sg` or `anshu.singh173@gmail.com`
 
 # Acknowledgement 
-Thanks, Christian von der Weth (@chrisvdweth) and Jithin Vachery (@jithinvachery) for the guidance.  
-@chrisvdweth provided the list of Singapore-linked official accounts. 
+Thanks, Prof. Mohan Kankanhalli, Christian von der Weth (@chrisvdweth), and Jithin Vachery (@jithinvachery) for the guidance.
+I am grateful to LRFI and N-CRiPT for their support.
+I would also like to acknowledge Reyha (@reyha) for her initial contributions that provided directions to this work.
