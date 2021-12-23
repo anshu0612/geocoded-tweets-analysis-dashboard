@@ -253,4 +253,4 @@ I am thankful to Prof. Mohan Kankanhalli, Dr. Christian von der Weth (@chrisvdwe
 I am grateful to [Lloyd’s Register Foundation Institute for the Public Understanding of Risk (IPUR)](https://ipur.nus.edu.sg/about/) and [NUS Centre for Research in Privacy Technologies (N-CRiPT)](https://ncript.comp.nus.edu.sg/site/ncript/home/) for their support.
 
 
-I would also like to acknowledge Reyha (@reyha) for her initial contributions that provided directions to this work.
+I would also like to acknowledge Reyha Verma (@reyha) for her initial contributions that provided directions to this work.
