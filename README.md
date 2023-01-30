@@ -62,7 +62,7 @@ Refer to this detailed [documentation](https://docs.google.com/document/d/1jr9FA
 
 # Visualizing the key insights from the sample tweets data
 
-Download the sample data from [this](https://drive.google.com/drive/folders/1_oV92pmcem8qMjIaZ5KiBj5CzzIRXein?usp=sharing) link and keep the country-specific/global data inside the `data` folder.
+Download the sample data from [this](https://drive.google.com/drive/folders/1_oV92pmcem8qMjIaZ5KiBj5CzzIRXein?usp=sharing) link and keep the <country-specific> (singapore, india, united states) or global folder inside the `data` folder.
 
 ## Manual Setup
 
